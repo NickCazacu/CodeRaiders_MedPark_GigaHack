@@ -150,12 +150,12 @@ def fact(f, fixes, where):
 
 # unitate scrisă după un număr -> cum ar apărea în vorbire (în linia transcrisă)
 # unitatea + eventualele „/kg/min”, „/zi”, „/L”: toată expresia dispare dacă unitatea nu a fost spusă
-UNIT = re.compile(r"(?<=\d)(\s*)(mg|µg|μg|mcg|ml|mL|mmol|µmol|μmol|umol|mmHg|g|%|UI)((?:/[^\W\d_]+)*)(?!\w)")
+UNIT = re.compile(r"(?<=\d)(\s*)(mg|µg|μg|mcg|ml|mL|mmol|µmol|μmol|umol|mmHg|bpm|g|%|UI)((?:/[^\W\d_]+)*)(?!\w)")
 UNIT_SPOKEN = {"mg": ("mg", "miligram"), "µg": ("µg", "mcg", "microgram", "gamma"), "μg": ("μg", "mcg", "microgram"),
                "mcg": ("mcg", "µg", "microgram"), "ml": ("ml", "mililit"), "g": ("g", "gram"),
                "mmol": ("mmol", "milimol"), "µmol": ("mol", "micromol"), "μmol": ("mol", "micromol"),
                "umol": ("mol", "micromol"), "mmhg": ("mmhg", "milimetri", "mm"), "%": ("%", "la sută", "procent"),
-               "ui": ("ui", "unități")}
+               "ui": ("ui", "unități"), "bpm": ("bpm", "bătăi")}
 
 
 def strip_unspoken_units(text, source, fixes, where):

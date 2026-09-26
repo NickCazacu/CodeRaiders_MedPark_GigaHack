@@ -3,9 +3,14 @@
  "date": "2026-03-10",
  "window_number": 3,
  "n_windows": 8,
- "known_cases": ["Pacientă salon 7, chirurgie — aprobat: Ceftriaxonă 2 g/zi"],
- "patient": {"label": "Pacientă salon 7, febră după colecistectomie", "start": "12:04"},
- "previous_summary":"Pacienta din salonul 7 a fost operată ieri de colecistectomie; s-a început ceftriaxonă [09:52].",
+ "known_cases": [
+  "Pacientă salon 7, chirurgie — aprobat: Ceftriaxonă 2 g/zi"
+ ],
+ "patient": {
+  "label": "Pacientă salon 7, febră după colecistectomie",
+  "start": "12:04"
+ },
+ "previous_summary": "Pacienta din salonul 7 a fost operată ieri de colecistectomie; s-a început ceftriaxonă [09:52].",
  "context_lines": [
   "[11:52] UNK: Pacientul din salonul 3 rămâne pe același tratament, fără modificări.",
   "[11:58] UNK: Bun, trecem mai departe."
@@ -17,7 +22,8 @@
   "[12:26] UNK: Ok, agreed. Antibioticul îl schimbăm pe meropenem.",
   "[12:33] UNK: Și pentru pacientul 12 poate... nu, stai. [?]",
   "[12:39] UNK: Pacientul 12 din cardiologie, externarea o amânăm până vin rezultatele la troponină.",
-  "[12:47] UNK: Troponina когда будет? Лаборатория говорит к вечеру."
+  "[12:47] UNK: Troponina когда будет? Лаборатория говорит к вечеру.",
+  "[12:55] UNK: Și un punct organizatoric: ecograful portabil e în service până vineri, până atunci folosim ecograful din urgență."
  ],
  "output": {
   "cases": [
@@ -26,9 +32,21 @@
     "topic": "Febră după colecistectomie, suspiciune de colecție abdominală",
     "discussion_summary": "Se face ecografie abdominală azi, cu drenaj dacă se găsește o colecție [12:18]. Antibioticul se schimbă pe meropenem [12:26].",
     "facts": [
-     {"category": "istoric", "fact": "A doua zi după colecistectomie", "timestamp": "12:04"},
-     {"category": "evoluție", "fact": "Febră 38,5 °C", "timestamp": "12:04"},
-     {"category": "analize", "fact": "Leucocite 14; CRP în creștere", "timestamp": "12:11"}
+     {
+      "category": "istoric",
+      "fact": "A doua zi după colecistectomie",
+      "timestamp": "12:04"
+     },
+     {
+      "category": "evoluție",
+      "fact": "Febră 38,5 °C",
+      "timestamp": "12:04"
+     },
+     {
+      "category": "analize",
+      "fact": "Leucocite 14; CRP în creștere",
+      "timestamp": "12:11"
+     }
     ],
     "decisions": [
      {
@@ -46,7 +64,11 @@
       "replaces_previous": true
      }
     ],
-    "eta": {"type": "relative", "raw": "сегодня", "condition": ""},
+    "eta": {
+     "type": "relative",
+     "raw": "сегодня",
+     "condition": ""
+    },
     "open_questions": []
    },
    {
@@ -54,7 +76,11 @@
     "topic": "Externare în așteptarea troponinei",
     "discussion_summary": "Externarea se amână până la rezultatele troponinei [12:39], așteptate spre seară [12:47].",
     "facts": [
-     {"category": "analize", "fact": "Rezultatul troponinei e așteptat de laborator spre seară", "timestamp": "12:47"}
+     {
+      "category": "analize",
+      "fact": "Rezultatul troponinei e așteptat de laborator spre seară",
+      "timestamp": "12:47"
+     }
     ],
     "decisions": [
      {
@@ -65,10 +91,43 @@
       "replaces_previous": false
      }
     ],
-    "eta": {"type": "conditional", "raw": "până vin rezultatele la troponină", "condition": "rezultatele troponinei"},
-    "open_questions": ["Rezultatul troponinei, așteptat spre seară [12:47]"]
+    "eta": {
+     "type": "conditional",
+     "raw": "până vin rezultatele la troponină",
+     "condition": "rezultatele troponinei"
+    },
+    "open_questions": [
+     "Rezultatul troponinei, așteptat spre seară [12:47]"
+    ]
+   },
+   {
+    "case_key": "Echipamente: ecograful portabil",
+    "topic": "Ecograful portabil în service",
+    "discussion_summary": "Ecograful portabil e în service până vineri; până atunci se folosește ecograful din urgență [12:55].",
+    "facts": [
+     {
+      "category": "informație",
+      "fact": "Ecograful portabil e în service până vineri",
+      "timestamp": "12:55"
+     }
+    ],
+    "decisions": [
+     {
+      "quote": "până atunci folosim ecograful din urgență",
+      "timestamp": "12:55",
+      "decision": "Se folosește temporar ecograful din urgență",
+      "status": "aprobat",
+      "replaces_previous": false
+     }
+    ],
+    "eta": {
+     "type": "relative",
+     "raw": "până vineri",
+     "condition": ""
+    },
+    "open_questions": []
    }
   ],
-  "summary": "Pentru pacienta din salonul 7 se face ecografie abdominală azi și se trece pe meropenem [12:18] [12:26]. Externarea pacientului 12 din cardiologie se amână până la rezultatele troponinei [12:39]."
+  "summary": "Pentru pacienta din salonul 7 se face ecografie abdominală azi și se trece pe meropenem [12:18] [12:26]. Externarea pacientului 12 din cardiologie se amână până la rezultatele troponinei [12:39]. Ecograful portabil e în service până vineri; până atunci se folosește cel din urgență [12:55]."
  }
 }

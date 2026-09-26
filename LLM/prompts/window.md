@@ -13,8 +13,8 @@ Rezumatul ferestrelor anterioare:
 {{window_lines}}
 === SFÂRȘIT ===
 
-Lista de cazuri cunoscute NU e completă: pacienții noi care apar în FEREASTRA CURENTĂ trebuie extrași și ei. Nu adăuga un caz cunoscut dacă nu e discutat în FEREASTRA CURENTĂ.
+Lista de cazuri cunoscute NU e completă: punctele noi (pacienți sau alte subiecte) care apar în FEREASTRA CURENTĂ trebuie extrase și ele. Nu adăuga un caz cunoscut dacă nu e discutat în FEREASTRA CURENTĂ.
 
 Returnează JSON:
-- "cases": toți pacienții discutați în FEREASTRA CURENTĂ, noi sau cunoscuți (pentru un caz cunoscut folosește același case_key), fiecare cu "facts" din FEREASTRA CURENTĂ (analize cu valori, tratament cu doze, proceduri, investigații, evoluție) și "decisions";
+- "cases": toate punctele discutate în FEREASTRA CURENTĂ (pacienți sau alte subiecte), noi sau cunoscute (pentru un caz cunoscut folosește același case_key), fiecare cu "facts" esențiale din FEREASTRA CURENTĂ (3–6: la un pacient diagnosticul, valorile-cheie, tratamentul; la un subiect problema, cifrele, termenele) și "decisions";
 - "summary": 2–3 propoziții în română despre fereastra curentă, cu [mm:ss] după fiecare afirmație.

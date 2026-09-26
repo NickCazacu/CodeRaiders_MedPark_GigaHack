@@ -1,0 +1,28 @@
+# Ședință de test: ședință administrativă de secție, fără pacienți (conținut fictiv)
+# date: 2026-09-26
+# window_tokens: 3500
+# overlap: 3
+
+[00:02] SPEAKER_00: Bună ziua, colegi. Azi n-avem cazuri, e ședința lunară de organizare. Avem patru puncte: graficul de gărzi, ventilatoarele, auditul de igienă și instruirea pe dosarul electronic.
+[00:20] SPEAKER_00: Primul punct, graficul de gărzi pe octombrie. Doi colegi pleacă în concediu în a doua jumătate a lunii, deci rămânem descoperiți în weekendurile din 18 și 25.
+[00:41] SPEAKER_01: Eu pot lua gărzile de sâmbătă, dar nu și duminica.
+[00:47] SPEAKER_02: Я могу взять воскресенье двадцать шестого, если мне дадут выходной в понедельник.
+[00:56] SPEAKER_00: Bine. Atunci sâmbetele le ia colegul, duminica de 26 colega, cu zi liberă luni 27. Graficul final îl trimit până vineri.
+[01:10] SPEAKER_01: Și duminica de 19? [?]
+[01:13] SPEAKER_00: Pentru 19 încă nu avem pe nimeni, întreb la secția de chirurgie dacă ne pot ajuta cu un medic.
+[01:25] SPEAKER_00: Al doilea punct, ventilatoarele. Din cele opt, două sunt în service de trei săptămâni, iar al treilea dă eroare de senzor de flux.
+[01:40] SPEAKER_03: Firma de service a spus că piesele vin în zece zile lucrătoare. Contractul de mentenanță expiră la sfârșitul anului.
+[01:52] SPEAKER_00: Nu putem rămâne cu cinci aparate iarna. Propun să cerem administrației un ventilator de rezervă cu chirie până revin cele din service.
+[02:05] SPEAKER_03: De acord. Fac eu cererea către administrație azi.
+[02:12] SPEAKER_00: Și pentru contract: pregătim caietul de sarcini pentru licitație până la 15 noiembrie.
+[02:22] SPEAKER_00: Al treilea punct, auditul de igienă a mâinilor. Rezultatul pe septembrie a fost 71 la sută, ținta e 85.
+[02:35] SPEAKER_02: Cele mai multe abateri sunt la schimbul de noapte și înainte de contactul cu pacientul.
+[02:44] SPEAKER_00: Atunci facem o instruire scurtă pentru asistentele de noapte săptămâna viitoare și repetăm auditul în noiembrie.
+[02:55] SPEAKER_02: Mai trebuie dozatoare noi pe coridor, două nu funcționează.
+[03:02] SPEAKER_00: Le trecem pe lista de comenzi a secției.
+[03:10] SPEAKER_00: Ultimul punct, dosarul electronic. De la 1 noiembrie foile de observație se completează doar electronic.
+[03:22] SPEAKER_01: Instruirea când e? Mulți nu au fost încă.
+[03:27] SPEAKER_00: Instruirea e marți și joi la ora 14, în sala de conferințe, câte o oră. Toată lumea trebuie să participe până la sfârșitul lunii.
+[03:40] SPEAKER_03: And the login problems with the new system? Some accounts are still not activated.
+[03:47] SPEAKER_00: Conturile neactivate le trimitem la IT până mâine, lista o face asistenta șefă.
+[03:58] SPEAKER_00: Atât pentru azi. Mulțumesc.

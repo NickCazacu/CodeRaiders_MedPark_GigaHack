@@ -6,5 +6,5 @@ Transcrierea completă a ședinței:
 === SFÂRȘIT ===
 
 Returnează JSON:
-- "cases": TOȚI pacienții discutați în ședință, fiecare cu "facts" (toate informațiile clinice: analize cu valori, tratament cu doze, proceduri, investigații, evoluție) și "decisions";
+- "cases": TOATE punctele discutate în ședință (pacienți sau alte subiecte), fiecare cu "facts" esențiale (3–6: la un pacient diagnosticul, valorile-cheie, tratamentul; la un subiect problema, cifrele, termenele) și "decisions";
 - "summary": 3–5 propoziții în română cu ideea principală a ședinței, cu [mm:ss] după fiecare afirmație.

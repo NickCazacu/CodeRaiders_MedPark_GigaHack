@@ -89,7 +89,7 @@ def test_mom_escapes_and_empty_minutes():
     job = tmpdir()
     (job / "minutes.json").write_text(json.dumps({"meeting_summary": "<b>x</b> & y", "cases": []}), encoding="utf-8")
     page = mom.write(job).read_text(encoding="utf-8")
-    assert "&lt;b&gt;x&lt;/b&gt; &amp; y" in page and "Niciun pacient identificat." in page
+    assert "&lt;b&gt;x&lt;/b&gt; &amp; y" in page and "Niciun punct identificat." in page
 
 
 def test_test_meetings_folder_by_name_and_mom_export():

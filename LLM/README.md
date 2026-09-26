@@ -80,6 +80,17 @@ lipsă și toate valorile clinice omise (creatinină, antibiotice cu doze, proce
   încărcat pe durata rulării, iar `num_ctx`, odată mărit, rămâne stabil (altfel Ollama reîncarcă modelul).
   Medpark: ~3 min → 79 s.
 - Reguli noi în `system.md`: unitatea de măsură doar dacă a fost spusă; zecimale rostite „X și Y”.
+- **Nu doar pacienți**: unitatea procesului-verbal e „punctul discutat”, un pacient sau un alt subiect
+  (organizare, gărzi, echipamente, protocoale, buget, incidente, instruiri). Împărțirea caută puncte (`segment.md`),
+  subiectele au `case_key` cu tema („Organizare: …”, „Echipamente: …”) și categoria `informație`; exemplul
+  few-shot are și un punct organizatoric. Testat pe `manual_tests/administrativ` (ședință fără pacienți: niciun
+  pacient inventat, toate subiectele și deciziile), `consiliu_30min` (8 pacienți + 4 subiecte) și Medpark.
+- **Doar informația de bază**: 3–6 elemente esențiale per punct (`extract.max_facts` 8), nu toate valorile.
+- **Procesul-verbal** (`mom.py`): per punct diagnostic și istoric, stare clinică, paraclinic, tratament și
+  proceduri, informații (subiecte), plan / decizii cu replica sursă, în așteptare; fără ordine de zi și termene vagi.
+- Verificări în cod pe textul modelului: unități nespuse (inclusiv în rezumate), ziua săptămânii după replica
+  citată, afirmații despre ce „nu s-a discutat”, chei prea lungi, chei deformate înlocuite cu identificatorul
+  fragmentului („Pacient boxă”).
 
 ## Cum lucrează
 

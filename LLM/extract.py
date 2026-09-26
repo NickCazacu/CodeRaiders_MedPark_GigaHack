@@ -54,13 +54,17 @@ def canonical_key(case_key, fragment_label):
     return CANON[kind].format(num).strip()
 
 
-def same_patient(a, b):
-    """Aceeași identificare (pat/boxă/salon/pacient + număr), altfel aceeași etichetă. „Pacient patul 9, pneumonie”
-    și „Patul 9 – insuficiență respiratorie” sunt același pacient: diagnosticul din etichetă variază între apeluri."""
-    ia, ib = patient_ids(a), patient_ids(b)
+def same_patient(a, b, cue_a="", cue_b=""):
+    """Același punct al ședinței? Pacienți: aceeași identificare (pat/boxă/salon/pacient + număr), căutată în
+    etichetă + cue: „Pacient patul 9, pneumonie” și „Patul 9 – insuficiență respiratorie” sunt același pacient.
+    Subiecte (fără identificator): o etichetă e începutul celeilalte („Audit de igienă” și „Audit de igienă:
+    schimbul de noapte”); „Echipamente: ventilatoare” și „Echipamente: dozatoare” rămân puncte diferite."""
+    ia, ib = patient_ids(f"{a} {cue_a}"), patient_ids(f"{b} {cue_b}")
     if ia or ib:
         return bool(ia & ib)
-    return " ".join(a.lower().split()) == " ".join(b.lower().split())
+    na, nb = (" ".join(re.sub(r"[^\w\s]", " ", x.lower()).split()) for x in (a, b))
+    short, long_ = sorted((na, nb), key=len)
+    return bool(short) and (long_ == short or long_.startswith(short + " "))
 
 
 @contextmanager
@@ -263,7 +267,7 @@ class Extractor:
                 continue
             if starts and T[ids[k]].start - T[ids[starts[-1][0]]].start < merge_s:
                 continue  # două începuturi la câteva secunde (ex. 02:58 și 03:00): același pacient
-            if starts and same_patient(f"{starts[-1][1]} {starts[-1][2]}", f"{label} {cue}"):
+            if starts and same_patient(starts[-1][1], label, starts[-1][2], cue):
                 continue  # la granița dintre bucăți modelul repetă uneori pacientul care continuă
             starts.append((k, label, cue))
         res = {"raw": raws[0] if len(raws) == 1 else raws, "data": parsed[0] if len(parsed) == 1 else parsed}
@@ -325,6 +329,11 @@ class Extractor:
         summary = self.fix_by_timestamps(summary, fixes, label)
         for c in cases:
             c["discussion_summary"] = self.fix_by_timestamps(c["discussion_summary"], fixes, label)
+        for c in cases:  # cheia e un identificator scurt: „Pacientul cu sepsis, adrenalectomie, ...” -> până la virgulă
+            if len(c["case_key"]) > 50 and "," in c["case_key"]:
+                short = c["case_key"].split(",")[0].strip()
+                fixes.append(f"{label}: case_key prea lung {c['case_key']!r} -> {short!r}")
+                c["case_key"] = short
         if patient and len(cases) == 1:
             key = canonical_key(cases[0]["case_key"], f"{patient['label']} {patient.get('cue', '')}")
             if key != cases[0]["case_key"]:

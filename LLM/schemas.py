@@ -7,7 +7,8 @@ STATUSES = ["aprobat", "respins", "amânat", "necesită investigații suplimenta
 ETA_TYPES = ["absolute", "relative", "duration", "conditional", "vague", "recurring", "none"]
 # constatările clinice ale unui caz (tot ce nu e decizie, dar contează în procesul-verbal)
 FACT_CATEGORIES = ["diagnostic", "istoric", "analize", "imagistică", "microbiologie", "tratament",
-                   "procedură", "monitorizare", "evoluție"]
+                   "procedură", "monitorizare", "evoluție",
+                   "informație"]  # puncte care nu sunt despre un pacient (organizare, echipamente, protocoale)
 
 _str = {"type": "string"}
 

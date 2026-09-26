@@ -25,7 +25,8 @@ STATUS_CLASS = {"aprobat": "ok", "respins": "no", "amânat": "wait", "necesită 
 SECTIONS = [("Diagnostic și istoric", ("diagnostic", "istoric")),
             ("Stare clinică", ("evoluție", "monitorizare")),
             ("Paraclinic", ("analize", "imagistică", "microbiologie")),
-            ("Tratament și proceduri", ("tratament", "procedură"))]
+            ("Tratament și proceduri", ("tratament", "procedură")),
+            ("Informații", ("informație",))]  # subiectele care nu sunt despre un pacient
 # statusul deciziei, în limbajul unei vizite medicale
 STATUS_LABEL = {"aprobat": "decis", "respins": "respins", "amânat": "amânat",
                 "necesită investigații suplimentare": "după investigații", "în discuție": "propus"}
@@ -115,7 +116,7 @@ def render_md(m):
     out = [f"# {m['title']}", "",
            f"**Data ședinței:** {m['date']} · **Durata înregistrării:** {m['duration']} · "
            f"**Generat:** {m['generated']} ({m['model']}, automat, de verificat)", "",
-           "## Rezumat", "", m["summary"] or "_—_", "", "## Pacienți", ""]
+           "## Rezumat", "", m["summary"] or "_—_", "", "## Puncte discutate", ""]
     for i, c in enumerate(m["cases"], 1):
         out += [f"### {i}. {c['case_key']}" + (f" — {c['topic']}" if c["topic"] else ""), ""]
         if c["discussion_summary"]:
@@ -211,7 +212,7 @@ def render_html(m):
 Generat: {e(m['generated'])} · {e(m['model'])}</div>
 <div class="draft">Generat automat din înregistrare — de verificat înainte de trimitere</div>
 <h2>Rezumat</h2><p>{e(m['summary'] or '—')}</p>
-<h2>Pacienți</h2>{''.join(cards) or '<p>Niciun pacient identificat.</p>'}
+<h2>Puncte discutate</h2>{''.join(cards) or '<p>Niciun punct identificat.</p>'}
 <h2>Note pentru verificare</h2><ul class="notes">
 <li>Generat automat din înregistrare: valorile și termenii medicali se verifică înainte de trimitere.</li>
 <li>[mm:ss] trimite la momentul din înregistrare; „sursa” e replica exactă, în limba vorbită.</li>{notes}</ul>

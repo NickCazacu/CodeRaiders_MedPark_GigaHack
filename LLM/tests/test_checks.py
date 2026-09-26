@@ -284,3 +284,9 @@ def test_weekday_follows_quote():
     assert fw("Tratament 3 luni, control joi", "control on Thursday, treatment for 3 months", fx, "w") == \
         "Tratament 3 luni, control joi"
     assert fw("Control joi", "control next week", fx, "w") == "Control joi"
+
+
+def test_bpm_unit_only_if_spoken():
+    from LLM.sanitize import strip_unspoken_units as su
+    fx = []
+    assert su("Frecvența ajustată la 80 bpm", "[07:15] X: frecvența la EKS la 80", fx, "w") == "Frecvența ajustată la 80"

@@ -252,6 +252,12 @@ def test_same_patient():
     assert ex.same_patient("Apătul nou mei departi de box", "Bocse de meniație, pneumonie")
     assert not ex.same_patient("Pacientul din patul 9", "Bocse de meniație")
     assert ex.same_patient("Alți pacienți", "alți  pacienți") and not ex.same_patient("Primul pacient", "Alți pacienți")
+    # identificatorul poate fi doar în cue (eticheta deformată)
+    assert ex.same_patient("Apătul nou mei", "Bocse de meniație", "departi de box", "")
+    # subiecte: continuarea aceleiași teme se unește, teme diferite din aceeași categorie nu
+    assert ex.same_patient("Audit de igienă", "Audit de igienă: schimb de noapte și contact cu pacientul")
+    assert not ex.same_patient("Echipamente: ventilatoare", "Echipamente: dozatoare")
+    assert not ex.same_patient("Audit", "Auditul financiar")
 
 
 def test_complete_pass_adds_missed_facts():
