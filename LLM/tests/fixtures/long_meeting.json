@@ -1,0 +1,811 @@
+{
+ "job_id": "sedinta_lunga",
+ "audio_duration_s": 358.2,
+ "speakers": [
+  "UNK"
+ ],
+ "languages": {
+  "ro": 39,
+  "ru": 6
+ },
+ "format": "[mm:ss] SPEAKER: text  (\" [?]\" = încredere scăzută)",
+ "token_estimate": "utf8_bytes/4",
+ "n_turns": 45,
+ "n_windows": 6,
+ "turns": [
+  {
+   "id": 0,
+   "speaker": "UNK",
+   "start": 1.0,
+   "end": 8.3,
+   "line": "[00:01] UNK: Începem consiliul. Primul, pacientul 48 din cardiologie, a venit cu infarct miocardic inferior.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    0
+   ],
+   "tokens_est": 29
+  },
+  {
+   "id": 1,
+   "speaker": "UNK",
+   "start": 9.1,
+   "end": 17.6,
+   "line": "[00:09] UNK: Pacientul 48, el a fost pe dată de uscări și a ajuns la noi cu infarct miocardic, a fost trombospirație făcută.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    1
+   ],
+   "tokens_est": 34
+  },
+  {
+   "id": 2,
+   "speaker": "UNK",
+   "start": 18.4,
+   "end": 24.2,
+   "line": "[00:18] UNK: Mitrală 3, compracție de 38-40. Da, el e pacient cardiac și trivascular, nu?",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    2
+   ],
+   "tokens_est": 24
+  },
+  {
+   "id": 3,
+   "speaker": "UNK",
+   "start": 25.0,
+   "end": 30.2,
+   "line": "[00:25] UNK: Trivascular, da. Și acolo suspecția și la ruptura de cordaj a fost.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    3
+   ],
+   "tokens_est": 22
+  },
+  {
+   "id": 4,
+   "speaker": "UNK",
+   "start": 31.0,
+   "end": 36.4,
+   "line": "[00:31] UNK: Ruptura de cordaj trebuie confirmată, pe transtoracic nu se vede clar.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    4
+   ],
+   "tokens_est": 22
+  },
+  {
+   "id": 5,
+   "speaker": "UNK",
+   "start": 37.2,
+   "end": 40.6,
+   "line": "[00:37] UNK: Нужно чреспищеводное эхо, без него не решим.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ru"
+   ],
+   "segment_ids": [
+    5
+   ],
+   "tokens_est": 25
+  },
+  {
+   "id": 6,
+   "speaker": "UNK",
+   "start": 41.4,
+   "end": 46.9,
+   "line": "[00:41] UNK: Deci deocamdată nu hotărâm nimic pentru 48, așteptăm ECO transesofagian.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    6
+   ],
+   "tokens_est": 24
+  },
+  {
+   "id": 7,
+   "speaker": "UNK",
+   "start": 47.7,
+   "end": 52.0,
+   "line": "[00:47] UNK: Hemodinamic e stabil, pe diuretice, tensiunea 110 pe 70.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    7
+   ],
+   "tokens_est": 19
+  },
+  {
+   "id": 8,
+   "speaker": "UNK",
+   "start": 67.8,
+   "end": 74.5,
+   "line": "[01:07] UNK: Trecem la pacienta din salonul 5, nefrologie, insuficiență renală acută pe fond cronic.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    8
+   ],
+   "tokens_est": 27
+  },
+  {
+   "id": 9,
+   "speaker": "UNK",
+   "start": 75.3,
+   "end": 79.2,
+   "line": "[01:15] UNK: Creatinina 420, potasiul 6,1, diureza 300 ml pe zi.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    9
+   ],
+   "tokens_est": 17
+  },
+  {
+   "id": 10,
+   "speaker": "UNK",
+   "start": 80.0,
+   "end": 84.8,
+   "line": "[01:20] UNK: Cu potasiul ăsta nu mai așteptăm. Hemodializă mâine dimineață.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    10
+   ],
+   "tokens_est": 22
+  },
+  {
+   "id": 11,
+   "speaker": "UNK",
+   "start": 85.6,
+   "end": 89.8,
+   "line": "[01:25] UNK: Согласен, диализ завтра утром, катетер ставим сегодня.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ru"
+   ],
+   "segment_ids": [
+    11
+   ],
+   "tokens_est": 29
+  },
+  {
+   "id": 12,
+   "speaker": "UNK",
+   "start": 90.6,
+   "end": 93.9,
+   "line": "[01:30] UNK: Ok, am notat, cateter azi și dializă mâine.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    12
+   ],
+   "tokens_est": 16
+  },
+  {
+   "id": 13,
+   "speaker": "UNK",
+   "start": 104.7,
+   "end": 109.9,
+   "line": "[01:44] UNK: O paranteză organizatorică: graficul de gărzi pe octombrie e afișat.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    13
+   ],
+   "tokens_est": 23
+  },
+  {
+   "id": 14,
+   "speaker": "UNK",
+   "start": 110.7,
+   "end": 115.2,
+   "line": "[01:50] UNK: Cine are schimburi, să vorbească direct cu șefa de secție.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    14
+   ],
+   "tokens_est": 20
+  },
+  {
+   "id": 15,
+   "speaker": "UNK",
+   "start": 116.0,
+   "end": 120.8,
+   "line": "[01:56] UNK: Și sala doi de operații e în renovare până la sfârșitul lunii.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    15
+   ],
+   "tokens_est": 22
+  },
+  {
+   "id": 16,
+   "speaker": "UNK",
+   "start": 136.6,
+   "end": 141.6,
+   "line": "[02:16] UNK: Pacientul 17 din chirurgie, apendicită acută, a venit azi-noapte.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    16
+   ],
+   "tokens_est": 21
+  },
+  {
+   "id": 17,
+   "speaker": "UNK",
+   "start": 142.4,
+   "end": 148.2,
+   "line": "[02:22] UNK: Leucocite 16, ecografia arată apendice de 11 milimetri, lichid liber puțin.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    17
+   ],
+   "tokens_est": 24
+  },
+  {
+   "id": 18,
+   "speaker": "UNK",
+   "start": 149.0,
+   "end": 152.2,
+   "line": "[02:29] UNK: Не будем ждать, это классическая картина.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ru"
+   ],
+   "segment_ids": [
+    18
+   ],
+   "tokens_est": 23
+  },
+  {
+   "id": 19,
+   "speaker": "UNK",
+   "start": 153.0,
+   "end": 157.4,
+   "line": "[02:33] UNK: Operăm pacientul 17 astăzi, apendicectomie laparoscopică.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    19
+   ],
+   "tokens_est": 20
+  },
+  {
+   "id": 20,
+   "speaker": "UNK",
+   "start": 158.2,
+   "end": 160.7,
+   "line": "[02:38] UNK: Da, sala unu e liberă după prânz.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    20
+   ],
+   "tokens_est": 14
+  },
+  {
+   "id": 21,
+   "speaker": "UNK",
+   "start": 161.5,
+   "end": 165.4,
+   "line": "[02:41] UNK: Anestezistul confirmă, a mâncat ultima dată aseară.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    21
+   ],
+   "tokens_est": 18
+  },
+  {
+   "id": 22,
+   "speaker": "UNK",
+   "start": 166.2,
+   "end": 168.2,
+   "line": "[02:46] UNK: Bun. Mergem mai departe.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    22
+   ],
+   "tokens_est": 11
+  },
+  {
+   "id": 23,
+   "speaker": "UNK",
+   "start": 189.0,
+   "end": 195.1,
+   "line": "[03:09] UNK: Am revenit la pacienta din salonul 5, au venit analizele de control chiar acum.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    23
+   ],
+   "tokens_est": 24
+  },
+  {
+   "id": 24,
+   "speaker": "UNK",
+   "start": 195.9,
+   "end": 201.3,
+   "line": "[03:15] UNK: Creatinina a scăzut la 250, potasiul 5,2, diureza a crescut la 900 ml.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    24
+   ],
+   "tokens_est": 22
+  },
+  {
+   "id": 25,
+   "speaker": "UNK",
+   "start": 202.1,
+   "end": 207.9,
+   "line": "[03:22] UNK: Atunci anulăm hemodializa, continuăm conservator și repetăm analizele mâine.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    25
+   ],
+   "tokens_est": 25
+  },
+  {
+   "id": 26,
+   "speaker": "UNK",
+   "start": 208.7,
+   "end": 212.4,
+   "line": "[03:28] UNK: Согласна, диализ отменяем, катетер пока оставим.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ru"
+   ],
+   "segment_ids": [
+    26
+   ],
+   "tokens_est": 27
+  },
+  {
+   "id": 27,
+   "speaker": "UNK",
+   "start": 228.2,
+   "end": 232.0,
+   "line": "[03:48] UNK: Pacientul 22 din neurologie, cădere acasă, confuz.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    27
+   ],
+   "tokens_est": 18
+  },
+  {
+   "id": 28,
+   "speaker": "UNK",
+   "start": 232.8,
+   "end": 234.9,
+   "line": "[03:52] UNK: Pe anticoagulante, INR 3,4.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    28
+   ],
+   "tokens_est": 11
+  },
+  {
+   "id": 29,
+   "speaker": "UNK",
+   "start": 235.7,
+   "end": 240.9,
+   "line": "[03:55] UNK: КТ с контрастом завтра, и сегодня... нет, КТ сегодня без контраста. [?]",
+   "low_confidence": true,
+   "low_confidence_ratio": 1.0,
+   "langs": [
+    "ru"
+   ],
+   "segment_ids": [
+    29
+   ],
+   "tokens_est": 35
+  },
+  {
+   "id": 30,
+   "speaker": "UNK",
+   "start": 241.7,
+   "end": 245.9,
+   "line": "[04:01] UNK: Da, CT nativ azi, urgent, din cauza anticoagulantelor.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    30
+   ],
+   "tokens_est": 18
+  },
+  {
+   "id": 31,
+   "speaker": "UNK",
+   "start": 246.7,
+   "end": 249.9,
+   "line": "[04:06] UNK: Și oprim anticoagulantul până la rezultat.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    31
+   ],
+   "tokens_est": 16
+  },
+  {
+   "id": 32,
+   "speaker": "UNK",
+   "start": 260.7,
+   "end": 264.0,
+   "line": "[04:20] UNK: Mai era ceva despre... nu, am uitat, revin.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    32
+   ],
+   "tokens_est": 15
+  },
+  {
+   "id": 33,
+   "speaker": "UNK",
+   "start": 264.8,
+   "end": 268.8,
+   "line": "[04:24] UNK: Farmacia a anunțat că meropenemul e în stoc din nou.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    33
+   ],
+   "tokens_est": 18
+  },
+  {
+   "id": 34,
+   "speaker": "UNK",
+   "start": 269.6,
+   "end": 274.4,
+   "line": "[04:29] UNK: Bine de știut. Pentru salonul 9 poate... lăsăm, nu e cazul azi.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    34
+   ],
+   "tokens_est": 21
+  },
+  {
+   "id": 35,
+   "speaker": "UNK",
+   "start": 275.2,
+   "end": 279.5,
+   "line": "[04:35] UNK: Asistentele cer să completăm fișele de transfer la timp.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    35
+   ],
+   "tokens_est": 19
+  },
+  {
+   "id": 36,
+   "speaker": "UNK",
+   "start": 280.3,
+   "end": 282.8,
+   "line": "[04:40] UNK: Da, vă rog, mai ales în weekend.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    36
+   ],
+   "tokens_est": 13
+  },
+  {
+   "id": 37,
+   "speaker": "UNK",
+   "start": 308.6,
+   "end": 313.4,
+   "line": "[05:08] UNK: Revenim la pacientul 48, a venit rezultatul ECO transesofagian.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    37
+   ],
+   "tokens_est": 20
+  },
+  {
+   "id": 38,
+   "speaker": "UNK",
+   "start": 314.2,
+   "end": 320.3,
+   "line": "[05:14] UNK: Se confirmă ruptura de cordaj pe valva mitrală posterioară, regurgitare severă.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    38
+   ],
+   "tokens_est": 25
+  },
+  {
+   "id": 39,
+   "speaker": "UNK",
+   "start": 321.1,
+   "end": 324.2,
+   "line": "[05:21] UNK: Fracția de ejecție rămâne 38-40 la sută.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    39
+   ],
+   "tokens_est": 16
+  },
+  {
+   "id": 40,
+   "speaker": "UNK",
+   "start": 325.0,
+   "end": 330.8,
+   "line": "[05:25] UNK: Atunci e indicație chirurgicală clară, plastie de valvă mitrală plus bypass.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    40
+   ],
+   "tokens_est": 25
+  },
+  {
+   "id": 41,
+   "speaker": "UNK",
+   "start": 331.6,
+   "end": 336.8,
+   "line": "[05:31] UNK: Operăm pacientul 48 joi, plastie mitrală și bypass aortocoronarian.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    41
+   ],
+   "tokens_est": 22
+  },
+  {
+   "id": 42,
+   "speaker": "UNK",
+   "start": 337.6,
+   "end": 341.0,
+   "line": "[05:37] UNK: Согласен, в четверг, я скажу кардиохирургам.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ru"
+   ],
+   "segment_ids": [
+    42
+   ],
+   "tokens_est": 25
+  },
+  {
+   "id": 43,
+   "speaker": "UNK",
+   "start": 341.8,
+   "end": 345.9,
+   "line": "[05:41] UNK: Până joi îl ținem pe terapie intensivă, monitorizare.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    43
+   ],
+   "tokens_est": 19
+  },
+  {
+   "id": 44,
+   "speaker": "UNK",
+   "start": 351.7,
+   "end": 354.4,
+   "line": "[05:51] UNK: Ok, am încheiat, mulțumesc tuturor.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    44
+   ],
+   "tokens_est": 14
+  }
+ ],
+ "windows": [
+  {
+   "index": 0,
+   "turn_ids": [
+    0,
+    7
+   ],
+   "overlap_turns": 0,
+   "start": 1.0,
+   "end": 52.0,
+   "tokens_est": 199,
+   "text": "[00:01] UNK: Începem consiliul. Primul, pacientul 48 din cardiologie, a venit cu infarct miocardic inferior.\n[00:09] UNK: Pacientul 48, el a fost pe dată de uscări și a ajuns la noi cu infarct miocardic, a fost trombospirație făcută.\n[00:18] UNK: Mitrală 3, compracție de 38-40. Da, el e pacient cardiac și trivascular, nu?\n[00:25] UNK: Trivascular, da. Și acolo suspecția și la ruptura de cordaj a fost.\n[00:31] UNK: Ruptura de cordaj trebuie confirmată, pe transtoracic nu se vede clar.\n[00:37] UNK: Нужно чреспищеводное эхо, без него не решим.\n[00:41] UNK: Deci deocamdată nu hotărâm nimic pentru 48, așteptăm ECO transesofagian.\n[00:47] UNK: Hemodinamic e stabil, pe diuretice, tensiunea 110 pe 70."
+  },
+  {
+   "index": 1,
+   "turn_ids": [
+    5,
+    13
+   ],
+   "overlap_turns": 3,
+   "start": 37.2,
+   "end": 109.9,
+   "tokens_est": 202,
+   "text": "[00:37] UNK: Нужно чреспищеводное эхо, без него не решим.\n[00:41] UNK: Deci deocamdată nu hotărâm nimic pentru 48, așteptăm ECO transesofagian.\n[00:47] UNK: Hemodinamic e stabil, pe diuretice, tensiunea 110 pe 70.\n[01:07] UNK: Trecem la pacienta din salonul 5, nefrologie, insuficiență renală acută pe fond cronic.\n[01:15] UNK: Creatinina 420, potasiul 6,1, diureza 300 ml pe zi.\n[01:20] UNK: Cu potasiul ăsta nu mai așteptăm. Hemodializă mâine dimineață.\n[01:25] UNK: Согласен, диализ завтра утром, катетер ставим сегодня.\n[01:30] UNK: Ok, am notat, cateter azi și dializă mâine.\n[01:44] UNK: O paranteză organizatorică: graficul de gărzi pe octombrie e afișat."
+  },
+  {
+   "index": 2,
+   "turn_ids": [
+    11,
+    20
+   ],
+   "overlap_turns": 3,
+   "start": 85.6,
+   "end": 160.7,
+   "tokens_est": 212,
+   "text": "[01:25] UNK: Согласен, диализ завтра утром, катетер ставим сегодня.\n[01:30] UNK: Ok, am notat, cateter azi și dializă mâine.\n[01:44] UNK: O paranteză organizatorică: graficul de gărzi pe octombrie e afișat.\n[01:50] UNK: Cine are schimburi, să vorbească direct cu șefa de secție.\n[01:56] UNK: Și sala doi de operații e în renovare până la sfârșitul lunii.\n[02:16] UNK: Pacientul 17 din chirurgie, apendicită acută, a venit azi-noapte.\n[02:22] UNK: Leucocite 16, ecografia arată apendice de 11 milimetri, lichid liber puțin.\n[02:29] UNK: Не будем ждать, это классическая картина.\n[02:33] UNK: Operăm pacientul 17 astăzi, apendicectomie laparoscopică.\n[02:38] UNK: Da, sala unu e liberă după prânz."
+  },
+  {
+   "index": 3,
+   "turn_ids": [
+    18,
+    28
+   ],
+   "overlap_turns": 3,
+   "start": 149.0,
+   "end": 234.9,
+   "tokens_est": 213,
+   "text": "[02:29] UNK: Не будем ждать, это классическая картина.\n[02:33] UNK: Operăm pacientul 17 astăzi, apendicectomie laparoscopică.\n[02:38] UNK: Da, sala unu e liberă după prânz.\n[02:41] UNK: Anestezistul confirmă, a mâncat ultima dată aseară.\n[02:46] UNK: Bun. Mergem mai departe.\n[03:09] UNK: Am revenit la pacienta din salonul 5, au venit analizele de control chiar acum.\n[03:15] UNK: Creatinina a scăzut la 250, potasiul 5,2, diureza a crescut la 900 ml.\n[03:22] UNK: Atunci anulăm hemodializa, continuăm conservator și repetăm analizele mâine.\n[03:28] UNK: Согласна, диализ отменяем, катетер пока оставим.\n[03:48] UNK: Pacientul 22 din neurologie, cădere acasă, confuz.\n[03:52] UNK: Pe anticoagulante, INR 3,4."
+  },
+  {
+   "index": 4,
+   "turn_ids": [
+    26,
+    36
+   ],
+   "overlap_turns": 3,
+   "start": 208.7,
+   "end": 282.8,
+   "tokens_est": 211,
+   "text": "[03:28] UNK: Согласна, диализ отменяем, катетер пока оставим.\n[03:48] UNK: Pacientul 22 din neurologie, cădere acasă, confuz.\n[03:52] UNK: Pe anticoagulante, INR 3,4.\n[03:55] UNK: КТ с контрастом завтра, и сегодня... нет, КТ сегодня без контраста. [?]\n[04:01] UNK: Da, CT nativ azi, urgent, din cauza anticoagulantelor.\n[04:06] UNK: Și oprim anticoagulantul până la rezultat.\n[04:20] UNK: Mai era ceva despre... nu, am uitat, revin.\n[04:24] UNK: Farmacia a anunțat că meropenemul e în stoc din nou.\n[04:29] UNK: Bine de știut. Pentru salonul 9 poate... lăsăm, nu e cazul azi.\n[04:35] UNK: Asistentele cer să completăm fișele de transfer la timp.\n[04:40] UNK: Da, vă rog, mai ales în weekend."
+  },
+  {
+   "index": 5,
+   "turn_ids": [
+    34,
+    44
+   ],
+   "overlap_turns": 3,
+   "start": 269.6,
+   "end": 354.4,
+   "tokens_est": 219,
+   "text": "[04:29] UNK: Bine de știut. Pentru salonul 9 poate... lăsăm, nu e cazul azi.\n[04:35] UNK: Asistentele cer să completăm fișele de transfer la timp.\n[04:40] UNK: Da, vă rog, mai ales în weekend.\n[05:08] UNK: Revenim la pacientul 48, a venit rezultatul ECO transesofagian.\n[05:14] UNK: Se confirmă ruptura de cordaj pe valva mitrală posterioară, regurgitare severă.\n[05:21] UNK: Fracția de ejecție rămâne 38-40 la sută.\n[05:25] UNK: Atunci e indicație chirurgicală clară, plastie de valvă mitrală plus bypass.\n[05:31] UNK: Operăm pacientul 48 joi, plastie mitrală și bypass aortocoronarian.\n[05:37] UNK: Согласен, в четверг, я скажу кардиохирургам.\n[05:41] UNK: Până joi îl ținem pe terapie intensivă, monitorizare.\n[05:51] UNK: Ok, am încheiat, mulțumesc tuturor."
+  }
+ ]
+}

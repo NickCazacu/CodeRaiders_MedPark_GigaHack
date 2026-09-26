@@ -1,0 +1,95 @@
+{
+ "job_id": "decizie_nesigura",
+ "audio_duration_s": 26.4,
+ "speakers": [
+  "UNK"
+ ],
+ "languages": {
+  "ro": 3,
+  "ru": 1
+ },
+ "format": "[mm:ss] SPEAKER: text  (\" [?]\" = încredere scăzută)",
+ "token_estimate": "utf8_bytes/4",
+ "n_turns": 4,
+ "n_windows": 1,
+ "turns": [
+  {
+   "id": 0,
+   "speaker": "UNK",
+   "start": 1.0,
+   "end": 6.5,
+   "line": "[00:01] UNK: Pacientul 33, pneumonie bilaterală, saturația 88 pe oxigen cinci litri.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    0
+   ],
+   "tokens_est": 23
+  },
+  {
+   "id": 1,
+   "speaker": "UNK",
+   "start": 7.3,
+   "end": 12.1,
+   "line": "[00:07] UNK: Radiografia de azi arată progresie, infiltrat bilateral extins.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    1
+   ],
+   "tokens_est": 21
+  },
+  {
+   "id": 2,
+   "speaker": "UNK",
+   "start": 12.9,
+   "end": 16.7,
+   "line": "[00:12] UNK: Трансфер в реанимацию сегодня, da, îl mutăm acum. [?]",
+   "low_confidence": true,
+   "low_confidence_ratio": 1.0,
+   "langs": [
+    "ru"
+   ],
+   "segment_ids": [
+    2
+   ],
+   "tokens_est": 25
+  },
+  {
+   "id": 3,
+   "speaker": "UNK",
+   "start": 17.5,
+   "end": 22.6,
+   "line": "[00:17] UNK: Bine, anunțăm reanimarea. Pacienta 40 e stabilă, rămâne pe secție.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    3
+   ],
+   "tokens_est": 23
+  }
+ ],
+ "windows": [
+  {
+   "index": 0,
+   "turn_ids": [
+    0,
+    3
+   ],
+   "overlap_turns": 0,
+   "start": 1.0,
+   "end": 22.6,
+   "tokens_est": 92,
+   "text": "[00:01] UNK: Pacientul 33, pneumonie bilaterală, saturația 88 pe oxigen cinci litri.\n[00:07] UNK: Radiografia de azi arată progresie, infiltrat bilateral extins.\n[00:12] UNK: Трансфер в реанимацию сегодня, da, îl mutăm acum. [?]\n[00:17] UNK: Bine, anunțăm reanimarea. Pacienta 40 e stabilă, rămâne pe secție."
+  }
+ ]
+}

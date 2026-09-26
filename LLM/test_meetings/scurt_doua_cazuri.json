@@ -1,0 +1,225 @@
+{
+ "job_id": "scurt_doua_cazuri",
+ "audio_duration_s": 95.1,
+ "speakers": [
+  "SPEAKER_00",
+  "SPEAKER_01",
+  "SPEAKER_02"
+ ],
+ "languages": {
+  "ro": 11,
+  "ru": 1
+ },
+ "format": "[mm:ss] SPEAKER: text  (\" [?]\" = încredere scăzută)",
+ "token_estimate": "utf8_bytes/4",
+ "n_turns": 12,
+ "n_windows": 1,
+ "turns": [
+  {
+   "id": 0,
+   "speaker": "SPEAKER_00",
+   "start": 1.0,
+   "end": 9.5,
+   "line": "[00:01] SPEAKER_00: Bună dimineața, începem. Primul caz: pacienta din salonul 3, neurologie, 67 de ani, AVC ischemic de ieri seară.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    0
+   ],
+   "tokens_est": 35
+  },
+  {
+   "id": 1,
+   "speaker": "SPEAKER_01",
+   "start": 10.3,
+   "end": 16.6,
+   "line": "[00:10] SPEAKER_01: A venit la șase ore de la debut, deci fereastra pentru tromboliză a fost depășită.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    1
+   ],
+   "tokens_est": 28
+  },
+  {
+   "id": 2,
+   "speaker": "SPEAKER_00",
+   "start": 17.4,
+   "end": 23.7,
+   "line": "[00:17] SPEAKER_00: CT-ul la internare fără hemoragie. Hemipareză pe dreapta, vorbirea puțin afectată.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    2
+   ],
+   "tokens_est": 28
+  },
+  {
+   "id": 3,
+   "speaker": "SPEAKER_02",
+   "start": 24.5,
+   "end": 28.2,
+   "line": "[00:24] SPEAKER_02: Надо сделать МРТ, чтобы увидеть объём поражения.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ru"
+   ],
+   "segment_ids": [
+    3
+   ],
+   "tokens_est": 28
+  },
+  {
+   "id": 4,
+   "speaker": "SPEAKER_00",
+   "start": 29.0,
+   "end": 34.1,
+   "line": "[00:29] SPEAKER_00: Da. Facem RMN cerebral mâine dimineață și începem aspirina de azi.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    4
+   ],
+   "tokens_est": 24
+  },
+  {
+   "id": 5,
+   "speaker": "SPEAKER_01",
+   "start": 34.9,
+   "end": 37.9,
+   "line": "[00:34] SPEAKER_01: De acord, și consult la kinetoterapeut.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    5
+   ],
+   "tokens_est": 16
+  },
+  {
+   "id": 6,
+   "speaker": "SPEAKER_00",
+   "start": 58.7,
+   "end": 66.8,
+   "line": "[00:58] SPEAKER_00: Bine, kinetoterapia din ziua a doua. Al doilea caz: pacientul 21 din chirurgie, hernie inghinală dreaptă.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    6
+   ],
+   "tokens_est": 33
+  },
+  {
+   "id": 7,
+   "speaker": "SPEAKER_02",
+   "start": 67.6,
+   "end": 73.1,
+   "line": "[01:07] SPEAKER_02: Hernia e reductibilă, fără semne de strangulare, analizele sunt normale.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    7
+   ],
+   "tokens_est": 25
+  },
+  {
+   "id": 8,
+   "speaker": "SPEAKER_01",
+   "start": 73.9,
+   "end": 78.8,
+   "line": "[01:13] SPEAKER_01: Anestezistul l-a văzut ieri, risc ASA doi, no contraindications.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    8
+   ],
+   "tokens_est": 23
+  },
+  {
+   "id": 9,
+   "speaker": "SPEAKER_02",
+   "start": 79.6,
+   "end": 84.6,
+   "line": "[01:19] SPEAKER_02: Atunci programăm operația pe 2 octombrie, hernioplastie cu plasă.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    9
+   ],
+   "tokens_est": 23
+  },
+  {
+   "id": 10,
+   "speaker": "SPEAKER_00",
+   "start": 85.4,
+   "end": 87.6,
+   "line": "[01:25] SPEAKER_00: Da, aprobat, pe 2 octombrie.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    10
+   ],
+   "tokens_est": 13
+  },
+  {
+   "id": 11,
+   "speaker": "SPEAKER_01",
+   "start": 88.4,
+   "end": 91.3,
+   "line": "[01:28] SPEAKER_01: Asta a fost tot pentru azi, mulțumesc.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    11
+   ],
+   "tokens_est": 16
+  }
+ ],
+ "windows": [
+  {
+   "index": 0,
+   "turn_ids": [
+    0,
+    11
+   ],
+   "overlap_turns": 0,
+   "start": 1.0,
+   "end": 91.3,
+   "tokens_est": 292,
+   "text": "[00:01] SPEAKER_00: Bună dimineața, începem. Primul caz: pacienta din salonul 3, neurologie, 67 de ani, AVC ischemic de ieri seară.\n[00:10] SPEAKER_01: A venit la șase ore de la debut, deci fereastra pentru tromboliză a fost depășită.\n[00:17] SPEAKER_00: CT-ul la internare fără hemoragie. Hemipareză pe dreapta, vorbirea puțin afectată.\n[00:24] SPEAKER_02: Надо сделать МРТ, чтобы увидеть объём поражения.\n[00:29] SPEAKER_00: Da. Facem RMN cerebral mâine dimineață și începem aspirina de azi.\n[00:34] SPEAKER_01: De acord, și consult la kinetoterapeut.\n[00:58] SPEAKER_00: Bine, kinetoterapia din ziua a doua. Al doilea caz: pacientul 21 din chirurgie, hernie inghinală dreaptă.\n[01:07] SPEAKER_02: Hernia e reductibilă, fără semne de strangulare, analizele sunt normale.\n[01:13] SPEAKER_01: Anestezistul l-a văzut ieri, risc ASA doi, no contraindications.\n[01:19] SPEAKER_02: Atunci programăm operația pe 2 octombrie, hernioplastie cu plasă.\n[01:25] SPEAKER_00: Da, aprobat, pe 2 octombrie.\n[01:28] SPEAKER_01: Asta a fost tot pentru azi, mulțumesc."
+  }
+ ]
+}
