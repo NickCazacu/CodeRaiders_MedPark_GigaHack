@@ -1,202 +1,269 @@
 # Proces-verbal al ședinței
 
-**Data ședinței:** 2026-09-26 · **Durata înregistrării:** 30 min · **Generat:** 2026-09-26 15:04 (qwen3:8b, automat, de verificat)
+**Data ședinței:** 2026-09-26 · **Durata înregistrării:** 30 min · **Generat:** 2026-09-27 01:49 (qwen3:8b, automat, de verificat)
 
-## 1. Rezumat
+## Rezumat
 
-S-a decis ecografia transesofagiană pentru pacientul 48 [03:20], iar în funcție de rezultate se va consulta cu chirurgia cardiacă [05:12]. Se planifică plasarea cateterului pentru dializă pentru pacienta din salonul 12 și amânarea colecistectomiei până la corectarea INR-ului [12:54]. S-a aprobat actualizarea protocolului de profilaxie antibiotică cu stop automat la 24 de ore [20:33].
+Sedinta a abordat decizii privind tratamentele pacientilor cu probleme cardiace, nefrologice și chirurgicale [00:15], precum si actualizarea protocolului de antibiotice și prevenirea căderilor în secțiile de spital [28:20].
 
-## 2. Ordinea de zi
+## Puncte discutate
 
-1. Pacientul 48, cardiologie: Ecografie transesofagiană și consult cu chirurgia cardiacă
-2. Pacienta salon 12, nefrologie: Plasarea cateterului pentru dializă
-3. Pacienta patul 8, chirurgie: Colecistectomie laparoscopică planificată
-4. Ecograful din secția de urgență: Probleme tehnice și planificare achiziție nouă
-5. Farmacia clinică - protocol antibiotice: Actualizarea protocolului de profilaxie antibiotică
-6. Pacientul 15, pneumologie: Externare pacient cu pneumonie comunitară
-7. Pacientul 5, ATI: Traheostomie pentru pacient cu trauma cranioencefalică
-8. Pacientul 40, gastroenterologie: Control endoscopic și tratament pentru hemoragie digestivă
-9. Pacientul 31, neurologie: Reabilitare după AVC ischemic
-10. Pacientul 71 de ani, neurologie: Reabilitare după AVC ischemic
-11. Pacientul 22, oncologie: Tratament pentru cancer de stomac în stadiu avansat
-12. Incident: cădere în secția de chirurgie: Căderea unei paciențe de 82 de ani
+### 1. Farmacia clinică: protocolul de antibiotice — Actualizarea protocolului de profilaxie antibiotică și introducerea stop-ului automat la 24 de ore
 
-## 3. Discuții și decizii
+_Consumul de ceftriaxonă e cu 40% peste recomandările guideline-urilor [13:22]. Se propune un stop automat la 24 de ore în sistem, cu override justificat [14:43]._
 
-### 3.1. Pacientul 48, cardiologie
+**Informații:**
+- Consumul de ceftriaxonă e cu 40% peste recomandările guideline-urilor [13:22]
+- În profilaxia chirurgicală, antibioticul se continuă după 24 de ore fără indicație documentată [13:42]
+- Propunerea include un stop automat la 24 de ore în sistem cu override justificat [14:43]
 
-**Subiect:** Ecografie transesofagiană și consult cu chirurgia cardiacă
+**Plan / decizii:**
+- **decis**: Actualizarea protocolului de profilaxie antibiotică cu stop automat la 24 de ore și override justificat — termen: în două săptămâni [14:51]
+  - _sursa: „Decizia: actualizăm protocolul de profilaxie antibiotică, cu stop automat la 24 de ore și override justificat.”_
 
-**Discuție:** Se discută suspiciunea de ruptură de cordaj după trombospirație și stent [01:09]. Se face ecografie transesofagiană mâine dimineață [03:20]. Revascularizarea completă se va discuta în heart team după stabilirea deciziei privind valva [03:44]. Se va face ecografie transesofagiană mâine dimineață [03:20]. Consultul cu chirurgia cardiacă se va decide în funcție de rezultatele ecografiei [03:57]. Ecografia transesofagiană e programată mâine dimineață [22:42]. Consultul cu chirurgia cardiacă se face în funcție de rezultate [22:42].
+### 2. Pacientul 5, ATI — Trauma cranioencefalică severă, necesită tracheostomie percutanată
 
-**Decizii:**
-- **aprobat**: Ecografie transesofagiană mâine dimineață; consult cu chirurgia cardiacă în funcție de rezultate — termen: relativ [03:20]
-  - _spus în înregistrare: „Atunci decizia: ecografie transesofagiană mâine dimineață, și în funcție de rezultat, consult cu chirurgia cardiacă pentru plastie sau protezare mitrală.” · termen spus: (fără expresie exactă în transcriere)_
+_Pacientul 5 are 49 de ani și a suferit o trauma cranioencefalică severă [17:44]. Se planifică tracheostomie percutanată poimâine dimineață [18:56], sub control bronhoscopic [18:50]._
 
-**Rămâne de clarificat:**
-- Rezultatele ecografiei transesofagiană [03:13], care confirmă ruptura de cordaj, vor determina dacă se va realiza operația în săptămâna asta [04:46].
+**Diagnostic și istoric:**
+- Trauma cranioencefalică severă [17:44]
 
-### 3.2. Pacienta salon 12, nefrologie
+**Stare clinică:**
+- S-a aflat pe ventilator de 12 zile, fără încercări de extubare [17:44]
+- Scorul Glasgow este 8 puncte [17:44]
 
-**Subiect:** Plasarea cateterului pentru dializă
+**Paraclinic:**
+- CT-ul de control e stabil, fără hemoragie nouă, edemul s-a redus [18:09]
 
-**Discuție:** Se repetă creatinina și kaliemia dimineața [07:34], iar dacă crește creatinina peste 300 sau kaliul peste 6, se începe dializa [07:55]. Se va plasa un cateter pentru dializă înainte [07:48]. Cateterul pentru dializă e plasat înainte de necesitate [22:42].
+**Plan / decizii:**
+- **decis**: Confirmarea tracheostomiei percutane poimâine dimineață — termen: poimâine dimineață [18:56]
+  - _sursa: „Де acord, traheostomie percutanată poimâine dimineață.”_
 
-**Decizii:**
-- **aprobat**: Repetarea creatininei și kaliemiei dimineața pentru decizie privind hemodializa [07:34]
-  - _spus în înregistrare: „Repetăm creatinina și kaliemia diseară, și decidem dializa după rezultat.”_
-- **aprobat**: Plasarea unui cateter pentru dializă înainte de necesitate — termen: dată fixă [07:45]
-  - _spus în înregistrare: „Катетер для диализа поставим заранее, чтобы не терять время ночью.” · termen spus: (fără expresie exactă în transcriere)_
+**În așteptare / de clarificat:**
+- Semnarea consimțământului de către rude [19:03]
 
-### 3.3. Pacienta patul 8, chirurgie
+### 3. Pacientul 15, pneumonologie — Pneumonie comunitară în lobul inferior drept
 
-**Subiect:** Colecistectomie laparoscopică planificată
+_Pacientul e stabil clinic, saturația 96 fără oxigen, CRP scăzut [16:16]. Externarea este aprobată vineri cu antibiotic per os încă trei zile și control la medicul de familie [17:10]._
 
-**Discuție:** Se propune colecistectomie laparoscopică pe 24 septembrie [09:23], cu sala liberă dimineața [09:34]. Colecistectomia e amânată din cauza INR-ului ridicat [29:18]. Operația se va face după corecția INR-ului [29:29].
+**Diagnostic și istoric:**
+- Pneumonie comunitară în lobul inferior drept [15:47]
 
-**Decizii:**
-- **aprobat**: ~~Colecistectomie laparoscopică planificată pentru 24 septembrie~~ (modificată ulterior) [09:23]
-  - _spus în înregistrare: „Propun să o operăm pe 24 septembrie, joi, avem sala liberă dimineața.”_
-- **amânat**: Amânarea colecistectomiei din cauza INR-ului ridicat [29:11]
-  - _spus în înregistrare: „Amânăm colecistectomia. Nu mai operăm joi.”_
-- **aprobat**: Operația se va face după corecția INR-ului (sub 1.5) — termen: condiționat, condiție: corecția INR-ului [29:18]
-  - _spus în înregistrare: „Corectăm INR-ul cu vitamina K și operăm după ce IN, R-ul scade sub 1.5.” · termen spus: „după ce INR-ul scade sub 1.5”_
+**Stare clinică:**
+- Afebril de trei zile [16:16]
 
-### 3.4. Ecograful din secția de urgență
+**Paraclinic:**
+- Saturația 96 fără oxigen, CRP a scăzut de la 180 la 22 [16:16]
 
-**Subiect:** Probleme tehnice și planificare achiziție nouă
+**Tratament și proceduri:**
+- Amoxicilină-clavulanat intravenos, apoi per os [16:23]
 
-**Discuție:** Ecograful se strică frecvent, iar în ultima săptămână a fost inutilizabil două zile [10:35]. Se discută achiziția unui ecograf nou, dar nu s-a decis încă din cauza bugetului [11:04].
+**Plan / decizii:**
+- **decis**: Externare vineri cu antibiotice per os încă trei zile și control la medicul de familie — termen: vineri [16:57]
+  - _sursa: „Da, propun externarea vineri, cu antibiotic per os încă trei zile și control la medicul de familie.”_
 
-**Decizii:**
-- **amânat**: Achiziția ecografului nou se va decide după recepția a doua ofertă — termen: relativ [12:09]
-  - _spus în înregistrare: „Nu decidem azi. Aștept a doua ofertă și revenim cu ambele variante, staționar și portabil.” · termen spus: „aștept a doua ofertă”_
+### 4. Pacientul 40, gastroenterologie — Sângerare din ulcerul duodenal (Forrest IIa), tratament endoscopic și monitorizare
 
-**Rămâne de clarificat:**
-- Recepția a doua ofertă pentru ecograf nou [11:04]
+_Se face o endoscopie de control peste 48 de ore [20:25]. Se propune administrarea inhibitorilor protонной pompei intravenos [20:14]._
 
-### 3.5. Farmacia clinică - protocol antibiotice
+**Diagnostic și istoric:**
+- Sângerare din ulcerul duodenal (Forrest IIa) [19:33]
 
-**Subiect:** Actualizarea protocolului de profilaxie antibiotică
+**Stare clinică:**
+- Stabil, fără melenă nouă [19:47]
 
-**Discuție:** Se analizează consumul excesiv de ceftriaxonă și se propune actualizarea protocolului cu stop automat la 24 de ore [13:22]. Se discută necesitatea override-ului pentru medic [14:24].
+**Paraclinic:**
+- Hemoglobina a scăzut de la 110 la 78; după transfuzia de două unități, este stabilă la 84 [19:47]
 
-**Decizii:**
-- **aprobat**: Actualizarea protocolului de profilaxie antibiotică cu stop automat la 24 de ore și override justificat — termen: relativ [14:51]
-  - _spus în înregistrare: „Decizia: actualizăm protocolul de profilaxie antibiotică, cu stop automat la 24 de ore și override justificat.” · termen spus: „În două săptămâni”_
+**Tratament și proceduri:**
+- Efectuată endoscopie hemostatică cu clipe și adrenalină [19:33]
 
-### 3.6. Pacientul 15, pneumologie
+**Plan / decizii:**
+- **decis**: Administrarea inhibitorilor protонной pompei intravenos [20:14]
+  - _sursa: „Ингибиторы протонной помпы внутривенно.”_
+- **decis**: Endoscopie de control peste 48 de ore [20:25]
+  - _sursa: „Aprobat, endoscopie de control peste 48 de ore.”_
 
-**Subiect:** Externare pacient cu pneumonie comunitară
+**În așteptare / de clarificat:**
+- Rezultatul biopsiei, așteptat [20:40]
 
-**Discuție:** Pacientul are evoluție stabilă clinic și se propune externarea vineri [16:57].
+### 5. Pacientul 31 — AVC ischemic în teritoriul arterei cerebrale medii stângi, tratament trombolitic finalizat
 
-**Decizii:**
-- **aprobat**: Externare vineri cu antibiotic per os încă trei zile și control la medicul de familie — termen: relativ [16:53]
-  - _spus în înregistrare: „Atunci externare?” · termen spus: „vineri”_
+_Pacientul 31 are NIHSS scăzut de la 14 la 6 [21:32]. Testul de deglutiție e trecut, mănâncă piure fără aspirație [21:51]. Transferul în recuperare neurologică este aprobat [22:34]._
 
-### 3.7. Pacientul 5, ATI
+**Diagnostic și istoric:**
+- AVC ischemic în teritoriul arterei cerebrale medii stângi [21:17]
 
-**Subiect:** Traheostomie pentru pacient cu trauma cranioencefalică
+**Stare clinică:**
+- Neurologic stabil, NIHSS a scăzut de la 14 la 6 [21:32]
+- Testul de deglutiție e trecut, mănâncă piure fără episoade de aspirație [21:51]
 
-**Discuție:** Se decide traheostomie percutanată poimâine dimineață [18:56].
+**Tratament și proceduri:**
+- Rămâne pe antiagregant și statină [22:07]
 
-**Decizii:**
-- **aprobat**: Traheostomie percutanată poimâine dimineață sub control bronhoscopic — termen: relativ [18:50]
-  - _spus în înregistrare: „Тогда трахеостомия послезавтра утром, под бронхоскопическим контролем.” · termen spus: „poimâine dimineață”_
+**Plan / decizii:**
+- **decis**: Confirmarea transferului în recuperare neurologică [22:34]
+  - _sursa: „De acord, transferul în recuperare, cât mai curând.”_
 
-**Rămâne de clarificat:**
-- Înregistrarea consimțământului de la rude [19:03]
+### 6. Pacientul 22, oncologie — Cancer de stomac, stadiu IV, ECOG 3
 
-### 3.8. Pacientul 40, gastroenterologie
+_Pacientul 22 are cancer de stomac la stadiu IV cu metasteze în ficat și peritoneu [23:39]. ECOG 3, albulmină 24, pierderea în greutate de 8 kg într-un lună [23:48]. Chimioterapia de linia a doua nu se face din cauza ECOG 3 și toxicității mari [24:00]. Se trece la îngrijire paliativă [24:27]._
 
-**Subiect:** Control endoscopic și tratament pentru hemoragie digestivă
+**Diagnostic și istoric:**
+- Cancer de stomac, stadiu IV [23:18]
 
-**Discuție:** Se propune control endoscopic peste 48 de ore și administrarea inhibitorilor de pompă protonică intravenos [20:14].
+**Stare clinică:**
+- Pierderea în greutate de 8 kg într-un lună [23:48]
+- Pacientul nu se ridică și a pierdut 8 kg într-un lună [24:00]
 
-**Decizii:**
-- **aprobat**: Control endoscopic peste 48 de ore și administrare inhibitori de pompă protonică intravenos — termen: relativ [20:25]
-  - _spus în înregistrare: „Aprobat, endoscopie de control peste 48 de ore.” · termen spus: „peste 48 de ore”_
+**Paraclinic:**
+- ECOG 3 [23:48]
+- Albumină 24 [23:48]
+- ECOG 3, albulmină 24 [24:00]
 
-**Rămâne de clarificat:**
-- Testul pentru Helicobacter peste 48 de ore [20:33]
+**Plan / decizii:**
+- **decis**: Se renunță la linia a doua de chimioterapie și se trece la îngrijire paliativă [24:17]
+  - _sursa: „Нет. Предлагаю отказаться от второй линии и перевести на паллиативную помощь.”_
+- **decis**: Pacientul este transferat în îngrijire paliativă [24:27]
+  - _sursa: „Trecem pacientul la îngrijire paliativă.”_
+- **decis**: Se planifică reevaluare lunară în cabinetul paliativ — termen: каждый месяц [24:36]
+  - _sursa: „И контроль каждый месяц в паллиативном кабинете, с оценкой боли и питания.”_
 
-### 3.9. Pacientul 31, neurologie
+### 7. Incident: căderea din secția de chirurgie — Căderea unei pacientă în secția de chirurgie, fractură de col femural
 
-**Subiect:** Reabilitare după AVC ischemic
+_Pacienta a căzut noaptea, mergând singură la baie; are fractură de col femural și e transferată la ortopedie [26:51]. Evaluarea riscului de cădere nu a fost reevaluată după sedativ [27:16]. Auditul prevenției căderilor va fi realizat în toate secțiile, cu reevaluare scalei Morse după orice sedativ [27:39] [28:05]._
 
-**Discuție:** Pacientul 31 are un AVC ischemic în teritoriul arterei cerebrale medii stângi, a făcut tromboliză în fereastră [21:17]. Neurologic stabil, NIHSS a scăzut de la 14 la 6 [21:32].
+**Diagnostic și istoric:**
+- Fractură de col femural [26:51]
 
-**Decizii:**
-- **aprobat**: Transfer în recuperare neurologică cât mai curând — termen: vag [22:22]
-  - _spus în înregistrare: „Transfer în recuperare neurologică cât mai curând, are loc la centrul de reabilitare, doar trebuie confirmat.” · termen spus: (fără expresie exactă în transcriere)_
+**Stare clinică:**
+- Căderea a avut loc noaptea, mergând singură la baie [26:51]
+- Transferată la ortopedie [26:51]
 
-### 3.10. Pacientul 71 de ani, neurologie
+**Informații:**
+- Evaluarea riscului de cădere nu a fost reevaluată după sedativ seara [27:16]
+- Auditul prevenției căderilor va fi realizat în toate secțiile [27:39]
 
-**Subiect:** Reabilitare după AVC ischemic
+**Plan / decizii:**
+- **decis**: Se propune un audit al prevenției căderilor în toate secțiile, cu reevaluare scalei Morse după orice sedativ [27:39]
+  - _sursa: „Propun un audit al prevenției căderilor în toate secțiile, cu reevaluarea scalei Morse după orice sedativ.”_
+- **decis**: Auditul prevenției căderilor va fi realizat până la sfârșitul lunii, cu raport final — termen: până la sfârșitul lunii [28:05]
+  - _sursa: „Senzorii îi discutăm separat, e buget. Auditul îl facem. Până la sfârșitul lunii vreau raportul.”_
 
-**Discuție:** Pacientul 71 de ani are un AVC ischemic în teritoriul arterei cerebrale medii stângi, a făcut tromboliză în fereastră [21:17]. Neurologic stabil, NIHSS a scăzut de la 14 la 6 [21:32].
+### 8. Organizare: graficul de gărzi — Goluri în echipa de gardă pentru octombrie
 
-**Decizii:** nicio decizie.
+_Există două colege în concediu de maternitate, ceea ce creează goluri în weekenduri, mai ales în a doua jumătate a lunii [25:41]. Rezultatele din resurse umane nu sunt complete, deci discuția este amânată pentru ședința de săptămâna viitoare [25:52]._
 
-### 3.11. Pacientul 22, oncologie
+**Informații:**
+- Două colege în concediu de maternitate [25:27]
+- Goluri în weekenduri, mai ales în a doua jumătate a lunii [25:41]
+- Datele din resurse umane nu sunt complete [25:52]
 
-**Subiect:** Tratament pentru cancer de stomac în stadiu avansat
+**Plan / decizii:**
+- **amânat**: Discuția despre graficul de gărzi este amânată pentru ședința de săptămâna viitoare — termen: pentru ședința de săptămâna viitoare [25:52]
+  - _sursa: „Nu avem toate datele de la resurse umane. Amânăm discuția pentru ședința de săptămâna viitoare.”_
 
-**Discuție:** Chimioterapia de linia a doua nu se face din cauza ECOG-ului 3 și albuliminii scăzute [24:09]. Se trece la îngrijire paliativă [24:27].
+### 9. Echipamente: ecograful din secția de urgență — Ecograful vechi din secția de urgență, neconform cu cerințele
 
-**Decizii:**
-- **aprobat**: Trecerea pacientului la îngrijire paliativă [24:27]
-  - _spus în înregistrare: „Respingem linia a doua. Trecem pacientul la îngrijire paliativă.”_
-- **aprobat**: Control lunar în cabinetul paliativ cu evaluare a bolii și nutriției — termen: periodic [24:36]
-  - _spus în înregistrare: „Контроль каждый месяц в паллиативном кабинете, с оценкой боли и питания.” · termen spus: „каждый месяц”_
+_Ecograful vechi se strică frecvent [10:24], iar în ultima săptămână a fost inutilizabil două zile [10:35]. Se discută cumpărarea unui nou ecograf, dar bugetul nu permite [10:50]._
 
-### 3.12. Incident: cădere în secția de chirurgie
+**Informații:**
+- Ecograful vechi din secția de urgență se strică tot mai des [10:24]
+- În săptămâna trecută a fost inutilizabil două zile [10:35]
+- Se discută cumpărarea unui nou ecograf, dar bugetul nu permite [10:50]
 
-**Subiect:** Căderea unei paciențe de 82 de ani
+**Plan / decizii:**
+- **propus**: Portabilul este considerat potrivit pentru ecografii de urgență [11:58]
+  - _sursa: „Pentru urgență portabilul e suficient, FAST, pleură, vezică. Ecocardiografia oricum o facem la voi.”_
+- **amânat**: Decizia va fi luată după recepția celei de-a doua oferte — termen: azi [12:09]
+  - _sursa: „Bine, nu decidem azi. Aștept a doua ofertă și revenim cu ambele variante, staționar și portabil.”_
 
-**Discuție:** Pacienta a căzut noaptea, are fractură de col femural și e la ortopedie [26:51]. Evaluarea riscului de cădere nu s-a reevaluat după sedativ [27:16].
+**În așteptare / de clarificat:**
+- Recepția celei de-a doua oferte [10:50]
+- Posibilitatea cumpărării unui ecograf portabil [11:34]
 
-**Decizii:**
-- **aprobat**: Auditul prevenției căderilor și reevaluarea scalei Morse după sedativ [27:39]
-  - _spus în înregistrare: „Propun un audit al prevenției căderilor în toate secțiile, cu reevaluarea scalei Morse după orice sedativ.”_
-- **aprobat**: Introducerea paturilor cu senzor pentru pacienți cu risc mare de cădere — termen: relativ [27:55]
-  - _spus în înregistrare: „Și paturi cu senzor, cel puțin pentru pacienții cu risc mare.” · termen spus: (fără expresie exactă în transcriere)_
+### 10. Patul 8, chirurgie — INR ridicat înainte de colecistectomie
 
-## 4. Sinteza deciziilor și termenelor
+_Pacienta are febră scăzută și bolii aproape disparute [08:33]. Leucocitele au scăzut de la 16 la 11 mii [08:46]. Se propune colecistectomie laparoscopică pe 24 septembrie [09:23]. INR-ul este 2.8; operarea se amâne până când INR-ul scade sub 1.5 [29:18]. Corecția se face cu vitamina K [29:30]._
 
-| Punct | Decizie | Status | Termen | Sursa |
-|---|---|---|---|---|
-| 1. Pacientul 48, cardiologie | Ecografie transesofagiană mâine dimineață; consult cu chirurgia cardiacă în funcție de rezultate | aprobat | relativ | [03:20] |
-| 2. Pacienta salon 12, nefrologie | Repetarea creatininei și kaliemiei dimineața pentru decizie privind hemodializa | aprobat | — | [07:34] |
-| 2. Pacienta salon 12, nefrologie | Plasarea unui cateter pentru dializă înainte de necesitate | aprobat | dată fixă | [07:45] |
-| 3. Pacienta patul 8, chirurgie | Amânarea colecistectomiei din cauza INR-ului ridicat | amânat | — | [29:11] |
-| 3. Pacienta patul 8, chirurgie | Operația se va face după corecția INR-ului (sub 1.5) | aprobat | condiționat, condiție: corecția INR-ului | [29:18] |
-| 4. Ecograful din secția de urgență | Achiziția ecografului nou se va decide după recepția a doua ofertă | amânat | relativ | [12:09] |
-| 5. Farmacia clinică - protocol antibiotice | Actualizarea protocolului de profilaxie antibiotică cu stop automat la 24 de ore și override justificat | aprobat | relativ | [14:51] |
-| 6. Pacientul 15, pneumologie | Externare vineri cu antibiotic per os încă trei zile și control la medicul de familie | aprobat | relativ | [16:53] |
-| 7. Pacientul 5, ATI | Traheostomie percutanată poimâine dimineață sub control bronhoscopic | aprobat | relativ | [18:50] |
-| 8. Pacientul 40, gastroenterologie | Control endoscopic peste 48 de ore și administrare inhibitori de pompă protonică intravenos | aprobat | relativ | [20:25] |
-| 9. Pacientul 31, neurologie | Transfer în recuperare neurologică cât mai curând | aprobat | vag | [22:22] |
-| 11. Pacientul 22, oncologie | Trecerea pacientului la îngrijire paliativă | aprobat | — | [24:27] |
-| 11. Pacientul 22, oncologie | Control lunar în cabinetul paliativ cu evaluare a bolii și nutriției | aprobat | periodic | [24:36] |
-| 12. Incident: cădere în secția de chirurgie | Auditul prevenției căderilor și reevaluarea scalei Morse după sedativ | aprobat | — | [27:39] |
-| 12. Incident: cădere în secția de chirurgie | Introducerea paturilor cu senzor pentru pacienți cu risc mare de cădere | aprobat | relativ | [27:55] |
+**Diagnostic și istoric:**
+- Colecistită acută calculoasă [08:28]
 
-## 5. Întrebări deschise
+**Stare clinică:**
+- Febră scăzută, bolii aproape disparute [08:33]
+- Risc crescut de hemoragie înainte de operație [29:04]
 
-- 1. Pacientul 48, cardiologie: Rezultatele ecografiei transesofagiană [03:13], care confirmă ruptura de cordaj, vor determina dacă se va realiza operația în săptămâna asta [04:46].
-- 4. Ecograful din secția de urgență: Recepția a doua ofertă pentru ecograf nou [11:04]
-- 7. Pacientul 5, ATI: Înregistrarea consimțământului de la rude [19:03]
-- 8. Pacientul 40, gastroenterologie: Testul pentru Helicobacter peste 48 de ore [20:33]
+**Paraclinic:**
+- Leucocite 16 → 11 mii [08:46]
+- Peretele colecistului e 6 mm, fără lichid perivezicular, calea biliară principală nu e dilatată [08:46]
+- INR 2.8 [28:43]
 
-## 6. Note pentru revizuire
+**Tratament și proceduri:**
+- Pacienta lua warfarină acasă, nu a fost menționată la internare [28:54]
 
-- Termenele sunt expresiile din transcriere; datele concrete se calculează la validare.
-- Timpii [mm:ss] trimit la momentul din înregistrare.
-- Textele „spus în înregistrare” sunt citate exacte, în limba vorbită; restul e în română.
-- ⚠ Punctul 1 (Pacientul 48, cardiologie): termenul (relativ) nu are expresia exactă din transcriere.
-- ⚠ Punctul 2 (Pacienta salon 12, nefrologie): termenul (dată fixă) nu are expresia exactă din transcriere.
-- ⚠ Punctul 9 (Pacientul 31, neurologie): termenul (vag) nu are expresia exactă din transcriere.
-- ⚠ Punctul 10 (Pacientul 71 de ani, neurologie): termenul (vag) nu are expresia exactă din transcriere.
-- ⚠ Punctul 12 (Incident: cădere în secția de chirurgie): termenul (relativ) nu are expresia exactă din transcriere.
+**Plan / decizii:**
+- **decis**: ~~Colecistectomie laparoscopică programată pentru 24 septembrie~~ (modificată ulterior) [09:34]
+  - _sursa: „Bine, aprobat. Colecistectomie laparoscopică pe 24 septembrie.”_
+- **decis**: Amânarea colecistectomiei din cauza INR-ului ridicat [29:04]
+  - _sursa: „С таким INR оперировать нельзя, риск кровотечения большой.”_
+- **decis**: Corecția INR-ului cu vitamina K și programarea operației după normalizare — termen: după ce INR-ul scade sub 1.5 [29:18]
+  - _sursa: „Corectăm INR-ul cu vitamina K și operăm după ce INR-ul scade sub 1.5.”_
+
+### 11. Pacienta salon 12, nefrologie — Infarct renal acut pe fondul sepsisului
+
+_Creeatinina a crescut de la 110 la 240 în două zile [06:03]. Se repetă creatinina și kaliemia dimineața pentru decizia privind hemodializa [07:34]._
+
+**Diagnostic și istoric:**
+- Infarct renal acut pe fondul sepsisului, cauzat de pielonefrită [05:47]
+
+**Stare clinică:**
+- Diureza scăzută (400), în ciuda folosinței furosemidului [06:07]
+
+**Paraclinic:**
+- Creeatinină 240 (înainte: 110), kaliu 5.6, bicarbonați 17 [06:03]
+
+**Tratament și proceduri:**
+- Vancomicina + meropenem; doza vancomicinei a fost redusă în jumătate [06:30]
+
+**Plan / decizii:**
+- **decis**: Repetarea creatininei și kaliemiei dimineața pentru decizia privind hemodializa; începerea dializei dacă creatinina depășește 300 sau kaliul este mai mare de 6 [07:05]
+  - _sursa: „Давайте повторим креатинин вечером и решим по гемодиализу. Если креатинин будет выше 300 или калий выше шести — начинаем диализ.”_
+- **decis**: Plasarea cateterului pentru dializă în avans pentru a evita pierderea timpului noaptea — termen: diseară [07:45]
+  - _sursa: „и катетер для диализа поставим заранее, чтобы не терять время ночью.”_
+
+**În așteptare / de clarificat:**
+- Rezultatele creatininei și kaliemiei, așteptate dimineața [07:34]
+
+### 12. Pacientul 48, cardiologie — Infarct miocardic acut STEMI inferior cu suspiciune de ruptură de cordaj
+
+_Se face ecografie transesofagiană mâine dimineață [03:13]. Decizia: consult chirurgia cardiacă pentru plastie sau protezare mitrală în funcție de rezultate [03:20]._
+
+**Diagnostic și istoric:**
+- Infarct miocardic acut STEMI inferior [00:50]
+
+**Stare clinică:**
+- Suspecție de ruptură de cordaj, jet excentric apărut brusc [01:31]
+- Stabil hemodinamic, tensiune 110/70, fără suport inotrop [02:23]
+
+**Paraclinic:**
+- Insuficiență mitrală gradul III, compracție 38-40% [01:09]
+- Lactat 1.8 ieri, repetare în cursul zilei [02:23]
+
+**Tratament și proceduri:**
+- Trombospirație și stent pe coronara dreaptă, flux TIMI 3 la final [01:09]
+
+**Plan / decizii:**
+- **decis**: Ecografie transesofagiană mâine dimineață, la ora 8 [03:06]
+  - _sursa: „Deci facem ecografie transesofagiană. Când puteți?”_
+- **decis**: Consult chirurgia cardiacă pentru plastie sau protezare mitrală după ecografie transesofagiană [03:20]
+  - _sursa: „Atunci decizia: ecografie transesofagiană mâine dimineață, și în funcție de rezultat, consult cu chirurgia cardiacă pentru plastie sau protezare mitrală.”_
+- **propus**: RMN cardiac pentru evaluarea viabilității miocardice în funcție de rezultatul ecografiei transesofagiană — termen: mâine dimineață, la opt [03:57]
+  - _sursa: „Poate ar merita și un RMN cardiac pentru viabilitate, dar... mă rog, vedem după TEE.”_
+
+**În așteptare / de clarificat:**
+- Rezultatele ecografiei transesofagiană [03:13], care vor determina decizia finală [03:20]
+
+## Note pentru verificare
+
+- Generat automat din înregistrare: valorile și termenii medicali se verifică înainte de trimitere.
+- [mm:ss] trimite la momentul din înregistrare; „sursa” e replica exactă, în limba vorbită.
