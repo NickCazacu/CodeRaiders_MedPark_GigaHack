@@ -90,8 +90,13 @@ def process(r, p):
     r["scripts"] = dict(Counter(w["script"] for w in r["words"] if w["script"] != "other"))
     if r["scripts"].get("mixed"):
         flags.append("mixed_script_word")
-    if r["lang_prob"] < p["min_lang_prob"]:
-        # cu limba greșită Whisper tinde să traducă, nu să transcrie
+    # cu limba greșită Whisper tinde să traducă, nu să transcrie
+    scores = sorted((r.get("lang_scores") or {}).values(), reverse=True)
+    method = r.get("lang_method", "detect")
+    if len(scores) >= 2:
+        if scores[0] - scores[1] < p["min_lang_margin"]:
+            flags.append("uncertain_language")
+    elif method != "forced" and r["lang_prob"] < p["min_lang_prob"]:
         flags.append("uncertain_language")
 
     dropped = None
@@ -100,6 +105,8 @@ def process(r, p):
         flags.append("high_compression")
     if not r["text"]:
         dropped = "empty"
+    elif r.get("prompt_leak"):
+        dropped = "prompt_leak"  # textul e o copie a initial_prompt, nu ce s-a vorbit
     elif cr > p["max_compression_ratio"]:
         dropped = "compression_ratio"  # tot repetitiv și după colapsarea repetițiilor
     elif (r["no_speech_prob"] or 0) > p["max_no_speech_prob"] and (r["avg_logprob"] or 0) < -1.0:

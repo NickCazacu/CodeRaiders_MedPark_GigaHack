@@ -134,8 +134,17 @@ reluat de la ultimul segment) și `transcript.json` (după postprocesare; segmen
 Pentru a compara modele sau setări pe același fișier, dă fiecărei variante propriul job, de exemplu
 `--job-id Medpark_large-v3_ro`. Același `asr.jsonl` nu poate conține rezultate de la modele diferite: pipeline-ul se oprește cu un mesaj.
 
-Glossary (opțional): `glossary/prompt.txt` înlocuiește `whisper.initial_prompt` din config, iar `glossary/hotwords.txt`
-se trimite ca `hotwords`, câte un termen pe linie. Liniile care încep cu `#` sunt ignorate.
+Formatul `llm_input.json` pentru echipa LLM e descris în [docs/LLM_INPUT.md](docs/LLM_INPUT.md), cu exemplu în `docs/llm_input.example.json`.
+
+**Limba** (`whisper.compare_languages`, implicit `[ro, ru]`): fiecare segment e decodat fără prompt în ro și ru (plus limba
+detectată, dacă e alta) și se alege scorul mai bun. Apoi segmentul e transcris final în limba aleasă, cu promptul de domeniu.
+Costă ~3 decodări pe segment (≈1.5 min de ASR pentru 12 min de audio pe RTX 5070), dar detectorul de limbă singur confundă
+româna moldovenească cu rusa. `--language ro` forțează o limbă și e mai rapid.
+
+Glossary (opțional), per limbă: `glossary/prompt.<lang>.txt` (sau `prompt.txt` pentru toate) înlocuiește
+`whisper.initial_prompt[<lang>]` din config, iar `glossary/hotwords.<lang>.txt` / `hotwords.txt` se trimite ca `hotwords`,
+câte un termen pe linie. Liniile care încep cu `#` sunt ignorate. Promptul descrie stilul și vocabularul, fără date reale.
+Whisper copiază uneori promptul în transcriere; aceste cazuri sunt detectate (`prompt_leak`) și nu intră la LLM.
 
 Etapele pe rând:
 ```powershell
@@ -157,6 +166,8 @@ Teste și unelte:
 .\.venv\Scripts\python.exe -m tests.test_segment_rules                     # regulile de segmentare
 .\.venv\Scripts\python.exe -m tests.test_asr_mapping                       # rezultate batched -> segmentul corect
 .\.venv\Scripts\python.exe -m tests.compare_jobs JOB_A JOB_B [--all]       # compară 2 modele/setări segment cu segment
+.\.venv\Scripts\python.exe -m tests.test_prompt_leak                       # detecția copiilor de prompt
+.\.venv\Scripts\python.exe -m tests.make_llm_example                       # regenerează docs/llm_input.example.json
 powershell -File tests\make_long_sample.ps1 -Minutes 120                   # ședință sintetică de 2 h (3 vorbitori TTS)
 powershell -File tests\measure.ps1 -m pipeline.segment <job_id>            # timp + RAM maxim
 ```

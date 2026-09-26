@@ -16,22 +16,37 @@ whisper:
                              # caută întâi models/faster-whisper-<model>, apoi cache-ul HF (offline)
   device: cuda               # cuda | cpu
   compute_type: float16      # cuda: float16 / int8_float16; cpu: int8
-  language: null             # null = detecție per segment, restrânsă la `languages`
+  language: null             # null = detecție per segment, restrânsă la `languages`; ex. ro = forțat
   languages: [ro, ru, en]    # limbile permise la detecție (null = toate limbile Whisper)
-  short_segment_s: 2.0       # segmentele mai scurte, cu detecție nesigură (<0.5),
-                             # moștenesc limba segmentului anterior
+  compare_languages: [ro, ru]  # limba fiecărui segment se decide decodându-l FĂRĂ prompt în aceste
+                             # limbi (+ limba detectată, dacă e alta) și alegând avg_logprob-ul cel mai
+                             # bun; apoi decodare finală cu promptul limbii alese. Motiv: detectorul
+                             # confundă româna moldovenească cu rusa, iar cu limba greșită Whisper
+                             # traduce în loc să transcrie. Cost: ~3 decodări/segment. [] = doar detecția.
+  language_bias: {}          # bonus adăugat la avg_logprob la alegerea limbii, ex. {ro: 0.12}: rusa
+                             # trebuie să câștige cu > 0.12. Motiv: fără prompt, large-v3 scrie uneori
+                             # româna moldovenească cu litere chirilice și câștigă la mică distanță.
+                             # De setat DOAR după validare pe o transcriere de referință (WER).
+  short_segment_s: 2.0       # (doar fără compare_languages) segmentele mai scurte, cu detecție
+                             # nesigură (<0.5), moștenesc limba segmentului anterior
   beam_size: 5
   batch_size: 8              # BatchedInferencePipeline; 1 = transcriere secvențială
   low_confidence_logprob: -0.7
-  # glossary/prompt.txt (initial_prompt) și glossary/hotwords.txt au prioritate dacă există
-  initial_prompt: "Ședință spital. Termeni medicali: diagnostic, anamneză, tomografie, hemoleucogramă."
+  # prompt per limbă; glossary/prompt.<lang>.txt și glossary/prompt.txt au prioritate dacă există
+  # (la fel hotwords.<lang>.txt / hotwords.txt)
+  initial_prompt:
+    ro: "Ședință spital. Termeni medicali: diagnostic, anamneză, tomografie, hemoleucogramă."
+    ru: "Совещание в больнице. Медицинские термины: диагноз, анамнез, томография, анализ крови."
+    en: null
 
 postprocess:
   max_compression_ratio: 2.4 # peste: text repetitiv/halucinat
   max_no_speech_prob: 0.6    # peste, combinat cu avg_logprob < -1.0: liniște transcrisă
   repeat_word_min: 4         # același cuvânt de >= N ori la rând => păstrăm unul
   repeat_phrase_min: 3       # aceeași frază (2-8 cuvinte) de >= N ori la rând => păstrăm una
-  min_lang_prob: 0.5         # sub: flag "uncertain_language" (tratat ca încredere scăzută la pack)
+  min_lang_margin: 0.1       # la decodare pe mai multe limbi: diferență de avg_logprob între prima și
+                             # a doua limbă sub care segmentul primește flag "uncertain_language"
+  min_lang_prob: 0.5         # la o singură limbă detectată: probabilitate sub care primește același flag
 
 pack:
   window_tokens: 3500        # estimare: octeți UTF-8 / 4 (conservator pentru chirilic)

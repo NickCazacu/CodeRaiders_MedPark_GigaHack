@@ -8,6 +8,7 @@ grup). La reluare continuă de la segmentele care lipsesc din fișier.
 import argparse
 import json
 import os
+import re
 from bisect import bisect_right
 
 import torch  # noqa: F401  încarcă cuBLAS/cuDNN pentru CTranslate2 (Windows); înainte de faster_whisper
@@ -29,8 +30,10 @@ def load_model(w, cfg):
     return WhisperModel(ref, device=w["device"], compute_type=w["compute_type"], local_files_only=True)
 
 
-def load_glossary(w):
-    """glossary/prompt.txt -> initial_prompt, glossary/hotwords.txt -> hotwords (câte un termen pe linie)."""
+def load_glossary(w, lang):
+    """(initial_prompt, hotwords) pentru limba `lang`. Ordinea de căutare:
+    glossary/prompt.<lang>.txt, glossary/prompt.txt, whisper.initial_prompt[lang] din config.
+    La fel pentru hotwords.<lang>.txt / hotwords.txt (câte un termen pe linie)."""
     g = ROOT / "glossary"
 
     def lines(name):
@@ -39,8 +42,11 @@ def load_glossary(w):
             return []
         return [l.strip() for l in p.read_text(encoding="utf-8").splitlines() if l.strip() and not l.startswith("#")]
 
-    prompt = " ".join(lines("prompt.txt")) or w.get("initial_prompt") or None
-    hotwords = ", ".join(lines("hotwords.txt")) or None
+    cfg_prompt = w.get("initial_prompt")
+    if isinstance(cfg_prompt, dict):
+        cfg_prompt = cfg_prompt.get(lang)
+    prompt = " ".join(lines(f"prompt.{lang}.txt") or lines("prompt.txt")) or cfg_prompt or None
+    hotwords = ", ".join(lines(f"hotwords.{lang}.txt") or lines("hotwords.txt")) or None
     return prompt, hotwords
 
 
@@ -67,7 +73,7 @@ def read_clip(f, s):
 
 
 def detect_languages(model, clips, allowed, batch_size):
-    """Limba per clip, dintr-o trecere de encoder; restrânsă la `allowed`."""
+    """Per clip: [(limbă, prob), ...] descrescător, dintr-o trecere de encoder; restrâns la `allowed`."""
     from faster_whisper.audio import pad_or_trim
 
     out = []
@@ -76,9 +82,22 @@ def detect_languages(model, clips, allowed, batch_size):
         for res in model.model.detect_language(model.encode(feats)):
             probs = {tok[2:-2]: p for tok, p in res}  # "<|ro|>" -> "ro"
             cand = {k: v for k, v in probs.items() if not allowed or k in allowed} or probs
-            lang = max(cand, key=cand.get)
-            out.append((lang, round(float(cand[lang]), 3)))
+            out.append(sorted(((k, round(float(v), 3)) for k, v in cand.items()), key=lambda kv: -kv[1]))
     return out
+
+
+def choose_candidates(det, seg, prev_lang, w):
+    """Limbile în care decodăm segmentul: compare_languages + limba detectată (dacă e alta).
+    Fără compare_languages: doar limba detectată; segmentele scurte cu detecție nesigură
+    moștenesc limba anterioară."""
+    cmp = w.get("compare_languages") or []
+    if not cmp:
+        top = det[0]
+        if seg["end"] - seg["start"] < w["short_segment_s"] and top[1] < 0.5 and prev_lang:
+            top = (prev_lang, top[1])
+        return [top]
+    probs = dict(det)
+    return [(l, probs.get(l, 0.0)) for l in dict.fromkeys(cmp + [det[0][0]])]
 
 
 def transcribe_batched(pipe, clips, lang, prompt, hotwords, w):
@@ -110,8 +129,36 @@ def transcribe_one(model, clip, lang, prompt, hotwords, w):
 
 
 def setup(w):
-    """Ce determină rezultatul ASR: model/compute_type/limbă."""
-    return f"{w['model']}/{w['compute_type']}/{w['language'] or 'auto'}"
+    """Ce determină rezultatul ASR: model/compute_type/limbă (+ nr. de limbi decodate per segment)."""
+    lang = w["language"] or "auto"
+    if not w["language"] and w.get("compare_languages"):
+        lang += "-cmp-" + "+".join(w["compare_languages"])
+        if w.get("language_bias"):
+            lang += "-bias-" + "+".join(f"{k}{v:+g}" for k, v in sorted(w["language_bias"].items()))
+    return f"{w['model']}/{w['compute_type']}/{lang}"
+
+
+def prompt_leak(text, prompt, min_cover=0.5):
+    """Whisper copiază uneori initial_prompt în transcriere (mai ales cu limba greșită
+    sau pe audio neclar), iar copia are un avg_logprob foarte bun. Considerăm copie
+    textul acoperit în proporție de >= min_cover de trigrame de cuvinte din prompt."""
+    tw = re.findall(r"\w+", (text or "").lower())
+    pw = re.findall(r"\w+", (prompt or "").lower())
+    if len(tw) < 3 or len(pw) < 3:
+        return False
+    pg = {tuple(pw[i:i + 3]) for i in range(len(pw) - 2)}
+    covered = set()
+    for i in range(len(tw) - 2):
+        if tuple(tw[i:i + 3]) in pg:
+            covered.update((i, i + 1, i + 2))
+    return len(covered) / len(tw) >= min_cover
+
+
+def avg_logprob(subsegs):
+    if not subsegs:
+        return None
+    n = [max(len(s.tokens), 1) for s in subsegs]
+    return round(float(np.average([s.avg_logprob for s in subsegs], weights=n)), 4)
 
 
 def compression_ratio(text):
@@ -119,26 +166,26 @@ def compression_ratio(text):
     return round(get_compression_ratio(text), 3) if text else 0.0
 
 
-def record(seg, lang, lang_prob, subsegs, offset, w):
+def record(seg, lang, lang_prob, lang_scores, method, subsegs, offset, w):
     text = "".join(s.text for s in subsegs).strip()
     words = [
         {"w": x.word, "start": round(seg["start"] + x.start - offset, 3),
          "end": round(seg["start"] + x.end - offset, 3), "p": round(x.probability, 3)}
         for s in subsegs for x in (s.words or [])
     ]
-    if subsegs:
-        n = [max(len(s.tokens), 1) for s in subsegs]
-        avg_logprob = round(float(np.average([s.avg_logprob for s in subsegs], weights=n)), 4)
-        no_speech = round(float(np.mean([s.no_speech_prob for s in subsegs])), 4)
-    else:
-        avg_logprob = no_speech = None
+    lp = avg_logprob(subsegs)
+    no_speech = round(float(np.mean([s.no_speech_prob for s in subsegs])), 4) if subsegs else None
     return {
         "id": seg["id"], "setup": setup(w),
         "speaker": seg["speaker"], "start": seg["start"], "end": seg["end"],
-        "lang": lang, "lang_prob": lang_prob, "text": text,
-        "avg_logprob": avg_logprob, "no_speech_prob": no_speech,
+        "lang": lang,
+        "lang_prob": lang_prob,        # probabilitatea dată de detector limbii alese
+        "lang_scores": lang_scores,    # avg_logprob per limbă decodată ({} dacă s-a decodat una singură)
+        "lang_method": method,         # forced | detect | logprob
+        "text": text,
+        "avg_logprob": lp, "no_speech_prob": no_speech,
         "compression_ratio": compression_ratio(text),
-        "low_confidence": avg_logprob is None or avg_logprob < w["low_confidence_logprob"],
+        "low_confidence": lp is None or lp < w["low_confidence_logprob"],
         "words": words,
     }
 
@@ -171,10 +218,11 @@ def asr(job_id, cfg=None):
             except ImportError:
                 print("[asr] BatchedInferencePipeline indisponibil în această versiune: transcriere secvențială")
 
-        prompt, hotwords = load_glossary(w)
+        forced = w["language"]
+        glossary = {l: load_glossary(w, l) for l in ([forced] if forced else w["languages"] or [])}
         pool = max(w["batch_size"], 1) * POOL_BATCHES
         prev_lang = done[max(done)]["lang"] if done else None
-        langs_count = {}
+        langs_count, decodes = {}, 0
 
         with sf.SoundFile(str(wav)) as f, open(out, "a", encoding="utf-8") as fo, \
                 tqdm(total=round(sum(s["end"] - s["start"] for s in todo)), unit="s", desc="asr") as bar:
@@ -183,36 +231,72 @@ def asr(job_id, cfg=None):
                 chunk = todo[i:i + pool]
                 clips = [read_clip(f, s) for s in chunk]
 
-                if w["language"]:
-                    langs = [(w["language"], 1.0)] * len(chunk)
+                # limbile candidate per segment
+                if forced:
+                    cands = [[(forced, 1.0)] for _ in chunk]
                 else:
-                    langs = detect_languages(model, clips, w["languages"], max(w["batch_size"], 1))
-                for k, s in enumerate(chunk):
-                    lang, p = langs[k]
-                    if s["end"] - s["start"] < w["short_segment_s"] and p < 0.5 and prev_lang:
-                        langs[k] = (prev_lang, p)  # prea scurt ca să ne încredem în detecție
-                    prev_lang = langs[k][0]
+                    det = detect_languages(model, clips, w["languages"], max(w["batch_size"], 1))
+                    cands = []
+                    for s, d in zip(chunk, det):
+                        cands.append(choose_candidates(d, s, prev_lang, w))
+                        prev_lang = cands[-1][0][0]
 
-                results = [None] * len(chunk)
-                for lang in sorted({l for l, _ in langs}):
-                    idx = [k for k in range(len(chunk)) if langs[k][0] == lang]
-                    if pipe:
-                        for k, r in zip(idx, transcribe_batched(pipe, [clips[k] for k in idx], lang, prompt, hotwords, w)):
-                            results[k] = r
-                    else:
-                        for k in idx:
-                            results[k] = transcribe_one(model, clips[k], lang, prompt, hotwords, w)
+                def decode(idx_langs, use_prompt):
+                    """idx_langs: [(k, lang)]. Un apel (batched) per limbă. -> {(k, lang): (subsegs, offset)}"""
+                    nonlocal decodes
+                    out = {}
+                    for lang in sorted({l for _, l in idx_langs}):
+                        idx = [k for k, l in idx_langs if l == lang]
+                        if lang not in glossary:
+                            glossary[lang] = load_glossary(w, lang)
+                        prompt, hotwords = glossary[lang] if use_prompt else (None, None)
+                        if pipe:
+                            rs = transcribe_batched(pipe, [clips[k] for k in idx], lang, prompt, hotwords, w)
+                        else:
+                            rs = [transcribe_one(model, clips[k], lang, prompt, hotwords, w) for k in idx]
+                        out.update({(k, lang): r for k, r in zip(idx, rs)})
+                        decodes += len(idx)
+                    return out
 
-                for s, (lang, p), (subsegs, offset) in zip(chunk, langs, results):
-                    fo.write(json.dumps(record(s, lang, p, subsegs, offset, w), ensure_ascii=False) + "\n")
+                # 1) decizia de limbă: decodare FĂRĂ prompt în fiecare limbă candidată, ca scorurile
+                #    să fie comparabile (promptul umflă scorul și, pe limba greșită, e copiat în text)
+                multi = [k for k, c in enumerate(cands) if len(c) > 1]
+                plain = decode([(k, l) for k in multi for l, _ in cands[k]], use_prompt=False)
+                chosen, lang_scores = [], []
+                for k, cand in enumerate(cands):
+                    if len(cand) == 1:
+                        chosen.append(cand[0][0])
+                        lang_scores.append({})
+                        continue
+                    sc = {l: avg_logprob(plain[(k, l)][0]) for l, _ in cand}
+                    sc = {l: v for l, v in sc.items() if v is not None}
+                    bias = w.get("language_bias") or {}
+                    chosen.append(max(sc, key=lambda l: sc[l] + bias.get(l, 0.0)) if sc else cand[0][0])
+                    lang_scores.append(sc)
+
+                # 2) transcrierea finală în limba aleasă, CU promptul de domeniu; dacă rezultatul
+                #    e o copie a promptului, păstrăm varianta fără prompt (dacă există)
+                final = decode(list(enumerate(chosen)), use_prompt=True)
+                for k, (s, cand) in enumerate(zip(chunk, cands)):
+                    lang = chosen[k]
+                    res = final[(k, lang)]
+                    leak = prompt_leak("".join(x.text for x in res[0]), glossary[lang][0])
+                    if leak and (k, lang) in plain:
+                        res, leak = plain[(k, lang)], False
+                    method = "forced" if forced else ("logprob" if len(cand) > 1 else "detect")
+                    rec = record(s, lang, dict(cand)[lang], lang_scores[k], method, *res, w)
+                    rec["prompt_leak"] = leak
+                    fo.write(json.dumps(rec, ensure_ascii=False) + "\n")
                     langs_count[lang] = langs_count.get(lang, 0) + 1
                 fo.flush()
                 os.fsync(fo.fileno())
                 bar.update(round(sum(s["end"] - s["start"] for s in chunk)))
 
         return {"model": w["model"], "device": w["device"], "compute_type": w["compute_type"],
-                "batched": pipe is not None, "resumed_from": len(done), "transcribed": len(todo),
-                "languages": langs_count, "initial_prompt": bool(prompt), "hotwords": bool(hotwords)}
+                "setup": setup(w), "batched": pipe is not None, "resumed_from": len(done),
+                "transcribed": len(todo), "decodes": decodes, "languages": langs_count,
+                "initial_prompt": {l: bool(p) for l, (p, _) in glossary.items()},
+                "hotwords": {l: bool(h) for l, (_, h) in glossary.items()}}
 
     run_stage(job_dir, "asr", out, work, done=lambda: len(read_done(out)) >= len(segs))
     return out
@@ -224,11 +308,12 @@ def main():
     ap.add_argument("--model")
     ap.add_argument("--device")
     ap.add_argument("--compute-type")
+    ap.add_argument("--language", help="forțează limba (ro/ru/en); implicit: detecție + decodare top-N")
     ap.add_argument("--config")
     args = ap.parse_args()
 
     cfg = load_config(args.config)
-    for k in ("model", "device", "compute_type"):
+    for k in ("model", "device", "compute_type", "language"):
         if getattr(args, k):
             cfg["whisper"][k] = getattr(args, k)
     print(asr(args.job_id, cfg))

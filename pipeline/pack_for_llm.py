@@ -82,6 +82,25 @@ def make_windows(turns, max_tokens, overlap):
     return windows
 
 
+def build(segs, p, job_id, duration_s):
+    """segs: segmentele din transcript.json. Returnează dict-ul scris în llm_input.json."""
+    segs = [s for s in segs if not s["dropped"] and s["text"]]
+    turns = make_turns(segs, p["max_turn_tokens"], p["mark_low_confidence"])
+    windows = make_windows(turns, p["window_tokens"], p["overlap_turns"])
+    return {
+        "job_id": job_id,
+        "audio_duration_s": duration_s,
+        "speakers": sorted({t["speaker"] for t in turns}),
+        "languages": dict(Counter(s["lang"] for s in segs)),
+        "format": "[mm:ss] SPEAKER: text" + ("  (\" [?]\" = încredere scăzută)" if p["mark_low_confidence"] else ""),
+        "token_estimate": "utf8_bytes/4",
+        "n_turns": len(turns),
+        "n_windows": len(windows),
+        "turns": turns,
+        "windows": windows,
+    }
+
+
 def pack(job_id, cfg=None):
     cfg = cfg or load_config()
     p = cfg["pack"]
@@ -90,21 +109,8 @@ def pack(job_id, cfg=None):
 
     def work():
         segs = json.loads((job_dir / "transcript.json").read_text(encoding="utf-8"))
-        segs = [s for s in segs if not s["dropped"] and s["text"]]
-        turns = make_turns(segs, p["max_turn_tokens"], p["mark_low_confidence"])
-        windows = make_windows(turns, p["window_tokens"], p["overlap_turns"])
-        data = {
-            "job_id": job_id,
-            "audio_duration_s": load_status(job_dir).get("duration_s"),
-            "speakers": sorted({t["speaker"] for t in turns}),
-            "languages": dict(Counter(s["lang"] for s in segs)),
-            "format": "[mm:ss] SPEAKER: text" + ("  (\" [?]\" = încredere scăzută)" if p["mark_low_confidence"] else ""),
-            "token_estimate": "utf8_bytes/4",
-            "n_turns": len(turns),
-            "n_windows": len(windows),
-            "turns": turns,
-            "windows": windows,
-        }
+        data = build(segs, p, job_id, load_status(job_dir).get("duration_s"))
+        turns, windows = data["turns"], data["windows"]
         tmp = out.with_name(out.name + ".part")
         tmp.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
         tmp.replace(out)
