@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>MedPark audio upload</title>
+    <link rel="stylesheet" href="/style.css">
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">MEDPARK · LOCAL</p>
+      <h1>Upload meeting audio</h1>
+      <p class="intro">Choose a recording and send it to the local n8n workflow.</p>
+      <form id="upload-form">
+        <label for="audio">Audio file</label>
+        <input id="audio" name="audio" type="file" accept="audio/*" required>
+        <p id="file-name" class="file-name" aria-live="polite">No file selected</p>
+        <button id="submit" type="submit">Send to n8n</button>
+      </form>
+      <p id="status" class="status" aria-live="polite"></p>
+      <p class="privacy">Files stay on this computer’s local Docker network.</p>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,71 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: medpark-n8n
+    restart: unless-stopped
+    ports:
+      # Keep the editor/API available only on this machine.
+      - "127.0.0.1:5678:5678"
+    environment:
+      N8N_HOST: localhost
+      N8N_PORT: "5678"
+      N8N_PROTOCOL: http
+      N8N_EDITOR_BASE_URL: http://localhost:5678/
+      WEBHOOK_URL: http://localhost:5678/
+      GENERIC_TIMEZONE: Europe/Chisinau
+      TZ: Europe/Chisinau
+      N8N_ENCRYPTION_KEY: ${N8N_ENCRYPTION_KEY}
+      # Keep large execution payloads out of the n8n database where possible.
+      N8N_DEFAULT_BINARY_DATA_MODE: filesystem
+      # This local deployment must not initiate diagnostics, template, or version calls.
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      N8N_PERSONALIZATION_ENABLED: "false"
+      N8N_TEMPLATES_ENABLED: "false"
+      N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
+      # Allow the workflow to write uploads only into the mounted shared runtime.
+      N8N_RESTRICT_FILE_ACCESS_TO: /workspace/runtime
+    volumes:
+      - n8n_data:/home/node/.n8n
+      # MedPark pipeline source, available for future workflow command/service nodes.
+      - ../CodeRaiders_MedPark_GigaHack:/workspace/medpark:rw
+      # Audio inbox and preprocessing artefacts. Do not place patient data in n8n's
+      # execution data; pass paths from this volume to the preprocessing API instead.
+      - ./runtime:/workspace/runtime:rw
+      # Versioned local webhook definition; import it once with the command in README.
+      - ./workflows:/workflows:ro
+    depends_on:
+      preprocess:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      N8N_WEBHOOK_URL: http://n8n:5678/webhook/audio-upload
+    depends_on:
+      - n8n
+
+  preprocess:
+    build:
+      context: ../preprocessing
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8001:8000"
+    environment:
+      MOM_PREPROCESS_WORK_DIR: /shared/preprocess
+      MOM_SOURCE_ROOT: /shared/inbox
+      MOM_PREPROCESS_WORKERS: "1"
+    volumes:
+      - ./runtime:/shared:rw
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/healthz')"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+      start_period: 10s
+
+volumes:
+  n8n_data:

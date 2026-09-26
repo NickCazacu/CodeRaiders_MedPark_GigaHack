@@ -1,0 +1,18 @@
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "PTH", "RUF", "ANN", "LOG", "G"]
+ignore = [
+    "ANN401",  # explicit Any is sometimes the honest type
+    "G004",    # f-strings in the CLI summary are fine
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ANN001", "ANN201", "SLF001"]  # fixtures and private-helper tests
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["error::RuntimeWarning"]

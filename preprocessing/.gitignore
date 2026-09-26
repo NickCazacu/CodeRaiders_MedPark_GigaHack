@@ -1,0 +1,23 @@
+# Hospital recordings and anything derived from them must never reach git.
+data/audio/
+data/work/
+data/gold/transcripts/
+*.wav
+*.m4a
+*.mp3
+*.f32
+!tests/fixtures/*.wav
+
+# Models (gigabytes, fetched by scripts/download_models.py)
+models/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# Local env
+.env

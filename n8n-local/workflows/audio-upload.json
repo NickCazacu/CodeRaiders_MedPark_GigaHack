@@ -1,0 +1,96 @@
+{
+  "id": "medpark-audio-upload",
+  "name": "MedPark - audio upload",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "id": "webhook-audio-upload",
+      "name": "Receive audio",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "medpark-audio-upload",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "audio-upload",
+        "responseMode": "lastNode",
+        "responseData": "firstEntryJson",
+        "options": {}
+      }
+    },
+    {
+      "id": "prepare-audio-name",
+      "name": "Prepare safe filename",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [260, 0],
+      "parameters": {
+        "jsCode": "const incoming = $input.first();\nconst audio = incoming.binary?.audio;\nif (!audio) throw new Error('Expected multipart field named audio');\nconst original = audio.fileName || 'meeting-audio';\nconst uploadName = original.replace(/[^A-Za-z0-9._-]/g, '_').replace(/^_+/, '') || 'meeting-audio';\nreturn [{ json: { uploadName }, binary: { audio } }];"
+      }
+    },
+    {
+      "id": "submit-preprocessing-job",
+      "name": "Preprocess audio",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [520, 0],
+      "parameters": {
+        "method": "POST",
+        "url": "http://preprocess:8000/jobs/upload",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "audio",
+              "inputDataFieldName": "audio"
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "restore-upload-binary",
+      "name": "Restore upload for local save",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [780, 0],
+      "parameters": {
+        "jsCode": "const original = $('Prepare safe filename').first();\nconst audio = original.binary?.audio;\nif (!audio) throw new Error('Original upload is unavailable');\nreturn [{ json: { ...$input.first().json, uploadName: original.json.uploadName }, binary: { audio } }];"
+      }
+    },
+    {
+      "id": "write-audio",
+      "name": "Save audio locally",
+      "type": "n8n-nodes-base.readWriteFile",
+      "typeVersion": 1,
+      "position": [1040, 0],
+      "parameters": {
+        "operation": "write",
+        "fileName": "=/workspace/runtime/inbox/{{$json.uploadName}}",
+        "dataPropertyName": "audio",
+        "options": {}
+      }
+    }
+  ],
+  "connections": {
+    "Receive audio": {
+      "main": [[{ "node": "Prepare safe filename", "type": "main", "index": 0 }]]
+    },
+    "Prepare safe filename": {
+      "main": [[{ "node": "Preprocess audio", "type": "main", "index": 0 }]]
+    },
+    "Preprocess audio": {
+      "main": [[{ "node": "Restore upload for local save", "type": "main", "index": 0 }]]
+    },
+    "Restore upload for local save": {
+      "main": [[{ "node": "Save audio locally", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {}
+}

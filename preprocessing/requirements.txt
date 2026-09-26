@@ -1,0 +1,17 @@
+# Runtime dependencies. Nothing here may contact the network at runtime.
+# Model files are fetched at dev time only (scripts/download_models.py).
+
+numpy>=1.26
+pydantic>=2.7
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9  # n8n sends audio to /jobs/upload as local multipart data
+
+# --- stage 1: preprocess ---------------------------------------------------------
+# ffmpeg/ffprobe are system binaries (pacman -S ffmpeg / apt install ffmpeg), not pip.
+onnxruntime>=1.17        # Silero VAD on CPU; no provider does any network I/O
+silero-vad>=5.1          # ships silero_vad.onnx as package data -> nothing to download
+
+# --- dev -------------------------------------------------------------------------
+pytest>=8.0
+ruff>=0.5

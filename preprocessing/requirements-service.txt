@@ -1,0 +1,8 @@
+# Lean runtime for the local CPU preprocessing service. Torch is intentionally
+# excluded: the service uses the bundled Silero ONNX model through onnxruntime.
+numpy>=1.26
+pydantic>=2.7
+fastapi>=0.115
+uvicorn[standard]>=0.30
+python-multipart>=0.0.9
+onnxruntime>=1.17
