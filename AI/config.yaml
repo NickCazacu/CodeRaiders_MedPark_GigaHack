@@ -22,7 +22,7 @@ whisper:
                              # limbi (+ limba detectată, dacă e alta) și alegând avg_logprob-ul cel mai
                              # bun; apoi decodare finală cu promptul limbii alese. Motiv: detectorul
                              # confundă româna moldovenească cu rusa, iar cu limba greșită Whisper
-                             # traduce în loc să transcrie. Cost: ~3 decodări/segment. [] = doar detecția.
+                             # traduce în loc să transcrie. [] = doar detecția.
   language_preference:       # {a: {b: m}}: în duelul a–b câștigă a dacă e la cel mult m în urmă (avg_logprob)
     ro: {ru: 0.5}            # large-v3 scrie româna moldovenească cu litere chirilice și o „câștigă” ca rusă cu
                              # până la 0.6. DOAR față de rusă: un bonus general traducea engleza în română.

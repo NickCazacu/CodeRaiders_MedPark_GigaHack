@@ -17,7 +17,8 @@ AI/     pipeline-ul audio (echipa ASR)        LLM/    acest modul
 `LLM/runs/` (ignorat de git). Configurarea e separată: `LLM/config.yaml` + variabile `LLM_*`.
 
 GPU: `qwen3:8b` ocupă ~6.2 GB VRAM și Ollama îl ține încărcat `keep_alive` (5 min) după ultimul apel.
-Nu rula extracția în paralel cu ASR-ul pe aceeași placă; dacă ASR urmează imediat, setează `LLM_KEEP_ALIVE=0`.
+Nu rula extracția în paralel cu ASR-ul pe aceeași placă; dacă ASR urmează imediat, setează `LLM_KEEP_ALIVE=0`
+(serviciul o face): modelul rămâne încărcat pe durata extracției și e scos din VRAM la final.
 
 ## Rulare
 
@@ -64,6 +65,21 @@ lipsă și toate valorile clinice omise (creatinină, antibiotice cu doze, proce
   cu qwen3:8b), `extract.max_facts` 20.
 - Testate și respinse pe Medpark: `qwen3:14b` (tot 2 pacienți, de 3× mai lent), `think: true` la extracție
   (fără câștig clar), ferestre ASR mai mici sau replici de 300 de tokeni (împărțire prea fină).
+
+## Modificări 27.09 (după testul de 2 h)
+
+- **Ședințe lungi**: împărțirea pe pacienți se face pe bucăți consecutive de ~15 min (`segment.window_tokens` 3000);
+  fiecare bucată știe ce pacient continuă, începuturile vecine cu același pat/boxă/salon/număr se unesc
+  (`extract.same_patient`), iar o bucată eșuată se reîncearcă pe jumătăți. Cu bucăți de 30 min, qwen3:8b punea
+  aceeași etichetă tuturor pacienților sau răspunsul era tăiat.
+- **Decizii repetate** (recapitulare, pacient reluat): aceeași decizie, același status și aceleași numere → una
+  singură, ultima apariție (`merge._collapse`, eveniment `drop_restated_decision`). Pe 2 h: 127 → 28 de decizii.
+- **`case_key` fără diagnostic**: diagnosticul din cheie era copiat de la primul pacient la toți ceilalți
+  („Patul 5, pneumonie comună”); acum doar identificarea, diagnosticul e în `topic`.
+- **Viteză**: cu `keep_alive` 0 modelul se reîncărca la fiecare apel (~2.6 s) și reevalua tot promptul; acum rămâne
+  încărcat pe durata rulării, iar `num_ctx`, odată mărit, rămâne stabil (altfel Ollama reîncarcă modelul).
+  Medpark: ~3 min → 79 s.
+- Reguli noi în `system.md`: unitatea de măsură doar dacă a fost spusă; zecimale rostite „X și Y”.
 
 ## Cum lucrează
 

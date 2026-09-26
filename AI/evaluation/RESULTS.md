@@ -83,6 +83,17 @@ termenii rămân în terms.tsv fără hotword. Hotword-ul se poate activa acum p
 Normalizarea audio (ffmpeg): `aresample=16000` înainte de `loudnorm` (care lucrează intern la 192 kHz): 12 min
 13.6 s -> 6.5 s.
 
+## Cap-coadă (RTX 5070, 27.09)
+
+| Înregistrare | normalize | diarizare + VAD | ASR | LLM | Total |
+|---|---|---|---|---|---|
+| Medpark 12 min, prin pagina web (n8n) | | | | | 3:54 (înainte 5:20) |
+| 2 h sintetic (engleză TTS în buclă, alt pacient la ~50 s) | 63 s | 170 s | 917 s | 1465 s (125 de fragmente) | 43:37 |
+
+LLM-ul pe 2 h: 9 apeluri de împărțire (128 s), 126 de extracții (~10 s fiecare, dominate de generarea răspunsului).
+Fișierul sintetic e cel mai rău caz pentru LLM; o ședință reală de 2 h cu 20–40 de pacienți ar avea de 3–4 ori mai
+puține extracții (estimat ~27–30 min total, nemăsurat).
+
 ## Nevalidat încă
 
 - Bonusul ro 0.5 pe **rusă reală**: dacă rusa vorbită iese transcrisă ca română, bonusul trebuie scăzut.

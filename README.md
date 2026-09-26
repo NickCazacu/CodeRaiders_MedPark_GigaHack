@@ -16,7 +16,17 @@ Sistem on-premise: înregistrarea ședinței → transcriere (ro/ru/en) cu vorbi
 powershell -ExecutionPolicy Bypass -File start_demo.ps1
 ```
 Pornește Ollama, serviciul AI (în fereastra lui) și containerele, apoi deschideți **http://localhost:8080**, încărcați o
-înregistrare și așteptați procesul-verbal (~2:40 pentru o ședință de 12 min pe RTX 5070). Test automat cap-coadă:
+înregistrare și așteptați procesul-verbal. Timpi măsurați pe RTX 5070 (12 GB), 27.09:
+
+| Înregistrare | Audio → transcriere | LLM | Total |
+|---|---|---|---|
+| Medpark, 12 min (prin pagina web) | ~2:40 | ~1:15 | **3:54** |
+| 2 h sintetic (cel mai rău caz: alt pacient la ~50 s, 125 de fragmente) | 19:12 | 24:25 | 43:37 |
+
+O ședință reală de 2 h (~20–40 de pacienți) are de 3–4 ori mai puține fragmente pentru LLM: estimat ~27–30 min
+(nemăsurat, nu avem o astfel de înregistrare). Detalii: [AI/evaluation/RESULTS.md](AI/evaluation/RESULTS.md).
+
+Test automat cap-coadă:
 `powershell -File n8n-local\e2e_test.ps1 -Audio <fișier>`. Detalii despre flux: [n8n-local/README.md](n8n-local/README.md).
 
 ## Mutarea proiectului pe alt calculator

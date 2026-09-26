@@ -138,10 +138,16 @@ Pentru a compara modele sau setări pe același fișier, dă fiecărei variante 
 Formatul `llm_input.json` pentru echipa LLM e descris în [docs/LLM_INPUT.md](docs/LLM_INPUT.md), cu exemplu în `docs/llm_input.example.json`.
 
 **Setările implicite** (`config.yaml`), alese prin măsurători (istoricul complet: [evaluation/RESULTS.md](evaluation/RESULTS.md)):
-- **limba**: fiecare segment e decodat în ro și ru (plus limba detectată, dacă e alta) și câștigă scorul cel mai bun; româna
-  primește un bonus de 0.5, pentru că large-v3 scrie dialectul moldovenesc cu litere chirilice și îl „câștigă” ca rusă.
-  `--language ro` forțează o limbă (mai rapid, dar pierde rusa); `--language-bias ro=0.3` schimbă bonusul pentru o rulare;
-- **hotwords** din `glossary/` da, **prompt de domeniu** nu (vezi [glossary/README.md](glossary/README.md));
+- **limba**: detectorul Whisper decide singur când e sigur (≥ 0.8) pe o limbă care nu e rusa (`compare_skip_prob`);
+  altfel segmentul e scorat în ro și ru (plus limba detectată) direct din ieșirea encoderului de la detecție
+  (`compare_from_encoder`, fără încă o trecere de encoder) și câștigă scorul cel mai bun. În duelul ro–ru româna
+  primește 0.5 (`language_preference`), pentru că large-v3 scrie dialectul moldovenesc cu litere chirilice și îl
+  „câștigă” ca rusă; bonusul nu o ridică peste o a treia limbă. `--language ro` forțează o limbă;
+  `--language-preference ro>ru=0.3` schimbă bonusul pentru o rulare;
+- **hotwords** din `glossary/` da (lista actuală; un glosar extins a fost măsurat și respins), **prompt de domeniu** nu
+  (vezi [glossary/README.md](glossary/README.md)). Coloana `hotword` din `terms.tsv`: `1` = toate limbile sau `ro,en`;
+- **numerele rostite** în segmentele românești devin cifre (`postprocess.numbers_to_digits`, `pipeline/itn.py`):
+  „treizeci și opt” → 38, „nouă spre zece” → 19; originalul rămâne în `text_raw`;
 - fără `--denoise`.
 
 Promptul și hotwords fac parte din amprenta `setup`: dacă le schimbi, rulează ASR-ul într-un job nou sau șterge `asr.jsonl`.
@@ -171,6 +177,8 @@ Teste și unelte:
 ```powershell
 .\.venv\Scripts\python.exe -m tests.test_segment_rules                     # regulile de segmentare
 .\.venv\Scripts\python.exe -m tests.test_asr_mapping                       # rezultate batched -> segmentul corect
+.\.venv\Scripts\python.exe -m tests.test_language_choice                   # alegerea limbii per segment
+.\.venv\Scripts\python.exe -m tests.test_itn                               # numerele rostite -> cifre
 .\.venv\Scripts\python.exe -m tests.compare_jobs JOB_A JOB_B [--all]       # compară 2 modele/setări segment cu segment
 .\.venv\Scripts\python.exe -m tests.test_prompt_leak                       # detecția copiilor de prompt
 .\.venv\Scripts\python.exe -m tests.make_llm_example                       # regenerează docs/llm_input.example.json
