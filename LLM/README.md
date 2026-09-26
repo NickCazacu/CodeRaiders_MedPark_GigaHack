@@ -149,6 +149,58 @@ prin același șablon ca apelul real).
 .\.venv\Scripts\python.exe -m LLM.tests.fixtures.build        # regenerează fixture-urile
 ```
 
+## Teste manuale: dai un JSON, vezi punctele principale și termenele
+
+```powershell
+.\.venv\Scripts\python.exe -m LLM.manual sedinta.json --date 2026-09-21    # rulează modelul și afișează rezultatul
+.\.venv\Scripts\python.exe -m LLM.manual jobs\<job_id>\llm_input.json      # un job real din pipeline
+.\.venv\Scripts\python.exe -m LLM.manual review sedinta.json               # reafișează, fără model
+```
+
+JSON-ul poate fi `llm_input.json` (ieșirea pipeline-ului), `transcript.json` (segmentele din
+postprocess, se împachetează cu `pack_for_llm`) sau o listă de replici cu `"line"`. Data: `--date`,
+altfel câmpul `"meeting_date"` din JSON, altfel azi. Rezultatele: lângă `jobs/<id>/llm_input.json`
+pentru un job real, altfel în `jobs/manual-<nume_fișier>/`.
+
+În terminal:
+
+```
+PUNCTELE PRINCIPALE
+Pacientul 3 din salonul 2 are programat control CT pe 5 octombrie [00:06]. ...
+
+TERMENE
+  C1 Pacientul 3, salon 2
+     când: „5 octombrie” (dată fixă)  [00:06]
+     ce:   Programarea controlului cu CT pe 5 octombrie
+  C4 Pacientul 14
+     când: „Dacă troponina a doua” (condiționat, dacă rezultatul a doua troponină)  [00:38]
+  ...
+CAZURI ȘI DECIZII
+  C1 Pacientul 3, salon 2: Evaluare post-colecistectomie
+     ✓ aprobat: Programarea controlului cu CT pe 5 octombrie  [00:06]
+DE VERIFICAT: 3 corecții în cod, 0 citate negăsite, 0 avertismente, 0 erori
+```
+
+`când` e expresia exactă din transcriere. Data concretă o calculează validarea, nu modelul.
+
+Ședință scrisă ca text, în loc de JSON:
+
+```powershell
+.\.venv\Scripts\python.exe -m LLM.manual new consiliu_cardio     # creează LLM/manual_tests/consiliu_cardio/meeting.txt
+.\.venv\Scripts\python.exe -m LLM.manual consiliu_cardio         # -> jobs/manual-consiliu_cardio/
+```
+
+`meeting.txt` are o replică pe linie, în formatul ferestrelor ASR: `[mm:ss] SPEAKER_01: text [?]`.
+Timpul și vorbitorul sunt opționale, `[?]` = încredere scăzută, iar o linie goală = pauză (subiect nou).
+Setările `# date:`, `# window_tokens:` (mic, ex. 300, pentru mai multe ferestre) și `# overlap:` stau
+în antet. Poți lipi direct linii din `windows[i].text` ale unui job real. `llm_input.json` se
+construiește cu `make_turns` / `make_windows` din `pipeline/pack_for_llm.py`, deci are formatul real.
+
+`review.md` conține: rezumatul ședinței, tabelul subiectelor principale, tabelul termenelor, fiecare caz cu deciziile
+lângă replica citată (⚠ replică nesigură, ⛔ citat negăsit, deciziile înlocuite tăiate), corecțiile
+făcute în cod, transcrierea cu liniile citate marcate (`▶ C1`) și o listă de verificare de bifat.
+`meeting.txt` se păstrează în git (`LLM/manual_tests/`); ieșirile din `jobs/` nu.
+
 Fixture-urile din `LLM/tests/fixtures/` sunt generate cu `make_turns` / `make_windows` din
 `pipeline/pack_for_llm.py`, deci au exact formatul real. `llm_input.example.json` reproduce exemplul
 din documentația ASR.

@@ -1,5 +1,5 @@
 """Generează fixture-urile llm_input.json din scenariile de mai jos, cu exact codul echipei ASR
-(pipeline.pack_for_llm.make_turns / make_windows), ca formatul să fie identic cu cel real.
+(pipeline.pack_for_llm.make_turns / make_windows, prin LLM.manual.build_llm_input).
 
     python -m LLM.tests.fixtures.build
 
@@ -8,45 +8,17 @@ lang (implicit: ru dacă textul e mai mult chirilic, altfel ro), pause (secunde 
 at / dur (început și durată explicite, în secunde).
 """
 import json
-from collections import Counter
 from pathlib import Path
 
-from pipeline.pack_for_llm import make_turns, make_windows
+from LLM.manual import build_llm_input
 
 HERE = Path(__file__).resolve().parent
 S0, S1, S2, U = "SPEAKER_00", "SPEAKER_01", "SPEAKER_02", "UNK"
 
 
-def lang_of(text):
-    cyr = sum("Ѐ" <= c <= "ӿ" for c in text)
-    lat = sum(c.isascii() and c.isalpha() for c in text)
-    return "ru" if cyr > lat else "ro"
-
-
-def build(job_id, script, window_tokens=3500, overlap=3, start=1.0, tail=3.0):
-    segs, t = [], start
-    for i, item in enumerate(script):
-        spk, text, opt = (*item, {}) if len(item) == 2 else item
-        t = opt.get("at", t + opt.get("pause", 0.0))
-        dur = opt.get("dur") or round(max(2.0, len(text) / 13), 1)
-        segs.append({"id": i, "speaker": spk, "start": round(t, 1), "end": round(t + dur, 1), "text": text,
-                     "lang": opt.get("lang") or lang_of(text), "low_confidence": bool(opt.get("low")),
-                     "flags": [], "dropped": None})
-        t += dur + 0.8
-    turns = make_turns(segs, 800, True)
-    windows = make_windows(turns, window_tokens, overlap)
-    return {
-        "job_id": job_id,
-        "audio_duration_s": round(t + tail, 1),
-        "speakers": sorted({x["speaker"] for x in turns}),
-        "languages": dict(Counter(s["lang"] for s in segs)),
-        "format": "[mm:ss] SPEAKER: text  (\" [?]\" = încredere scăzută)",
-        "token_estimate": "utf8_bytes/4",
-        "n_turns": len(turns),
-        "n_windows": len(windows),
-        "turns": turns,
-        "windows": windows,
-    }
+def build(job_id, script, window_tokens=3500, overlap=3, tail=3.0):
+    utts = [{"speaker": item[0], "text": item[1], **(item[2] if len(item) > 2 else {})} for item in script]
+    return build_llm_input(job_id, utts, window_tokens, overlap, tail=tail)
 
 
 # ---------------------------------------------------------------------------------------------
