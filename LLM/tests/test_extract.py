@@ -226,6 +226,22 @@ def test_patient_mode_long_meeting_in_parts():
     assert [s["ts"] for s in starts] == ["00:03", "00:52"], starts
 
 
+def test_failed_segment_part_is_retried_in_halves():
+    # bucata 2 (replicile 4-6) eșuează: se reîncearcă pe jumătăți (4 | 5-6), a doua găsește pacientul nou
+    segs = [{"patients": [{"start": "00:03", "label": "Pacient patul 8", "cue": ""}]},
+            {"patients": []},
+            None,
+            {"patients": []},
+            {"patients": [{"start": "00:52", "label": "Pacient patul 9", "cue": ""}]}]
+    w = {"summary": "", "cases": []}
+    m, report, client, d = go("llm_input.example.json", {"segment": segs, "extract": [w] * 4, "final": [None]},
+                              **{"segment.enabled": True, "segment.window_tokens": 70, "segment.min_split_turns": 2})
+    assert [c["stage"] for c in client.calls][:5] == ["segment"] * 5, client.calls
+    assert any("reîncerc pe jumătăți" in x for x in report["warnings"]), report["warnings"]
+    starts = json.loads((d / "llm_debug" / "segment.response.json").read_text(encoding="utf-8"))["starts"]
+    assert [s["ts"] for s in starts] == ["00:03", "00:52"], starts
+
+
 def test_same_patient():
     assert ex.same_patient("Pacient patul 9, pneumonie", "Patul 9 – insuficiență respiratorie")
     assert ex.same_patient("Pacientul 48", "Pacient 48, cardiologie")

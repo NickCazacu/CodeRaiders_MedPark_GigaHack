@@ -18,7 +18,7 @@ stages:
   # cât încape în num_ctx lângă promptul real (fără să mărească num_ctx => modelul rămâne tot în VRAM)
   # 4096: cu `facts` (analize, doze, proceduri) răspunsul pentru 6–8 pacienți trece de 2048 de tokeni
   extract:   {think: false, num_predict: 4096, max_predict: 6144}
-  segment:   {think: false, num_predict: 1024}   # împărțirea ședinței pe pacienți (vezi `segment`)
+  segment:   {think: false, num_predict: 2048}   # împărțirea ședinței pe pacienți (vezi `segment`)
   same_case: {think: false, num_predict: 32}     # „același caz?” pentru chei ambigue
   supersede: {think: false, num_predict: 128}    # ce decizii au fost înlocuite (caz cu >= 2 decizii)
   translate: {think: false, num_predict: 1024}   # rusa rămasă în câmpurile care trebuie să fie în română
@@ -59,7 +59,7 @@ segment:
   max_segment_tokens: 1200      # un pacient mai lung se împarte în bucăți cu aceeași etichetă
   context_turns: 2              # replici dinaintea fragmentului, doar pentru context
   min_patient_s: 15             # începuturi mai apropiate de atât = același pacient (nu un fragment nou)
-  window_tokens: 6000           # transcriere mai lungă (ședințe de ~25+ min): împărțirea se face pe bucăți consecutive,
+  window_tokens: 3000           # transcriere mai lungă (ședințe de ~15+ min): împărțirea se face pe bucăți consecutive,
                                 # fiecare știind ce pacient continuă; începuturile vecine cu același pat/număr se unesc
 
 extract:

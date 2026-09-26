@@ -42,6 +42,16 @@ def test_preference_does_not_beat_english():
     assert pick_language({"ro": -0.6, "ru": -1.4, "en": -0.3}, PREF) == "en"
 
 
+def test_preference_does_not_jump_over_third_language():
+    # engleză TTS scurtă: traducerea în rusă are scorul cel mai bun, engleza e a doua, româna mult în urmă
+    assert pick_language({"ro": -0.61, "ru": -0.1175, "en": -0.1361}, PREF) != "ro"
+
+
+def test_confident_english_is_trusted():
+    # „First item. The patient in room twelve” era tradus în rusă/română în ciuda detecției en ~1.0
+    assert choose_candidates([("en", 1.0), ("ro", 0.0), ("ru", 0.0)], SEG, None, W) == [("en", 1.0)]
+
+
 def test_no_preference_is_plain_max():
     assert pick_language({"ro": -0.9, "ru": -0.5}, {}) == "ru"
 

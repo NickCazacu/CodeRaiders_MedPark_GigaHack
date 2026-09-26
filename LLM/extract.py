@@ -170,8 +170,11 @@ class Extractor:
             tok += T[i].tokens
         parts.append(cur)
         found, raws, parsed, previous = [], [], [], None
-        for n, part in enumerate(parts):
-            label_n = "segment" if len(parts) == 1 else f"segment_{n:02d}"
+        n = -1
+        while parts:
+            part = parts.pop(0)
+            n += 1
+            label_n = "segment" if n == 0 and not parts else f"segment_{n:02d}"
             msgs = prompt.segment_messages([T[i].line for i in part], previous)
             self.dbg.write(f"{label_n}.prompt.txt", messages_text(msgs))
             if self.budget(msgs, "segment")[0] is None:
@@ -182,11 +185,15 @@ class Extractor:
             parsed.append(res["data"])
             if res["error"]:  # nu e fatal
                 self.errors.pop()
-                if len(parts) == 1:
+                if label_n == "segment":
                     self.warn(f"împărțirea pe pacienți a eșuat ({res['error']}); folosesc ferestrele ASR")
                     return None
-                self.warn(f"{label_n}: împărțirea pe pacienți a eșuat ({res['error']}); "
-                          "fragmentul rămâne la pacientul anterior")
+                if len(part) >= sc.get("min_split_turns", 8):  # de obicei răspuns tăiat: încercăm pe jumătăți
+                    self.warn(f"{label_n}: împărțirea pe pacienți a eșuat ({res['error']}); reîncerc pe jumătăți")
+                    parts[:0] = [part[:len(part) // 2], part[len(part) // 2:]]
+                else:
+                    self.warn(f"{label_n}: împărțirea pe pacienți a eșuat ({res['error']}); "
+                              "fragmentul rămâne la pacientul anterior")
                 continue
             lo = T[part[0]].start - 1
             for p in (res["data"] or {}).get("patients") or []:

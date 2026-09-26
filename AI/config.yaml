@@ -31,7 +31,10 @@ whisper:
   compare_from_encoder: true # comparația ro/ru decodează direct din ieșirea encoderului de la detecție (beam 5, fără
                              # prompt, fără timestamps), fără încă o trecere de encoder per limbă. Aceleași alegeri și
                              # același WER, ASR cu ~30% mai rapid (Medpark 113.8 -> 79.6 s; evaluation/RESULTS.md).
-  short_segment_s: 2.0      # (doar fără compare_languages) segmentele mai scurte, cu detecție
+  compare_skip_prob: 0.8     # detector sigur (>= 0.8) pe o limbă care nu e „pierzătoare” într-o preferință (deci nu
+                             # ru): fără comparație. Motiv: pe fraze scurte Whisper TRADUCE cu scor mai bun decât
+                             # transcrie („First item. The patient in room twelve” -> „Первое. Пациент в комнате 12”).
+  short_segment_s: 2.0     # (doar fără compare_languages) segmentele mai scurte, cu detecție
                              # nesigură (<0.5), moștenesc limba segmentului anterior
   beam_size: 5
   batch_size: 8              # BatchedInferencePipeline; 1 = transcriere secvențială

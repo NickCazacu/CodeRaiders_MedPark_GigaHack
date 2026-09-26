@@ -186,7 +186,9 @@ def pick_language(scores, preference):
     best = max(scores, key=scores.get)
     for a, overs in (preference or {}).items():
         m = overs.get(best)
-        if a in scores and m is not None and scores[a] + m >= scores[best]:
+        # a câștigă doar duelul cu `best`; o a treia limbă mai bună decât a rămâne mai bună
+        if a in scores and m is not None and scores[a] + m >= scores[best] \
+                and all(scores[a] >= v for l, v in scores.items() if l not in (a, best)):
             best = a
     return best
 
