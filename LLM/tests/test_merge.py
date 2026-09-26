@@ -95,6 +95,22 @@ def test_decisions_ordered_by_time():
     assert [x["decision"] for x in m.result()[0]["decisions"]] == ["a", "b"]
 
 
+def test_restated_decision_kept_once():
+    m = Merger(cfg())
+    # formulări reale din testul de 2 h (aceeași decizie, reluată)
+    m.add_window(0, [], -1, [c("Patul 12", [d(3, 10, 0, "Continuarea tratamentului cu ceftriaxonă pentru încă trei "
+                                                        "zile; repetarea radiografiei toracice vineri")])])
+    m.add_window(4, [], -1, [c("Patul 12", [
+        d(80, 600, 4, "Tratamentul cu ceftriaxonă se continuă pentru încă 3 zile și se repetă radiografia toracică "
+                      "vineri"),                                                    # recapitulare: aceeași decizie
+        d(90, 610, 4, "Tratamentul cu ceftriaxonă se continuă pentru încă 5 zile"),  # alt număr: altă decizie
+        d(99, 620, 4, "Continuarea tratamentului cu ceftriaxonă pentru încă trei zile; repetarea radiografiei "
+                      "toracice vineri", status="amânat")])])                       # alt status
+    decs = m.result()[0]["decisions"]
+    assert [x["turn_id"] for x in decs] == [80, 90, 99], decs   # rămâne ultima apariție
+    assert any(e["event"] == "drop_restated_decision" for e in m.events)
+
+
 def test_ambiguous_asks_llm():
     asked = []
 

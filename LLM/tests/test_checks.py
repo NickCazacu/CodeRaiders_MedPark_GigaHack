@@ -95,8 +95,9 @@ def test_proposal_and_confirmation_collapsed():
     m.add_window(0, [], -1, [c("Pacient 21", [
         dict(d(9, "Operația hernioplastie cu plasă programată pentru 2 octombrie"), _t=79),
         dict(d(10, "Operația hernioplastie cu plasă programată pentru 2 octombrie"), _t=85),
-        dict(d(30, "Operația hernioplastie cu plasă programată pentru 2 octombrie"), _t=300)])])  # departe: rămâne
-    assert [x["turn_id"] for x in m.result()[0]["decisions"]] == [10, 30], m.events
+        # repetată mult mai târziu (recapitulare): tot aceeași decizie, rămâne ultima apariție
+        dict(d(30, "Operația hernioplastie cu plasă programată pentru 2 octombrie"), _t=300)])])
+    assert [x["turn_id"] for x in m.result()[0]["decisions"]] == [30], m.events
 
 
 def test_same_turn_in_two_cases_kept_once():

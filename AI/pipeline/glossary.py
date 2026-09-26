@@ -88,9 +88,12 @@ def load_terms(path=TERMS_PATH):
     header = lines[0].split("\t")
     for line in lines[1:]:
         row = dict(zip(header, (c.strip() for c in line.split("\t"))))
-        hot = row.get("hotword") == "1"
+        # hotword: 1 = toate limbile; sau lista limbilor, ex. „ro,en” (rusa e deja aproape de limita de tokeni)
+        hw = (row.get("hotword") or "").replace(" ", "")
+        hot_langs = set(LANGS) if hw == "1" else set(hw.split(",")) - {"", "0"}
         custom = row.get("stem", "")
         for lang in LANGS:
+            hot = lang in hot_langs
             for col, abbr in ((lang, False), (f"abbr_{lang}", True)):
                 for k, text in enumerate(v for v in (row.get(col) or "").split("|") if v.strip()):
                     text = text.strip()

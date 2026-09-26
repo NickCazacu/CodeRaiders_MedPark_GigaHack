@@ -70,6 +70,16 @@ beam-ului contează puțin; costul era encoderul rulat de 4 ori per segment (det
 
 Concluzie: comparația între limbi trebuie făcută în condiții identice (fără hotwords/prompt).
 
+Engleză scurtă tradusă (găsit pe 2 h de engleză TTS): 94 din 1734 de segmente ieșeau în ro/ru, fiindcă traducerea
+are scor mai bun decât transcrierea pe fraze scurte, iar preferința ro>ru sărea peste engleză. `compare_skip_prob:
+0.8` (detecție sigură pe o limbă care nu e ru => fără comparație) + preferința doar în duelul ro–ru: 12 -> 1 pe
+primele 15 min; Medpark și amestecul de limbi identice (55.6% / 33.1%; en 100%, ru 92%).
+
+Glosar extins (27.09): +10 termeni de terapie intensivă ca hotwords ro/en (dobutamină, meropenem, vancomicină,
+amikacină, gazometrie, hemocultură, hidronefroză, nefrostomă, atelectazie, șoc septic; promptul ro la 216/223 tokeni):
+Medpark 56.4% / 34.0% (față de 55.6% / 33.1%), en WER 3.9% (față de 1.3%), ru 26.9% (față de 25.6%). **Respins**;
+termenii rămân în terms.tsv fără hotword. Hotword-ul se poate activa acum per limbă (coloana `hotword`: `ro,en`).
+
 Normalizarea audio (ffmpeg): `aresample=16000` înainte de `loudnorm` (care lucrează intern la 192 kHz): 12 min
 13.6 s -> 6.5 s.
 

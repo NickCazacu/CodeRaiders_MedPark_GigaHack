@@ -21,6 +21,22 @@ class OllamaClient:
         self.url = o["url"].rstrip("/") + "/api/chat"
         self.o = o
         self.stages = cfg["stages"]
+        # keep_alive 0 („eliberează VRAM-ul pentru ASR”) = descarcă modelul la FINALUL rulării, nu după fiecare
+        # apel: altfel fiecare fereastră reîncarcă modelul (~2.6 s) și reevaluează tot promptul fix
+        ka = str(o.get("keep_alive", "5m")).strip()
+        self.unload_at_end = ka in ("0", "0s", "0m")
+        self.keep_alive = "5m" if self.unload_at_end else ka
+
+    def unload(self):
+        """Scoate modelul din VRAM (apelat la finalul extracției când keep_alive = 0)."""
+        req = urllib.request.Request(self.url.replace("/api/chat", "/api/generate"),
+                                     data=json.dumps({"model": self.o["model"], "keep_alive": 0}).encode("utf-8"),
+                                     headers={"Content-Type": "application/json"})
+        try:
+            with _opener.open(req, timeout=30) as r:
+                r.read()
+        except (urllib.error.URLError, TimeoutError, OSError) as e:
+            print(f"[llm] descărcarea modelului din VRAM a eșuat: {e}")
 
     def chat(self, stage, messages, schema, num_ctx=None):
         """Returnează dict: data (JSON parsat sau None), raw, error, attempts, meta."""
@@ -31,7 +47,7 @@ class OllamaClient:
             "format": schema,
             "stream": False,
             "think": bool(st.get("think", False)),
-            "keep_alive": self.o.get("keep_alive", "5m"),
+            "keep_alive": self.keep_alive,
             "options": {
                 "temperature": self.o["temperature"],
                 "num_ctx": num_ctx or self.o["num_ctx"],

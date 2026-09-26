@@ -1,6 +1,6 @@
 # Glosar medical RO/RU/EN + abrevieri. Un rând = un concept. Coloane separate prin TAB.
 # Variante în aceeași celulă: separate prin |. Prima variantă e forma canonică (pentru hotwords și corecție).
-# hotword: 1 = intră în glossary/hotwords.<lang>.txt (python -m pipeline.glossary hotwords). Păstrați ~25/limbă:
+# hotword: 1 = intră în glossary/hotwords.<lang>.txt pentru toate limbile, sau doar pentru limbile listate (ex. ro,en). Păstrați ~25/limbă:
 #          hotwords și initial_prompt împart ~224 de tokeni.
 # stem (opțional): rădăcinile pentru potrivire, per cuvânt, separate prin spațiu; implicit se calculează automat.
 # Abrevierile se potrivesc exact, cu majuscule (TA ≠ „ta”).
@@ -119,3 +119,9 @@ punctie	procedura	puncție	пункция	puncture				0
 rcr	procedura	resuscitare cardiorespiratorie|resuscitare	сердечно-легочная реанимация	cardiopulmonary resuscitation	RCR	СЛР	CPR	0
 oxigenoterapie	procedura	oxigenoterapie	оксигенотерапия	oxygen therapy				0
 anestezie	procedura	anestezie	анестезия|наркоз	anesthesia				0
+dobutamina	medicament	dobutamină	добутамин	dobutamine				0
+amikacina	medicament	amikacină	амикацин	amikacin				0
+hidronefroza	diagnostic	hidronefroză	гидронефроз	hydronephrosis				0
+nefrostoma	procedura	nefrostomă	нефростома	nephrostomy				0
+atelectazie	diagnostic	atelectazie	ателектаз	atelectasis				0
+soc_septic	diagnostic	șoc septic	септический шок	septic shock				0

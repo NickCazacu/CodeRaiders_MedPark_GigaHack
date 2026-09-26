@@ -1,5 +1,6 @@
 """Utilitare pentru teste: client Ollama fals, verificarea formatului minutei, runner simplu."""
 import copy
+import itertools
 import json
 import re
 import tempfile
@@ -62,8 +63,13 @@ def fact(text, ts, category="analize"):
     return {"category": category, "fact": text, "timestamp": ts}
 
 
-def dec(quote, ts, text="d", status="aprobat", replaces=False):
-    return {"quote": quote, "timestamp": ts, "decision": text, "status": status, "replaces_previous": replaces}
+_DEC_N = itertools.count(1)
+
+
+def dec(quote, ts, text=None, status="aprobat", replaces=False):
+    # text implicit unic: decizii diferite au texte diferite (merge unește deciziile repetate)
+    return {"quote": quote, "timestamp": ts, "decision": text or f"decizia {next(_DEC_N)}", "status": status,
+            "replaces_previous": replaces}
 
 
 def tmpdir():

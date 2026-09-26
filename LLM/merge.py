@@ -16,6 +16,21 @@ from LLM.loader import ts_seconds
 from LLM.quotes import norm
 
 TS_REF = re.compile(r"\[(\d+:\d{2}(?::\d{2})?)\]")
+_NUM = re.compile(r"\d+(?:[.,]\d+)?|\b(?:unu|una|doi|două|trei|patru|cinci|șase|șapte|opt|nouă|zece)\b")
+
+
+_WORDS = {"unu": "1", "una": "1", "doi": "2", "două": "2", "trei": "3", "patru": "4", "cinci": "5", "șase": "6",
+          "șapte": "7", "opt": "8", "nouă": "9", "zece": "10"}
+
+
+def stems(text):
+    """Rădăcini aproximative (primele 5 litere): „continuarea tratamentului” ~ „tratamentul se continuă”."""
+    return " ".join(w[:5] for w in norm(text).split())
+
+
+def numbers(text):
+    """Numerele dintr-o decizie (cifre și 1-10 în litere -> cifre), pentru „aceeași decizie?”."""
+    return [_WORDS.get(x, x.replace(",", ".")) for x in _NUM.findall((text or "").lower())]
 
 
 def norm_key(key):
@@ -211,7 +226,21 @@ class Merger:
                 out[-1] = d
             else:
                 out.append(d)
-        return out
+        # aceeași decizie repetată mai târziu (recapitulare la final, reluarea cazului): o păstrăm pe ultima, ca la
+        # confirmarea imediată de mai sus. Aceleași numere obligatoriu: „ceftriaxonă 3 zile” și „ceftriaxonă 5 zile”
+        # rămân decizii diferite.
+        kept = []
+        for d in reversed(out):
+            twin = next((x for x in kept if x["status"] == d["status"]
+                         and sorted(numbers(x["decision"])) == sorted(numbers(d["decision"]))
+                         and fuzz.token_set_ratio(stems(x["decision"]), stems(d["decision"])) >= self.m.get(
+                             "restated_min_score", 85)), None)
+            if twin:
+                self.events.append({"event": "drop_restated_decision", "case_key": acc["case_key"],
+                                    "timestamp": d["timestamp"], "same_as": twin["timestamp"]})
+            else:
+                kept.append(d)
+        return kept[::-1]
 
     def result(self, supersede=None):
         """supersede(case_key, decizii) -> set de indici înlocuiți sau None (apel eșuat)."""

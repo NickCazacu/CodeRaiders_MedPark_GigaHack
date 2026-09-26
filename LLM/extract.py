@@ -138,6 +138,11 @@ class Extractor:
             return {"data": None, "raw": None, "error": err, "errors": [err], "attempts": 0, "meta": {}}
         if num_ctx != self.cfg["ollama"]["num_ctx"]:
             self.warn(f"{label}: ~{est} tokeni, num_ctx mărit la {num_ctx}")
+        # Ollama reîncarcă modelul la fiecare num_ctx diferit: după ce estimarea se bazează pe tokeni reali,
+        # un num_ctx mărit rămâne mărit până la final (primul apel, cu factorul prudent, nu se ține minte)
+        if self.observed_factor:
+            num_ctx = max(num_ctx, getattr(self, "_ctx_used", 0))
+            self._ctx_used = rec["num_ctx"] = num_ctx
         res = self.client.chat(stage, msgs, schema, num_ctx=num_ctx)
         rec.update(attempts=res["attempts"], error=res["error"],
                    est_prompt_raw=msgs_tokens(msgs), **res.get("meta", {}))
@@ -423,9 +428,14 @@ def extract(input_path, date, out=None, debug_dir=None, cfg=None, client=None):
     for w in meeting.warnings:
         print(f"[llm] ATENȚIE: {w}")
 
-    ex = Extractor(meeting, date, cfg, client or OllamaClient(cfg), dbg)
-    with keep_awake():
-        minutes = ex.run()
+    client = client or OllamaClient(cfg)
+    ex = Extractor(meeting, date, cfg, client, dbg)
+    try:
+        with keep_awake():
+            minutes = ex.run()
+    finally:
+        if getattr(client, "unload_at_end", False):
+            client.unload()  # VRAM liber pentru următorul ASR
     path = ex.mode  # „patients” dacă împărțirea pe pacienți a reușit
 
     out.parent.mkdir(parents=True, exist_ok=True)
