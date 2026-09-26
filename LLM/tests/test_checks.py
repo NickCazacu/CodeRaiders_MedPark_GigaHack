@@ -269,3 +269,18 @@ def test_unspoken_units_removed():
         "Miropinem 2 și amicacină 1500", fx
     assert su("Creatinina 200 µmol/L", "[01:49] X: creatinina 200", fx, "w") == "Creatinina 200"
     assert su("Noradrenalină 0,1 µg/kg/min", "[01:00] X: nor 0,1 micrograme", fx, "w") == "Noradrenalină 0,1 µg/kg/min"
+
+
+def test_weekday_follows_quote():
+    from LLM.sanitize import fix_weekday as fw
+    fx = []
+    q = "We continue antibiotic therapy and repeat the chest x-ray on Friday."
+    assert fw("Repetarea radiografiei toracice joi", q, fx, "w") == "Repetarea radiografiei toracice vineri", fx
+    assert fw("Repetarea radiografiei vineri", q, fx, "w") == "Repetarea radiografiei vineri"
+    assert fw("КТ в четверг", "Сделаем КТ в четверг", fx, "w") == "КТ в четверг"
+    assert fw("Operația marți", "операция во вторник", fx, "w") == "Operația marți"
+    assert fw("Operația joi", "операция во вторник", fx, "w") == "Operația marți"
+    # „3 luni” e o durată, nu o zi; citat fără zi: nimic de corectat
+    assert fw("Tratament 3 luni, control joi", "control on Thursday, treatment for 3 months", fx, "w") == \
+        "Tratament 3 luni, control joi"
+    assert fw("Control joi", "control next week", fx, "w") == "Control joi"

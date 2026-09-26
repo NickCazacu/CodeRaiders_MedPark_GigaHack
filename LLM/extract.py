@@ -176,6 +176,26 @@ class Extractor:
             self.errors.append(f"{label}: {res['error']}")
         return res
 
+    # ---------- verificări pe textul liber, după linia citată ----------
+    def line_at(self, ts):
+        """Replica ședinței care conține momentul `ts` + următoarea."""
+        sec = ts_seconds(ts)
+        ids = sorted(self.mt.turns)
+        if sec is None or not ids:
+            return ""
+        k = max((j for j, i in enumerate(ids) if self.mt.turns[i].start <= sec + 1), default=0)
+        return " ".join(self.mt.turns[i].line for i in ids[k:k + 2])
+
+    def fix_by_timestamps(self, text, fixes, where):
+        """Rezumatele pun [mm:ss] după fiecare afirmație: ziua săptămânii din afirmație trebuie să fie cea din
+        linia de la acel moment („on Friday” nu devine „joi”)."""
+        if not text:
+            return text
+        parts = re.split(r"(\[\d+:\d{2}(?::\d{2})?\])", text)
+        for k in range(1, len(parts), 2):
+            parts[k - 1] = sanitize.fix_weekday(parts[k - 1], self.line_at(parts[k][1:-1]), fixes, where)
+        return "".join(parts)
+
     # ---------- împărțirea pe pacienți ----------
     def patient_windows(self):
         """Modul „segment”: un apel scurt împarte ședința pe pacienți (ordine + momentul de început), apoi
@@ -296,6 +316,9 @@ class Extractor:
         res = self.call("extract", msgs, schemas.extract_schema(ec.get("max_cases"), ec.get("max_decisions"),
                                                                 ec.get("max_facts")), label)
         cases, summary, fixes = sanitize.extract(res["data"]) if res["data"] is not None else ([], "", [])
+        summary = self.fix_by_timestamps(summary, fixes, label)
+        for c in cases:
+            c["discussion_summary"] = self.fix_by_timestamps(c["discussion_summary"], fixes, label)
         if patient and len(cases) == 1:
             key = canonical_key(cases[0]["case_key"], f"{patient['label']} {patient.get('cue', '')}")
             if key != cases[0]["case_key"]:
@@ -444,6 +467,10 @@ class Extractor:
         self.dbg.write("supersede.json", self.supersede_log)
         self.dbg.write("checks.json", self.checks)
         self.dbg.write("merge.json", {"events": merger.events, "cases": cases})
+        fixes = []
+        meeting_summary = self.fix_by_timestamps(meeting_summary, fixes, "final")
+        if fixes:
+            self.checks += [{"window": None, "event": "summary_fix", "detail": f} for f in fixes]
         minutes = {"meeting_summary": meeting_summary, "cases": cases}
         self.translate(minutes)
         # deocamdată ieșirea e doar în română; alte limbi vor veni mai târziu

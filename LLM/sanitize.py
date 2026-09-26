@@ -67,6 +67,46 @@ def eta(raw_eta, fixes, where):
     return {"type": typ, "raw": raw, "date": None, "condition": cond, "needs_review": False}
 
 
+RO_DAYS = ["luni", "marți", "miercuri", "joi", "vineri", "sâmbătă", "duminică"]
+# zilele săptămânii în ro/ru/en -> 0..6. „luni” după un număr = „luni” (months), nu ziua
+_DAY_PATTERNS = [
+    (r"\bluni\b|\blunea\b|\bmonday\b|\bпонедельник\w*", 0),
+    (r"\bmar[țt]i\b|\bmar[țt]ea\b|\btuesday\b|\bвторник\w*", 1),
+    (r"\bmiercuri(?:a)?\b|\bwednesday\b|\bсред[аеуы]\b", 2),
+    (r"\bjoi(?:a)?\b|\bthursday\b|\bчетверг\w*", 3),
+    (r"\bvineri(?:a)?\b|\bvinerea\b|\bfriday\b|\bпятниц\w*", 4),
+    (r"\bs[âa]mb[ăa]t[ăa]\b|\bs[âa]mb[ăa]ta\b|\bsaturday\b|\bсуббот\w*", 5),
+    (r"\bduminic[ăa]\b|\bduminica\b|\bsunday\b|\bвоскресень\w*", 6),
+]
+_DAY_RE = [(re.compile(p, re.IGNORECASE), i) for p, i in _DAY_PATTERNS]
+
+
+def weekdays(text):
+    """{(index zi, (start, end))} pentru zilele săptămânii din text; „3 luni” (durată) nu e zi."""
+    out = []
+    for rx, i in _DAY_RE:
+        for m in rx.finditer(text or ""):
+            if i == 0 and re.search(r"(\d|\b(?:două|trei|patru|cinci|șase|șapte|opt|nouă|zece))\s*$",
+                                    (text or "")[:m.start()], re.IGNORECASE):
+                continue
+            out.append((i, m.span()))
+    return out
+
+
+def fix_weekday(text, quote, fixes, where):
+    """Citatul numește o singură zi („on Friday”), decizia alta („joi”): traducere greșită -> ziua din citat."""
+    q = {i for i, _ in weekdays(quote)}
+    found = weekdays(text)
+    if len(q) != 1 or not found or {i for i, _ in found} == q:
+        return text
+    day = RO_DAYS[next(iter(q))]
+    for i, (a, b) in sorted(found, key=lambda x: -x[1][0]):
+        if i not in q:
+            text = text[:a] + day + text[b:]
+    fixes.append(f"{where}: ziua din decizie corectată după citat -> {day!r}")
+    return text
+
+
 def decision(d, fixes, where):
     if not isinstance(d, dict):
         return None
@@ -79,6 +119,7 @@ def decision(d, fixes, where):
     status = fix_enum(d.get("status"), STATUSES, "în discuție")
     if status != s(d.get("status")):
         fixes.append(f"{where}: status {d.get('status')!r} -> {status!r}")
+    text = fix_weekday(text, quote, fixes, where)
     return {"decision": text, "status": status, "quote": quote, "timestamp": norm_ts(d.get("timestamp")),
             "replaces_previous": bool(d.get("replaces_previous"))}
 
