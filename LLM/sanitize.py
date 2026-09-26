@@ -107,6 +107,41 @@ def fact(f, fixes, where):
     return {"category": cat, "fact": text, "timestamp": norm_ts(f.get("timestamp"))}
 
 
+# unitate scrisă după un număr -> cum ar apărea în vorbire (în linia transcrisă)
+# unitatea + eventualele „/kg/min”, „/zi”, „/L”: toată expresia dispare dacă unitatea nu a fost spusă
+UNIT = re.compile(r"(?<=\d)(\s*)(mg|µg|μg|mcg|ml|mL|mmol|µmol|μmol|umol|mmHg|g|%|UI)((?:/[^\W\d_]+)*)(?!\w)")
+UNIT_SPOKEN = {"mg": ("mg", "miligram"), "µg": ("µg", "mcg", "microgram", "gamma"), "μg": ("μg", "mcg", "microgram"),
+               "mcg": ("mcg", "µg", "microgram"), "ml": ("ml", "mililit"), "g": ("g", "gram"),
+               "mmol": ("mmol", "milimol"), "µmol": ("mol", "micromol"), "μmol": ("mol", "micromol"),
+               "umol": ("mol", "micromol"), "mmhg": ("mmhg", "milimetri", "mm"), "%": ("%", "la sută", "procent"),
+               "ui": ("ui", "unități")}
+
+
+def strip_unspoken_units(text, source, fixes, where):
+    """Scoate unitățile de măsură pe care modelul le-a adăugat, dar care nu apar în linia transcrisă
+    („amicacină 1500” -> nu „1500 mg”). Fără linie sursă, textul rămâne cum e."""
+    if not source:
+        return text
+    src = source.lower()
+
+    def spoken(x):
+        if x == "%":
+            return "%" in src
+        # abrevierile scurte ca cuvânt întreg („g” nu se potrivește în „gradul”), rădăcinile ca început de cuvânt
+        tail = r"(?![^\W\d_])" if len(x) <= 4 else ""
+        return re.search(r"(?<![^\W\d_])" + re.escape(x) + tail, src) is not None
+
+    def repl(m):
+        unit = m.group(2) + m.group(3)
+        key = m.group(2) if m.group(2) in ("µmol", "μmol", "μg") else m.group(2).lower()
+        if any(spoken(x) for x in UNIT_SPOKEN.get(key, (key,))):
+            return m.group(0)
+        fixes.append(f"{where}: unitate nespusă eliminată: {unit!r}")
+        return ""
+
+    return UNIT.sub(repl, text)
+
+
 CYRILLIC = re.compile(r"[Ѐ-ӿ]+(?:[\s-]+[Ѐ-ӿ]+)*")
 # câmpurile scrise de model, care trebuie să fie doar în română (quote și eta.raw sunt verbatim)
 RO_FIELDS = ("case_key", "topic", "discussion_summary")

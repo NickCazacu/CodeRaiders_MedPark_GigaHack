@@ -29,13 +29,35 @@ DEBUG_PATTERNS = ["window_*.prompt.txt", "window_*.response.json", "final.*", "s
                   "supersede.json", "checks.json", "quotes.json", "merge.json", "context_check.json", "run.json",
                   "segment.*", "segment_*"]
 
-PATIENT_ID = re.compile(r"\b(pat(?:ul)?|box[aă]|salon(?:ul)?|rezerva|pacient(?:ul|a)?)\s+(?:nr\.?\s*)?(\d+)", re.I)
+PATIENT_ID = re.compile(r"\b(pat(?:ul)?|box[aăe]?|salon(?:ul)?|rezerva|pacient(?:ul|a)?)\s+(?:nr\.?\s*)?(\d+)", re.I)
+BOX = re.compile(r"\b(box|bocs|бокс)\w*", re.I)
+
+
+CANON = {"pat": "Pacient patul {}", "box": "Pacient boxă {}", "sal": "Pacient salonul {}", "rez": "Pacient rezerva {}",
+         "pac": "Pacientul {}"}
+
+
+def patient_ids(x):
+    out = {(m[1].lower()[:3], m[2]) for m in PATIENT_ID.finditer(x or "")}
+    if BOX.search(x or "") and not any(k == "box" for k, _ in out):
+        out.add(("box", ""))  # „boxa” fără număr (o singură boxă discutată): tot un identificator
+    return out
+
+
+def canonical_key(case_key, fragment_label):
+    """Modul pe pacienți: dacă fragmentul are un identificator clar (pat/boxă/salon + număr) pe care case_key-ul
+    modelului nu îl conține (cheie deformată de transcriere: „Apătul nou mei”), cheia devine identificatorul."""
+    want = patient_ids(fragment_label)
+    if len(want) != 1 or patient_ids(case_key) & want:
+        return case_key
+    kind, num = next(iter(want))
+    return CANON[kind].format(num).strip()
 
 
 def same_patient(a, b):
     """Aceeași identificare (pat/boxă/salon/pacient + număr), altfel aceeași etichetă. „Pacient patul 9, pneumonie”
     și „Patul 9 – insuficiență respiratorie” sunt același pacient: diagnosticul din etichetă variază între apeluri."""
-    ia, ib = ({(m[1].lower()[:3], m[2]) for m in PATIENT_ID.finditer(x)} for x in (a, b))
+    ia, ib = patient_ids(a), patient_ids(b)
     if ia or ib:
         return bool(ia & ib)
     return " ".join(a.lower().split()) == " ".join(b.lower().split())
@@ -215,7 +237,7 @@ class Extractor:
                 continue
             if starts and T[ids[k]].start - T[ids[starts[-1][0]]].start < merge_s:
                 continue  # două începuturi la câteva secunde (ex. 02:58 și 03:00): același pacient
-            if starts and same_patient(starts[-1][1], label):
+            if starts and same_patient(f"{starts[-1][1]} {starts[-1][2]}", f"{label} {cue}"):
                 continue  # la granița dintre bucăți modelul repetă uneori pacientul care continuă
             starts.append((k, label, cue))
         res = {"raw": raws[0] if len(raws) == 1 else raws, "data": parsed[0] if len(parsed) == 1 else parsed}
@@ -274,6 +296,11 @@ class Extractor:
         res = self.call("extract", msgs, schemas.extract_schema(ec.get("max_cases"), ec.get("max_decisions"),
                                                                 ec.get("max_facts")), label)
         cases, summary, fixes = sanitize.extract(res["data"]) if res["data"] is not None else ([], "", [])
+        if patient and len(cases) == 1:
+            key = canonical_key(cases[0]["case_key"], f"{patient['label']} {patient.get('cue', '')}")
+            if key != cases[0]["case_key"]:
+                fixes.append(f"{label}: case_key {cases[0]['case_key']!r} -> {key!r} (identificatorul fragmentului)")
+                cases[0]["case_key"] = key
 
         keys = Counter(c["case_key"] for c in cases)
         for key, n in keys.items():
@@ -281,7 +308,18 @@ class Extractor:
                 self.warn(f"{label}: modelul a repetat cazul {key!r} de {n} ori (buclă)")
 
         turns = [self.mt.turns[i] for i in w.turn_ids]
+        def source_lines(ts):
+            """Replica care conține momentul `ts` (modelul citează uneori un moment din mijlocul unei replici
+            lungi) + următoarea (o valoare poate continua pe replica următoare)."""
+            sec = ts_seconds(ts)
+            if sec is None or not turns:
+                return ""
+            i = max((k for k, t in enumerate(turns) if t.start <= sec + 1), default=0)
+            return " ".join(x.line for x in turns[i:i + 2])
+
         for case in cases:
+            for f in case.get("facts", []):
+                f["fact"] = sanitize.strip_unspoken_units(f["fact"], source_lines(f["timestamp"]), fixes, label)
             for d in case["decisions"]:
                 r = quotes.resolve(d["quote"], d["timestamp"], turns, self.cfg["quotes"])
                 r.update(window=w.index, case_key=case["case_key"],

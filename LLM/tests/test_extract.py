@@ -247,7 +247,18 @@ def test_same_patient():
     assert ex.same_patient("Pacientul 48", "Pacient 48, cardiologie")
     assert not ex.same_patient("Pacient patul 8", "Pacient 48")
     assert not ex.same_patient("Boxa 3", "Patul 3")
+    # boxa fără număr (etichetă + cue, deformate de transcriere) e tot un identificator
+    assert ex.same_patient("Apătul nou mei departi de box", "Bocse de meniație, pneumonie")
+    assert not ex.same_patient("Pacientul din patul 9", "Bocse de meniație")
     assert ex.same_patient("Alți pacienți", "alți  pacienți") and not ex.same_patient("Primul pacient", "Alți pacienți")
+
+
+def test_canonical_key_from_fragment():
+    ck = ex.canonical_key
+    assert ck("Apătul nou mei (patul nouă), reanimare", "Apătul nou mei ... departi de box") == "Pacient boxă"
+    assert ck("Pacientul din patul 9", "Pacient patul 9, insuficiență respiratorie") == "Pacientul din patul 9"
+    assert ck("Pacient cu sepsis", "pacient cu sepsis, laparotomie") == "Pacient cu sepsis"   # fără identificator
+    assert ck("Depipatul nouă", "Patul 9 – pneumonie") == "Pacient patul 9"
 
 
 def test_patient_mode_falls_back_to_asr_windows():

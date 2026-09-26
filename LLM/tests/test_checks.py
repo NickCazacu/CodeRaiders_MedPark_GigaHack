@@ -252,3 +252,20 @@ def test_only_local_ollama():
 
 if __name__ == "__main__":
     sys.exit(run(globals()))
+
+
+def test_unspoken_units_removed():
+    from LLM.sanitize import strip_unspoken_units as su
+    fx = []
+    line = "[06:09] SPEAKER_01: Amicacină a mărit la 1500, era doză ieri de un gram"
+    assert su("Amicacină 1500 mg", line, fx, "w") == "Amicacină 1500", fx
+    assert su("Amicacină 1 g", line, fx, "w") == "Amicacină 1 g"                      # „un gram” spus
+    assert su("Frecvența la 80%", "[07:15] X: frecvența la EKS la 80", fx, "w") == "Frecvența la 80"
+    assert su("Saturația 94%", "[03:00] X: saturație 94 la sută", fx, "w") == "Saturația 94%"
+    assert su("Hidronefroză gradul 2", "[05:07] X: gradul 2", fx, "w") == "Hidronefroză gradul 2"
+    assert su("Noradrenalină 0,22 mg", "", fx, "w") == "Noradrenalină 0,22 mg"            # fără sursă: neatins
+    # forme compuse (găsite pe Medpark): toată unitatea dispare
+    assert su("Miropinem 2 g/zi și amicacină 1500 mg/zi", line.replace("un gram", "unul"), fx, "w") == \
+        "Miropinem 2 și amicacină 1500", fx
+    assert su("Creatinina 200 µmol/L", "[01:49] X: creatinina 200", fx, "w") == "Creatinina 200"
+    assert su("Noradrenalină 0,1 µg/kg/min", "[01:00] X: nor 0,1 micrograme", fx, "w") == "Noradrenalină 0,1 µg/kg/min"
