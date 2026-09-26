@@ -23,10 +23,12 @@ whisper:
                              # bun; apoi decodare finală cu promptul limbii alese. Motiv: detectorul
                              # confundă româna moldovenească cu rusa, iar cu limba greșită Whisper
                              # traduce în loc să transcrie. Cost: ~3 decodări/segment. [] = doar detecția.
-  language_bias: {}          # bonus adăugat la avg_logprob la alegerea limbii, ex. {ro: 0.12}: rusa
-                             # trebuie să câștige cu > 0.12. Motiv: fără prompt, large-v3 scrie uneori
-                             # româna moldovenească cu litere chirilice și câștigă la mică distanță.
-                             # De setat DOAR după validare pe o transcriere de referință (WER).
+  language_bias: {ro: 0.5}   # bonus adăugat la avg_logprob al românei la alegerea limbii: rusa trebuie
+                             # să câștige cu > 0.5. Motiv: large-v3 scrie româna moldovenească cu litere
+                             # chirilice și o „câștigă” ca rusă cu până la 0.6. Evaluare pe
+                             # tests/reference/medpark.txt: 0 → WER 65.9%, 0.3 → 60.1%, 0.5 → 59.5%
+                             # (= româna forțată). NEVALIDAT încă pe rusă reală: dacă rusa vorbită
+                             # ajunge transcrisă ca română, scade valoarea.
   short_segment_s: 2.0       # (doar fără compare_languages) segmentele mai scurte, cu detecție
                              # nesigură (<0.5), moștenesc limba segmentului anterior
   beam_size: 5
@@ -34,9 +36,11 @@ whisper:
   low_confidence_logprob: -0.7
   # prompt per limbă; glossary/prompt.<lang>.txt și glossary/prompt.txt au prioritate dacă există
   # (la fel hotwords.<lang>.txt / hotwords.txt)
+  # Implicit FĂRĂ prompt: pe referința Medpark, promptul de domeniu a crescut WER-ul de la 59.5% la 63.0%
+  # (ex. a transformat „pacientul 48” în „pacientul din patul 8”). Rusa: promptul era copiat în text.
   initial_prompt:
-    ro: "Ședință spital. Termeni medicali: diagnostic, anamneză, tomografie, hemoleucogramă."
-    ru: null   # fără prompt: pe audio în română decodat ca rusă, Whisper copia promptul în text
+    ro: null
+    ru: null
     en: null
 
 postprocess:

@@ -37,6 +37,8 @@ def main():
     ap.add_argument("--compute-type", help="implicit: din config (cpu => int8)")
     ap.add_argument("--batch-size", type=int)
     ap.add_argument("--language", help="forțează limba (ro/ru/en); implicit: detecție per segment")
+    ap.add_argument("--language-bias", help="bonus la alegerea limbii, ex.: ro=0.2 sau ro=0.2,en=0.1")
+    ap.add_argument("--no-prompt", action="store_true", help="fără initial_prompt și hotwords (pentru comparații)")
     ap.add_argument("--denoise", action=argparse.BooleanOptionalAction, default=None)
     ap.add_argument("--diarization", action=argparse.BooleanOptionalAction, default=None)
     ap.add_argument("--job-id")
@@ -58,6 +60,10 @@ def main():
         w["batch_size"] = args.batch_size
     if args.language:
         w["language"] = args.language
+    if args.language_bias:
+        w["language_bias"] = {k.strip(): float(v) for k, v in (x.split("=") for x in args.language_bias.split(","))}
+    if args.no_prompt:
+        w["use_prompt"] = False
     diar = cfg["diarization"]["enabled"] if args.diarization is None else args.diarization
     if diar and not (ROOT / cfg["diarization"]["pipeline_dir"] / "config.yaml").exists():
         sys.exit(f"Lipsește modelul de diarizare ({cfg['diarization']['pipeline_dir']}, vezi SETUP.md §5b). "

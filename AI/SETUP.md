@@ -20,7 +20,7 @@ Instalare ffmpeg:
 
 Windows (PowerShell):
 ```powershell
-cd D:\Hackaton\CodeRaiders_MedPark_GigaHack
+cd D:\Hackaton\CodeRaiders_MedPark_GigaHack\AI   # toate comenzile din acest fișier se rulează din AI/
 py -3.11 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --upgrade pip
 ```
@@ -136,17 +136,21 @@ Pentru a compara modele sau setări pe același fișier, dă fiecărei variante 
 
 Formatul `llm_input.json` pentru echipa LLM e descris în [docs/LLM_INPUT.md](docs/LLM_INPUT.md), cu exemplu în `docs/llm_input.example.json`.
 
-**Limba** (`whisper.compare_languages`, implicit `[ro, ru]`): fiecare segment e decodat fără prompt în ro și ru (plus limba
-detectată, dacă e alta) și se alege scorul mai bun. Apoi segmentul e transcris final în limba aleasă, cu promptul de domeniu.
-Costă ~3 decodări pe segment (≈1.5 min de ASR pentru 12 min de audio pe RTX 5070), dar detectorul de limbă singur confundă
-româna moldovenească cu rusa. `--language ro` forțează o limbă și e mai rapid.
+**Limba** (`whisper.compare_languages: [ro, ru]` + `language_bias: {ro: 0.5}`): fiecare segment e decodat în ro și ru (plus
+limba detectată, dacă e alta) și se alege scorul cel mai bun. Româna primește un bonus de 0.5, pentru că large-v3 scrie
+dialectul moldovenesc cu litere chirilice și îl „câștigă” ca rusă. Rusa și engleza rămân posibile când scorul lor e clar
+mai bun. Costă ~2 decodări pe segment (≈80 s de ASR pentru 12 min de audio pe RTX 5070). `--language ro` forțează o
+limbă și e mai rapid, dar nu mai recunoaște rusa. `--language-bias ro=0.3` schimbă bonusul pentru o rulare.
 
-Glossary (opțional), per limbă: `glossary/prompt.<lang>.txt` (sau `prompt.txt` pentru toate) înlocuiește
-`whisper.initial_prompt[<lang>]` din config, iar `glossary/hotwords.<lang>.txt` / `hotwords.txt` se trimite ca `hotwords`,
-câte un termen pe linie. Liniile care încep cu `#` sunt ignorate. Promptul descrie stilul și vocabularul, fără date reale.
-Whisper copiază uneori promptul în transcriere, mai ales când audio-ul e decodat în limba greșită. Copiile complete
-sunt detectate (`prompt_leak`) și nu intră la LLM. Din acest motiv rusa nu are prompt (`initial_prompt.ru: null`).
-Prompturile fac parte din `setup`: dacă le schimbi, rulează ASR-ul într-un job nou sau șterge `asr.jsonl`.
+**Evaluare** pe o transcriere de referință (vezi `tests/reference/README.md`):
+```powershell
+.\.venv\Scripts\python.exe -m tests.evaluate tests\reference\medpark.txt JOB1 JOB2 ...
+```
+Pe Medpark (2 fragmente, 346 de cuvinte), cu large-v3 și diarizare: fără bonus WER 65.9%, bonus 0.3 → 60.1%,
+**bonus 0.5 → 59.5%** (egal cu româna forțată), cu prompt de domeniu → 63.0%.
+
+Glosar: vezi [glossary/README.md](glossary/README.md). Implicit fără prompt, pentru că măsurat înrăutățește rezultatul.
+Promptul și hotwords fac parte din amprenta `setup`: dacă le schimbi, rulează ASR-ul într-un job nou sau șterge `asr.jsonl`.
 
 Etapele pe rând:
 ```powershell

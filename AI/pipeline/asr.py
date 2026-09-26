@@ -35,6 +35,8 @@ def load_glossary(w, lang):
     """(initial_prompt, hotwords) pentru limba `lang`. Ordinea de căutare:
     glossary/prompt.<lang>.txt, glossary/prompt.txt, whisper.initial_prompt[lang] din config.
     La fel pentru hotwords.<lang>.txt / hotwords.txt (câte un termen pe linie)."""
+    if w.get("use_prompt") is False:
+        return None, None
     g = ROOT / "glossary"
 
     def lines(name):
@@ -279,8 +281,14 @@ def asr(job_id, cfg=None):
                     lang_scores.append(sc)
 
                 # 2) transcrierea finală în limba aleasă, CU promptul de domeniu; dacă rezultatul
-                #    e o copie a promptului, păstrăm varianta fără prompt (dacă există)
-                final = decode(list(enumerate(chosen)), use_prompt=True)
+                #    e o copie a promptului, păstrăm varianta fără prompt (dacă există).
+                #    Fără prompt/hotwords pentru limba aleasă, decodarea de la pasul 1 e deja finală.
+                pairs = list(enumerate(chosen))
+                for l in set(chosen):
+                    glossary.setdefault(l, load_glossary(w, l))
+                redo = [(k, l) for k, l in pairs if (k, l) not in plain or any(glossary[l])]
+                final = {kl: plain[kl] for kl in pairs if kl not in redo}
+                final.update(decode(redo, use_prompt=True))
                 for k, (s, cand) in enumerate(zip(chunk, cands)):
                     lang = chosen[k]
                     res = final[(k, lang)]
