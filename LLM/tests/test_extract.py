@@ -111,6 +111,29 @@ def test_failed_window_continues():
     assert not check_minutes(m)
 
 
+def test_non_romanian_summary_warned():
+    m, report, _, _ = go("uncertain_decision.json", {"extract": [{"summary": "Перевод в реанимацию [00:20].", "cases": [
+        case("Pacient 33", [dec("Трансфер в реанимацию сегодня, da, îl mutăm acum.", "00:20", "Transfer în ATI azi")])]}]})
+    assert any("nu e în română: meeting_summary" in w for w in report["warnings"]), report["warnings"]
+    assert not any("decision" in w for w in report["warnings"])   # citatul rusesc e permis (verbatim)
+
+
+def test_leftover_russian_translated():
+    resp = {"summary": "Transfer în ATI azi [00:20].", "cases": [case(
+        "Pacient 33", [dec("Трансфер в реанимацию сегодня, da, îl mutăm acum.", "00:20", "Перевод в реанимацию")],
+        questions=["Родственникам позвонить [00:20]", "Rămâne de văzut [00:20]"])]}
+    # al doilea text tradus păstrează chirilică => nu se aplică, rămâne semnalat
+    m, report, client, d = go("uncertain_decision.json", {
+        "extract": [resp], "translate": [{"texts": ["Transfer în reanimare", "Позвонить rudelor [00:20]"]}]})
+    c = m["cases"][0]
+    assert c["decisions"][0]["decision"] == "Transfer în reanimare", c
+    assert c["decisions"][0]["quote"].startswith("Трансфер")          # citatul rămâne verbatim
+    assert c["open_questions"] == ["Родственникам позвонить [00:20]", "Rămâne de văzut [00:20]"], c
+    assert any("open_questions[1]" in w for w in report["warnings"]), report["warnings"]
+    sent = client.calls[-1]["messages"][0]["content"]
+    assert "0. Перевод в реанимацию" in sent and "Rămâne de văzut" not in sent, sent
+
+
 def test_empty_result_valid():
     m, report, _, _ = go("no_decisions.json", {"extract": [{"summary": "Raport de gardă fără evenimente [00:01].",
                                                               "cases": []}]})
@@ -138,6 +161,22 @@ def test_window_too_large_expands_ctx():
                               **{"ollama.num_ctx": 2048, "context.max_num_ctx": 8192})
     assert all(c["num_ctx"] > 2048 for c in client.calls if c["stage"] == "extract"), client.calls
     assert any("num_ctx mărit" in w for w in report["warnings"])
+
+
+def test_budget_uses_observed_token_ratio():
+    # primul apel: factorul din config (1.55) cere num_ctx mai mare; Ollama raportează prompt real mai mic
+    # => apelul următor încape în num_ctx de bază (modelul rămâne tot în VRAM)
+    class Measured(FakeClient):
+        def chat(self, stage, messages, schema, num_ctx=None):
+            res = super().chat(stage, messages, schema, num_ctx)
+            res["meta"] = {"prompt_eval_count": int(ex.msgs_tokens(messages) * 1.2)}
+            return res
+
+    client = Measured({"extract": [{"summary": "", "cases": []}] * 2})
+    ex.extract(fixture("llm_input.example.json"), "2026-09-21", tmpdir() / "m.json", tmpdir(),
+               cfg(**{"ollama.num_ctx": 6144, "context.token_factor": 1.9}), client)
+    first, second = [c["num_ctx"] for c in client.calls if c["stage"] == "extract"]
+    assert first > 6144 and second == 6144, (first, second)
 
 
 if __name__ == "__main__":

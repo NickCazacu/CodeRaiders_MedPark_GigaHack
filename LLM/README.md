@@ -1,17 +1,32 @@
-# llm: extracția procesului-verbal (llm_input.json → minutes.json)
+# LLM: extracția procesului-verbal (llm_input.json → minutes.json)
 
-Citește `jobs/<job_id>/llm_input.json` (scris de `pipeline/pack_for_llm.py`) și produce `minutes.json`:
+Citește `AI/jobs/<job_id>/llm_input.json` (scris de `AI/pipeline/pack_for_llm.py`) și produce `minutes.json`:
 cazurile discutate, deciziile cu citat verbatim și timp, ETA-ul și întrebările deschise.
 Rulează **doar** pe Ollama local (`qwen3:8b`), fără alte apeluri de rețea: URL-urile non-locale sunt
 refuzate, iar proxy-urile din mediu sunt ignorate.
 
+## Locul în repo
+
+```
+AI/     pipeline-ul audio (echipa ASR)        LLM/    acest modul
+```
+
+`LLM/` nu modifică nimic din `AI/`. Importă doar `pipeline.pack_for_llm` / `pipeline.common` (read-only;
+`LLM/__init__.py` pune `AI/` pe `sys.path`) și, pentru un job real, scrie rezultatele lângă
+`AI/jobs/<id>/llm_input.json` (`minutes.json`, `llm_debug/`, `review.md`, `mom.*`). Rulările manuale merg în
+`LLM/runs/` (ignorat de git). Configurarea e separată: `LLM/config.yaml` + variabile `LLM_*`.
+
+GPU: `qwen3:8b` ocupă ~6.2 GB VRAM și Ollama îl ține încărcat `keep_alive` (5 min) după ultimul apel.
+Nu rula extracția în paralel cu ASR-ul pe aceeași placă; dacă ASR urmează imediat, setează `LLM_KEEP_ALIVE=0`.
+
 ## Rulare
 
-Pregătire unică: Ollama instalat și `ollama pull qwen3:8b`. Dependențele Python sunt deja în
-`requirements.txt` (`pyyaml`, `rapidfuzz`).
+Toate comenzile se rulează din rădăcina repo-ului. Pregătire unică: Ollama instalat și `ollama pull qwen3:8b`;
+un mediu Python 3.11+ cu `pip install -r LLM\requirements.txt` (`pyyaml`, `rapidfuzz`; mediul pipeline-ului
+din `AI/` le are deja).
 
 ```powershell
-.\.venv\Scripts\python.exe -m LLM.extract jobs\<job_id>\llm_input.json --date 2026-09-21
+.\.venv\Scripts\python.exe -m LLM.extract AI\jobs\<job_id>\llm_input.json --date 2026-09-21
 .\.venv\Scripts\python.exe -m LLM.extract <job_id> --date 2026-09-21 --out minute.json
 ```
 
@@ -22,7 +37,7 @@ Din pipeline, după ce s-a scris `llm_input.json`:
 
 ```python
 from LLM.extract import extract, extract_job
-extract_job(job_id, "2026-09-21")          # jobs/<id>/minutes.json + etapa „llm” în status.json (sare dacă există)
+extract_job(job_id, "2026-09-21")          # AI/jobs/<id>/minutes.json + etapa „llm” în status.json (sare dacă există)
 report = extract(path, "2026-09-21")       # direct pe un fișier; întoarce raportul rulării
 ```
 
@@ -90,7 +105,7 @@ Un apel eșuat (timeout, JSON invalid, răspuns tăiat) se reîncearcă o dată.
   `turn_uncertain` în `llm_debug/quotes.json`).
 - Listele goale sunt valide.
 
-## Debug: `jobs/<job_id>/llm_debug/` (rescris la fiecare rulare)
+## Debug: `AI/jobs/<job_id>/llm_debug/` (rescris la fiecare rulare)
 
 | Fișier | Conținut |
 |---|---|
@@ -146,21 +161,37 @@ prin același șablon ca apelul real).
 .\.venv\Scripts\python.exe -m LLM.tests                       # offline, fără Ollama: loader, context, citate, verificări, merge, flux complet cu client fals
 .\.venv\Scripts\python.exe -m LLM.tests.test_scenarios        # cu qwen3:8b real; sărit dacă Ollama nu răspunde
                                                               # strict: pacientul corect per decizie, tipul exact de ETA, eta.raw verbatim
+.\.venv\Scripts\python.exe -m LLM.tests.test_scenarios 30min  # doar regresia pe consiliul realist de 30 min (fixtures/consiliu_30min.json)
 .\.venv\Scripts\python.exe -m LLM.tests.fixtures.build        # regenerează fixture-urile
 ```
 
 ## Teste manuale: dai un JSON, vezi punctele principale și termenele
 
+Două foldere:
+- `LLM/test_meetings/`: ședințele de test, câte un `.json` per ședință (vezi README-ul de acolo);
+- `LLM/test_moms/`: procesul-verbal generat pentru fiecare, `<nume>.md`, rescris la fiecare rulare.
+
+```powershell
+.\.venv\Scripts\python.exe -m LLM.manual all --date 2026-09-26   # toate ședințele -> LLM/test_moms/*.md + tabel
+.\.venv\Scripts\python.exe -m LLM.manual consiliu_30min          # doar una, după numele fișierului
+```
+
+Pentru o ședință nouă: pune JSON-ul în `LLM/test_meetings/` și rulează-l. Rulările lasă în git
+diferențe în `LLM/test_moms/`, deci se vede ușor ce s-a schimbat în MoM după o modificare de prompt
+sau de cod.
+
+Orice alt JSON merge și direct, fără să-l copiezi în folder:
+
 ```powershell
 .\.venv\Scripts\python.exe -m LLM.manual sedinta.json --date 2026-09-21    # rulează modelul și afișează rezultatul
-.\.venv\Scripts\python.exe -m LLM.manual jobs\<job_id>\llm_input.json      # un job real din pipeline
+.\.venv\Scripts\python.exe -m LLM.manual AI\jobs\<job_id>\llm_input.json      # un job real din pipeline
 .\.venv\Scripts\python.exe -m LLM.manual review sedinta.json               # reafișează, fără model
 ```
 
 JSON-ul poate fi `llm_input.json` (ieșirea pipeline-ului), `transcript.json` (segmentele din
 postprocess, se împachetează cu `pack_for_llm`) sau o listă de replici cu `"line"`. Data: `--date`,
-altfel câmpul `"meeting_date"` din JSON, altfel azi. Rezultatele: lângă `jobs/<id>/llm_input.json`
-pentru un job real, altfel în `jobs/manual-<nume_fișier>/`.
+altfel câmpul `"meeting_date"` din JSON, altfel azi. Rezultatele: lângă `AI/jobs/<id>/llm_input.json`
+pentru un job real, altfel în `LLM/runs/<nume_fișier>/` (ignorat de git).
 
 În terminal:
 
@@ -183,11 +214,28 @@ DE VERIFICAT: 3 corecții în cod, 0 citate negăsite, 0 avertismente, 0 erori
 
 `când` e expresia exactă din transcriere. Data concretă o calculează validarea, nu modelul.
 
+La fiecare rulare, în folderul rezultatelor:
+
+| Fișier | Pentru cine |
+|---|---|
+| `mom.html` / `mom.md` | **procesul-verbal (MoM) pentru revizuire**, generat din `minutes.json` de `LLM/mom.py` (Python, fără model, deci nu adaugă nimic): rezumat, ordinea de zi, discuții și decizii pe puncte, sinteza deciziilor și termenelor, întrebări deschise, note pentru revizuire. Textul e în română; citatele exacte apar doar ca adnotări „spus în înregistrare”. |
+| `review.md` | raportul tehnic: fiecare decizie lângă replica citată, corecțiile din cod, transcrierea marcată, listă de verificare |
+| `minutes.json`, `llm_debug/` | ieșirea brută și tot ce s-a trimis/primit de la model |
+
+`python -m LLM.mom AI\jobs\<job_id>` regenerează MoM-ul pentru orice job cu `minutes.json`.
+
+Experimente (fiecare variantă în folderul ei, ca să le poți compara):
+
+```powershell
+.\.venv\Scripts\python.exe -m LLM.manual sedinta.json --window-tokens 500      # ferestre mai mici -> LLM\runs\sedinta-w500\
+$env:LLM_THINK_EXTRACT = "1"; .\.venv\Scripts\python.exe -m LLM.manual sedinta.json --tag think; Remove-Item Env:LLM_THINK_EXTRACT
+```
+
 Ședință scrisă ca text, în loc de JSON:
 
 ```powershell
 .\.venv\Scripts\python.exe -m LLM.manual new consiliu_cardio     # creează LLM/manual_tests/consiliu_cardio/meeting.txt
-.\.venv\Scripts\python.exe -m LLM.manual consiliu_cardio         # -> jobs/manual-consiliu_cardio/
+.\.venv\Scripts\python.exe -m LLM.manual consiliu_cardio         # -> LLM/runs/consiliu_cardio/
 ```
 
 `meeting.txt` are o replică pe linie, în formatul ferestrelor ASR: `[mm:ss] SPEAKER_01: text [?]`.
@@ -199,7 +247,7 @@ construiește cu `make_turns` / `make_windows` din `pipeline/pack_for_llm.py`, d
 `review.md` conține: rezumatul ședinței, tabelul subiectelor principale, tabelul termenelor, fiecare caz cu deciziile
 lângă replica citată (⚠ replică nesigură, ⛔ citat negăsit, deciziile înlocuite tăiate), corecțiile
 făcute în cod, transcrierea cu liniile citate marcate (`▶ C1`) și o listă de verificare de bifat.
-`meeting.txt` se păstrează în git (`LLM/manual_tests/`); ieșirile din `jobs/` nu.
+`meeting.txt` se păstrează în git (`LLM/manual_tests/`); ieșirile din `LLM/runs/` nu.
 
 Fixture-urile din `LLM/tests/fixtures/` sunt generate cu `make_turns` / `make_windows` din
 `pipeline/pack_for_llm.py`, deci au exact formatul real. `llm_input.example.json` reproduce exemplul

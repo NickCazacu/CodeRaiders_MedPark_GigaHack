@@ -6,6 +6,7 @@ cunoscute din fixture), tipul exact de ETA, eta.raw copiat din transcriere, supr
 Ieșirile rămân în directorul temporar afișat, pentru inspecție.
 """
 import json
+import re
 import sys
 import urllib.request
 
@@ -28,8 +29,17 @@ PATIENTS = {
     "long_meeting.json": {("P", "48"): [*range(0, 8), *range(37, 45)], ("W", "5"): [*range(8, 13), *range(23, 27)],
                           ("P", "17"): range(16, 23), ("P", "22"): range(27, 32)},
     "uncertain_decision.json": {("P", "33"): range(0, 3), ("P", "40"): range(3, 4)},
-    "llm_input.example.json": {("P", "48"): range(0, 7)},
+    "llm_input.example.json": {("W", "8"): range(0, 7)},   # AI/docs: „Pacientul din patul 8”
+    # consiliu realist de 30 min (148 replici, 5 ferestre); replicile fiecărui punct, din transcriere
+    "consiliu_30min.json": {("P", "48"): range(3, 26), ("W", "12"): range(26, 41),
+                            ("W", "8"): [*range(41, 51), *range(140, 146)], ("P", "15"): range(77, 86),
+                            ("P", "5"): range(86, 96), ("P", "40"): range(96, 104), ("P", "31"): range(104, 115),
+                            ("P", "22"): range(115, 126)},
 }
+M30 = "consiliu_30min.json"
+NAMES = re.compile(r"andrei|mihailovic|ceban|irina|petrovna", re.I)
+CYRILLIC = re.compile(r"[Ѐ-ӿ]")
+TS_RANGE = re.compile(r"\[\d+:\d{2}\s*[–—-]\s*\d+:\d{2}\]")
 ETA = {("P", "3"): "absolute", ("P", "9"): "relative", ("P", "11"): "duration", ("P", "14"): "conditional",
        ("P", "20"): "vague", ("P", "25"): "recurring", ("P", "30"): "none"}
 
@@ -155,9 +165,9 @@ def test_8_unk_speakers():
 
 def test_9_example_from_docs():
     m, _ = minutes("llm_input.example.json")
-    p48 = case_of(m, ("P", "48"))
-    assert [d["turn_id"] for d in p48["decisions"]] == [3] and p48["decisions"][0]["timestamp"] == "00:32", p48
-    assert p48["eta"]["type"] == "relative" and p48["eta"]["raw"] == "вечером", p48["eta"]
+    bed8 = case_of(m, ("W", "8"))
+    assert 3 in [d["turn_id"] for d in bed8["decisions"]], bed8   # „Давайте повторим креатинин вечером…” [00:32]
+    assert all(d["timestamp"] == "00:32" for d in bed8["decisions"] if d["turn_id"] == 3), bed8
 
 
 def test_10_decisions_on_the_right_patient():
@@ -168,6 +178,80 @@ def test_10_decisions_on_the_right_patient():
 def test_11_eta_raw_verbatim():
     problems = [p for name in PATIENTS for p in eta_raw_problems(name)]
     assert not problems, problems
+
+
+# ---------- consiliu de 30 min (regresie; rulează doar acestea cu: python -m LLM.tests.test_scenarios 30min) ----------
+def decisions_in(m, turns):
+    return [(c, d) for c in m["cases"] for d in c["decisions"] if d["turn_id"] in turns]
+
+
+def test_30min_1_every_patient_once_with_decisions():
+    m, _ = minutes(M30)
+    missing = {lab: len([c for c in m["cases"] if lab in labels(c)]) for lab in PATIENTS[M30]}
+    assert all(n == 1 for n in missing.values()), missing
+    empty = [lab for lab in PATIENTS[M30] if not case_of(m, lab)["decisions"]]
+    assert not empty, empty
+
+
+def test_30min_2_age_is_not_patient_number_and_no_names():
+    m, _ = minutes(M30)
+    assert not [c["case_key"] for c in m["cases"] if ("P", "71") in labels(c) or ("P", "45") in labels(c)], \
+        [c["case_key"] for c in m["cases"]]
+    fields = [m["meeting_summary"]] + [x for c in m["cases"] for x in (
+        c["case_key"], c["topic"], c["discussion_summary"], *c["open_questions"],
+        *(d["decision"] for d in c["decisions"]))]
+    assert not [f for f in fields if NAMES.search(f)], [f for f in fields if NAMES.search(f)]
+
+
+def test_30min_3_bed8_surgery_approved_then_postponed():
+    m, _ = minutes(M30)
+    bed8 = case_of(m, ("W", "8"))["decisions"]
+    early = [d for d in bed8 if d["turn_id"] in range(46, 49)]
+    late = [d for d in bed8 if d["turn_id"] in range(143, 146)]
+    assert early and late, bed8
+    assert all(d["superseded"] for d in early) and not bed8[-1]["superseded"], bed8
+    assert case_of(m, ("W", "8"))["eta"]["type"] == "conditional", case_of(m, ("W", "8"))["eta"]
+
+
+def test_30min_4_eta_types():
+    m, _ = minutes(M30)
+    want = {("P", "48"): "relative", ("W", "12"): "relative", ("P", "15"): "relative", ("P", "5"): "relative",
+            ("P", "40"): "relative", ("P", "31"): "vague", ("P", "22"): "recurring"}
+    got = {lab: case_of(m, lab)["eta"] for lab in want}
+    wrong = {f"{lab[0]}{lab[1]}": f"{e['type']} ({e['raw']!r}), așteptat {want[lab]}"
+             for lab, e in got.items() if e["type"] != want[lab]}
+    assert not wrong, wrong
+
+
+def test_30min_5_non_patient_items():
+    m, _ = minutes(M30)
+    # ecograful: „să cumpărăm” e întrerupt, apoi „nu decidem azi” => nicio decizie aprobată
+    bought = [(c["case_key"], d["decision"]) for c, d in decisions_in(m, range(51, 66)) if d["status"] == "aprobat"]
+    assert not bought, bought
+    assert decisions_in(m, range(70, 77)), "protocolul de antibiotice lipsește"
+    garzi = decisions_in(m, range(126, 131))
+    assert garzi and all(d["status"] == "amânat" for _, d in garzi), garzi
+    falls = {c["case_key"] for c, _ in decisions_in(m, range(131, 140))}
+    assert len(falls) == 1, falls   # incidentul e un singur caz
+
+
+def test_30min_6_clean_output():
+    m, report = minutes(M30)
+    assert not attribution_problems(M30), attribution_problems(M30)
+    ids_ = [d["turn_id"] for d in decisions(m) if d["turn_id"] is not None]
+    assert len(ids_) == len(set(ids_)), sorted(ids_)
+    assert report["quotes_unresolved"] <= 1, report["quotes_unresolved"]
+    texts = [m["meeting_summary"]] + [c["discussion_summary"] for c in m["cases"]]
+    assert not [t for t in texts if TS_RANGE.search(t)]
+
+
+def test_30min_7_romanian_only():
+    m, _ = minutes(M30)
+    fields = [m["meeting_summary"]] + [x for c in m["cases"] for x in (
+        c["case_key"], c["topic"], c["discussion_summary"], *c["open_questions"],
+        *(d["decision"] for d in c["decisions"]))]
+    ru = [f for f in fields if CYRILLIC.search(f)]
+    assert not ru, ru
 
 
 if __name__ == "__main__":

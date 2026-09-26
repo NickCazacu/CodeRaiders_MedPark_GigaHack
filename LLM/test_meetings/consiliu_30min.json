@@ -1,0 +1,2483 @@
+{
+  "job_id": "test_consiliu_30min",
+  "audio_duration_s": 1808.8,
+  "speakers": [
+    "SPEAKER_00",
+    "SPEAKER_01",
+    "SPEAKER_02",
+    "SPEAKER_03",
+    "SPEAKER_04",
+    "SPEAKER_05",
+    "SPEAKER_06",
+    "SPEAKER_07",
+    "SPEAKER_08"
+  ],
+  "languages": {
+    "en": 10,
+    "ro": 114,
+    "ru": 41
+  },
+  "n_turns": 148,
+  "n_windows": 5,
+  "turns": [
+    {
+      "id": 0,
+      "speaker": "SPEAKER_00",
+      "start": 3.1,
+      "end": 8.559,
+      "line": "[00:03] SPEAKER_00: Bună dimineața tuturor. Se aude? Să pornit parcă înregistrare. [?]",
+      "low_confidence": true,
+      "low_confidence_ratio": 0.55,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        1
+      ],
+      "tokens_est": 22
+    },
+    {
+      "id": 1,
+      "speaker": "SPEAKER_02",
+      "start": 10.809,
+      "end": 15.574,
+      "line": "[00:10] SPEAKER_02: Да, всё слышно. Подождём Ирину Петровну или начинаем?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        2
+      ],
+      "tokens_est": 19
+    },
+    {
+      "id": 2,
+      "speaker": "SPEAKER_00",
+      "start": 18.839,
+      "end": 32.338,
+      "line": "[00:18] SPEAKER_00: Începem, vine ea pe parcurs. Avem mai multe puncte azi, încercăm să ne încadrăm în jumătate de oră. Primul caz, cardiologia, vă rog.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        3
+      ],
+      "tokens_est": 38
+    },
+    {
+      "id": 3,
+      "speaker": "SPEAKER_01",
+      "start": 50.602,
+      "end": 68.082,
+      "line": "[00:50] SPEAKER_01: Pacientul 48, bărbat de 62 de ani, internat pe dată de optsprezece cu infarct miocardic acut, STEMI inferior. S-a făcut trombospirație și stent pe coronara dreaptă, fluxul TIMI trei la final.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        4,
+        5
+      ],
+      "tokens_est": 53
+    },
+    {
+      "id": 4,
+      "speaker": "SPEAKER_01",
+      "start": 69.897,
+      "end": 88.303,
+      "line": "[01:09] SPEAKER_01: Ecografic are insuficiență mitrală de gradul trei, compracție de 38-40 la sută. Și avem suspecție de ruptură de cordaj, pentru că jetul a apărut brusc, pe ecografia de la internare nu era.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        6,
+        7
+      ],
+      "tokens_est": 52
+    },
+    {
+      "id": 5,
+      "speaker": "SPEAKER_00",
+      "start": 91.788,
+      "end": 93.392,
+      "line": "[01:31] SPEAKER_00: Trivascular, nu?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        8
+      ],
+      "tokens_est": 9
+    },
+    {
+      "id": 6,
+      "speaker": "SPEAKER_01",
+      "start": 96.116,
+      "end": 106.918,
+      "line": "[01:36] SPEAKER_01: Trivascular, da. Descendenta anterioară și circumflexa au stenoze de 70-80 la sută, dar acum nu sunt vinovate de eveniment.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        9
+      ],
+      "tokens_est": 36
+    },
+    {
+      "id": 7,
+      "speaker": "SPEAKER_03",
+      "start": 108.955,
+      "end": 121.783,
+      "line": "[01:48] SPEAKER_03: А ruptura de cordaj e confirmată sau doar suspiciune? Потому что если это cordaj, это уже хирургический вопрос, и тогда всё меняется.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro",
+        "ru"
+      ],
+      "segment_ids": [
+        10
+      ],
+      "tokens_est": 39
+    },
+    {
+      "id": 8,
+      "speaker": "SPEAKER_01",
+      "start": 124.534,
+      "end": 134.764,
+      "line": "[02:04] SPEAKER_01: Doar suspiciune. Pe transtoracică nu se vede clar, jetul e excentric și fereastra e proastă, pacientul e obez.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        11
+      ],
+      "tokens_est": 33
+    },
+    {
+      "id": 9,
+      "speaker": "SPEAKER_02",
+      "start": 136.586,
+      "end": 141.022,
+      "line": "[02:16] SPEAKER_02: Гемодинамически он стабилен? Лактат какой? На аминах?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        12
+      ],
+      "tokens_est": 19
+    },
+    {
+      "id": 10,
+      "speaker": "SPEAKER_01",
+      "start": 143.746,
+      "end": 152.891,
+      "line": "[02:23] SPEAKER_01: Stabil, tensiunea 110 pe 70, fără suport inotrop. Lactatul a fost 1.8 ieri, azi n-am repetat.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        13
+      ],
+      "tokens_est": 29
+    },
+    {
+      "id": 11,
+      "speaker": "SPEAKER_02",
+      "start": 156.426,
+      "end": 160.587,
+      "line": "[02:36] SPEAKER_02: Надо повторить лактат сегодня, на всякий случай.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        14
+      ],
+      "tokens_est": 17
+    },
+    {
+      "id": 12,
+      "speaker": "SPEAKER_01",
+      "start": 163.914,
+      "end": 166.121,
+      "line": "[02:43] SPEAKER_01: Da, îl repetăm.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        15
+      ],
+      "tokens_est": 9
+    },
+    {
+      "id": 13,
+      "speaker": "SPEAKER_03",
+      "start": 169.148,
+      "end": 184.453,
+      "line": "[02:49] SPEAKER_03: Atunci eu aș vrea să văd o transesofagiană înainte să discutăm de operație. Without TEE I can't decide anything, nu știu dacă e plastie sau protezare.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro",
+        "en"
+      ],
+      "segment_ids": [
+        16
+      ],
+      "tokens_est": 43
+    },
+    {
+      "id": 14,
+      "speaker": "SPEAKER_00",
+      "start": 186.696,
+      "end": 190.884,
+      "line": "[03:06] SPEAKER_00: Bine. Deci facem ecografie transesofagiană. Când puteți?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        17
+      ],
+      "tokens_est": 19
+    },
+    {
+      "id": 15,
+      "speaker": "SPEAKER_01",
+      "start": 193.317,
+      "end": 198.14,
+      "line": "[03:13] SPEAKER_01: Mâine dimineață, la opt, am loc în laborator.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        18
+      ],
+      "tokens_est": 17
+    },
+    {
+      "id": 16,
+      "speaker": "SPEAKER_00",
+      "start": 200.214,
+      "end": 212.027,
+      "line": "[03:20] SPEAKER_00: Atunci decizia: ecografie transesofagiană mâine dimineață, și în funcție de rezultat, consult cu chirurgia cardiacă pentru plastie sau protezare mitrală.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        19
+      ],
+      "tokens_est": 44
+    },
+    {
+      "id": 17,
+      "speaker": "SPEAKER_03",
+      "start": 215.19,
+      "end": 222.259,
+      "line": "[03:35] SPEAKER_03: Да, согласен. Și pentru restul leziunilor, heart team după, nu acum.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro",
+        "ru"
+      ],
+      "segment_ids": [
+        20
+      ],
+      "tokens_est": 22
+    },
+    {
+      "id": 18,
+      "speaker": "SPEAKER_01",
+      "start": 224.991,
+      "end": 233.986,
+      "line": "[03:44] SPEAKER_01: Corect, revascularizarea completă o discutăm în heart team după ce stabilim ce facem cu valva.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        21
+      ],
+      "tokens_est": 29
+    },
+    {
+      "id": 19,
+      "speaker": "SPEAKER_01",
+      "start": 237.162,
+      "end": 246.012,
+      "line": "[03:57] SPEAKER_01: Poate ar merita și un RMN cardiac pentru viabilitate, dar... mă rog, vedem după TEE.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        22
+      ],
+      "tokens_est": 26
+    },
+    {
+      "id": 20,
+      "speaker": "SPEAKER_04",
+      "start": 248.379,
+      "end": 254.36,
+      "line": "[04:08] SPEAKER_04: Anticoagulant are? Pentru stent vreau să zic, dubla antiagregare.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        23
+      ],
+      "tokens_est": 22
+    },
+    {
+      "id": 21,
+      "speaker": "SPEAKER_01",
+      "start": 256.535,
+      "end": 259.55,
+      "line": "[04:16] SPEAKER_01: Da, aspirină și ticagrelor, standard.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        24
+      ],
+      "tokens_est": 15
+    },
+    {
+      "id": 22,
+      "speaker": "SPEAKER_02",
+      "start": 262.784,
+      "end": 269.782,
+      "line": "[04:22] SPEAKER_02: Почки у него как? Контраст он получил много во время коронарографии.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        25
+      ],
+      "tokens_est": 22
+    },
+    {
+      "id": 23,
+      "speaker": "SPEAKER_01",
+      "start": 273.328,
+      "end": 283.204,
+      "line": "[04:33] SPEAKER_01: Creatinina a fost 98 la internare, azi 105, deci stabilă. L-am hidratat după procedură, diureza e bună.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        26
+      ],
+      "tokens_est": 31
+    },
+    {
+      "id": 24,
+      "speaker": "SPEAKER_03",
+      "start": 286.512,
+      "end": 307.383,
+      "line": "[04:46] SPEAKER_03: Și dacă TEE confirmă ruptura, noi îl putem lua în sală chiar săptămâna asta, dar trebuie să știu din timp, ca să rezerv perfuzionistul și sângele, că la noi circulația extracorporeală nu se organizează în două ore.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        27,
+        28
+      ],
+      "tokens_est": 59
+    },
+    {
+      "id": 25,
+      "speaker": "SPEAKER_00",
+      "start": 310.607,
+      "end": 312.013,
+      "line": "[05:10] SPEAKER_00: Clar, înțeleg.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        29
+      ],
+      "tokens_est": 9
+    },
+    {
+      "id": 26,
+      "speaker": "SPEAKER_00",
+      "start": 339.251,
+      "end": 344.142,
+      "line": "[05:39] SPEAKER_00: Mergem mai departe. Salonul 12, nefrologia, Andrei Mihailovici.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        30
+      ],
+      "tokens_est": 21
+    },
+    {
+      "id": 27,
+      "speaker": "SPEAKER_02",
+      "start": 347.247,
+      "end": 360.878,
+      "line": "[05:47] SPEAKER_02: Пациентка 57 лет, салон 12, острое повреждение почек на фоне сепсиса, источник — пиелонефрит. Креатинин вырос со 110 до 240 за двое суток.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        31,
+        32
+      ],
+      "tokens_est": 40
+    },
+    {
+      "id": 28,
+      "speaker": "SPEAKER_00",
+      "start": 363.059,
+      "end": 365.071,
+      "line": "[06:03] SPEAKER_00: Diureza cum este?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        33
+      ],
+      "tokens_est": 10
+    },
+    {
+      "id": 29,
+      "speaker": "SPEAKER_02",
+      "start": 367.776,
+      "end": 375.664,
+      "line": "[06:07] SPEAKER_02: Диурез снижен, 400 мл за ночь, несмотря на фуросемид. Калий 5.6, бикарбонат 17.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        34
+      ],
+      "tokens_est": 25
+    },
+    {
+      "id": 30,
+      "speaker": "SPEAKER_05",
+      "start": 378.077,
+      "end": 388.233,
+      "line": "[06:18] SPEAKER_05: Ce antibiotic primește acum? Dacă e vancomicină, trebuie să ajustăm doza, the trough levels were high yesterday.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro",
+        "en"
+      ],
+      "segment_ids": [
+        35
+      ],
+      "tokens_est": 33
+    },
+    {
+      "id": 31,
+      "speaker": "SPEAKER_02",
+      "start": 390.059,
+      "end": 397.779,
+      "line": "[06:30] SPEAKER_02: Да, ванкомицин плюс меропенем. Уровень ванкомицина был 28. Мы уже снизили дозу вдвое.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        36
+      ],
+      "tokens_est": 27
+    },
+    {
+      "id": 32,
+      "speaker": "SPEAKER_05",
+      "start": 399.603,
+      "end": 405.796,
+      "line": "[06:39] SPEAKER_05: Bine, am văzut, doza acum e corectă pentru clearance-ul ei.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        37
+      ],
+      "tokens_est": 20
+    },
+    {
+      "id": 33,
+      "speaker": "SPEAKER_02",
+      "start": 408.072,
+      "end": 414.434,
+      "line": "[06:48] SPEAKER_02: Посевы крови пришли? Там Klebsiella, чувствительная к меропенему, так что оставляем.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru",
+        "en"
+      ],
+      "segment_ids": [
+        38
+      ],
+      "tokens_est": 26
+    },
+    {
+      "id": 34,
+      "speaker": "SPEAKER_04",
+      "start": 416.674,
+      "end": 422.477,
+      "line": "[06:56] SPEAKER_04: Hemodializa o luați în calcul? Kaliul 5.6 nu e mic.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        39
+      ],
+      "tokens_est": 18
+    },
+    {
+      "id": 35,
+      "speaker": "SPEAKER_02",
+      "start": 425.497,
+      "end": 436.973,
+      "line": "[07:05] SPEAKER_02: Давайте повторим креатинин вечером и решим по гемодиализу. Если креатинин будет выше 300 или калий выше шести — начинаем диализ.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        40,
+        41
+      ],
+      "tokens_est": 37
+    },
+    {
+      "id": 36,
+      "speaker": "SPEAKER_00",
+      "start": 440.468,
+      "end": 443.99,
+      "line": "[07:20] SPEAKER_00: De acord. Și ecografia renală? [?]",
+      "low_confidence": true,
+      "low_confidence_ratio": 1.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        42
+      ],
+      "tokens_est": 14
+    },
+    {
+      "id": 37,
+      "speaker": "SPEAKER_02",
+      "start": 446.568,
+      "end": 450.999,
+      "line": "[07:26] SPEAKER_02: Сделали вчера, без обструкции, почки нормальных размеров.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        43
+      ],
+      "tokens_est": 20
+    },
+    {
+      "id": 38,
+      "speaker": "SPEAKER_00",
+      "start": 454.459,
+      "end": 461.577,
+      "line": "[07:34] SPEAKER_00: Bine, deci repetăm creatinina și kaliemia diseară, și decidem dializa după rezultat.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        44
+      ],
+      "tokens_est": 26
+    },
+    {
+      "id": 39,
+      "speaker": "SPEAKER_02",
+      "start": 465.129,
+      "end": 472.464,
+      "line": "[07:45] SPEAKER_02: Да, и катетер для диализа поставим заранее, чтобы не терять время ночью.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        45
+      ],
+      "tokens_est": 23
+    },
+    {
+      "id": 40,
+      "speaker": "SPEAKER_00",
+      "start": 475.956,
+      "end": 480.963,
+      "line": "[07:55] SPEAKER_00: Asta e decizia voastră clinică, nu am obiecții.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        46
+      ],
+      "tokens_est": 17
+    },
+    {
+      "id": 41,
+      "speaker": "SPEAKER_00",
+      "start": 508.88,
+      "end": 510.987,
+      "line": "[08:28] SPEAKER_00: Chirurgia. Patul 8.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        47
+      ],
+      "tokens_est": 10
+    },
+    {
+      "id": 42,
+      "speaker": "SPEAKER_03",
+      "start": 513.157,
+      "end": 524.548,
+      "line": "[08:33] SPEAKER_03: Пациентка 45 лет, patul 8, colecistită acută calculoasă, a treia zi de antibiotic, febra a scăzut, болей почти нет.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro",
+        "ru"
+      ],
+      "segment_ids": [
+        48
+      ],
+      "tokens_est": 34
+    },
+    {
+      "id": 43,
+      "speaker": "SPEAKER_03",
+      "start": 526.73,
+      "end": 540.822,
+      "line": "[08:46] SPEAKER_03: Leucocitele au scăzut de la 16 la 11 mii. Ecografic, peretele colecistului e 6 milimetri, fără lichid perivezicular, calea biliară principală nu e dilatată.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        49,
+        50
+      ],
+      "tokens_est": 44
+    },
+    {
+      "id": 44,
+      "speaker": "SPEAKER_05",
+      "start": 542.949,
+      "end": 547.234,
+      "line": "[09:02] SPEAKER_05: Pe ce antibiotic e? Ceftriaxonă cu metronidazol?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        51
+      ],
+      "tokens_est": 17
+    },
+    {
+      "id": 45,
+      "speaker": "SPEAKER_03",
+      "start": 549.375,
+      "end": 552.257,
+      "line": "[09:09] SPEAKER_03: Da, ceftriaxonă plus metronidazol.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        52
+      ],
+      "tokens_est": 14
+    },
+    {
+      "id": 46,
+      "speaker": "SPEAKER_00",
+      "start": 555.154,
+      "end": 559.663,
+      "line": "[09:15] SPEAKER_00: Deci propuneți colecistectomie laparoscopică în această internare?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        53
+      ],
+      "tokens_est": 22
+    },
+    {
+      "id": 47,
+      "speaker": "SPEAKER_03",
+      "start": 563.057,
+      "end": 571.179,
+      "line": "[09:23] SPEAKER_03: Da. Propun să o operăm pe 24 septembrie, joi, avem sala liberă dimineața.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        54
+      ],
+      "tokens_est": 24
+    },
+    {
+      "id": 48,
+      "speaker": "SPEAKER_00",
+      "start": 574.465,
+      "end": 579.138,
+      "line": "[09:34] SPEAKER_00: Bine, aprobat. Colecistectomie laparoscopică pe 24 septembrie.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        55
+      ],
+      "tokens_est": 21
+    },
+    {
+      "id": 49,
+      "speaker": "SPEAKER_04",
+      "start": 581.774,
+      "end": 583.871,
+      "line": "[09:41] SPEAKER_04: Anestezistul a văzut-o?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        56
+      ],
+      "tokens_est": 11
+    },
+    {
+      "id": 50,
+      "speaker": "SPEAKER_03",
+      "start": 586.82,
+      "end": 593.915,
+      "line": "[09:46] SPEAKER_03: Încă nu, azi o vede. Думаю, проблем не будет, она молодая.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro",
+        "ru"
+      ],
+      "segment_ids": [
+        57
+      ],
+      "tokens_est": 20
+    },
+    {
+      "id": 51,
+      "speaker": "SPEAKER_00",
+      "start": 624.093,
+      "end": 633.276,
+      "line": "[10:24] SPEAKER_00: Punctul patru, puțin administrativ. Ecograful din secția de urgență, cel vechi, se strică tot mai des.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        58
+      ],
+      "tokens_est": 31
+    },
+    {
+      "id": 52,
+      "speaker": "SPEAKER_04",
+      "start": 635.202,
+      "end": 647.959,
+      "line": "[10:35] SPEAKER_04: Săptămâna trecută a stat două zile nefuncțional. Am trimis pacienții la etajul trei, și asta înseamnă o oră de așteptare pentru fiecare.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        59
+      ],
+      "tokens_est": 39
+    },
+    {
+      "id": 53,
+      "speaker": "SPEAKER_02",
+      "start": 650.921,
+      "end": 660.616,
+      "line": "[10:50] SPEAKER_02: Надо покупать новый, не ремонтировать. Ремонт уже третий раз в этом году, это деньги на ветер.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        60
+      ],
+      "tokens_est": 29
+    },
+    {
+      "id": 54,
+      "speaker": "SPEAKER_00",
+      "start": 664.027,
+      "end": 674.904,
+      "line": "[11:04] SPEAKER_00: Problema e bugetul. Am cerut ofertă de la doi furnizori, dar încă n-am primit răspuns de la al doilea.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        61
+      ],
+      "tokens_est": 31
+    },
+    {
+      "id": 55,
+      "speaker": "SPEAKER_02",
+      "start": 678.085,
+      "end": 682.01,
+      "line": "[11:18] SPEAKER_02: Так давайте купим тот, первый, и...",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        62
+      ],
+      "tokens_est": 14
+    },
+    {
+      "id": 56,
+      "speaker": "SPEAKER_00",
+      "start": 685.134,
+      "end": 692.032,
+      "line": "[11:25] SPEAKER_00: Stați, stați, încă nu avem aprobarea financiară, nu putem cumpăra nimic acum.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        63
+      ],
+      "tokens_est": 25
+    },
+    {
+      "id": 57,
+      "speaker": "SPEAKER_05",
+      "start": 694.666,
+      "end": 704.845,
+      "line": "[11:34] SPEAKER_05: Poate ar trebui să luăm unul portabil, point-of-care, e mai ieftin și îl folosim și în ATI.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro",
+        "en"
+      ],
+      "segment_ids": [
+        64
+      ],
+      "tokens_est": 28
+    },
+    {
+      "id": 58,
+      "speaker": "SPEAKER_01",
+      "start": 706.94,
+      "end": 715.529,
+      "line": "[11:46] SPEAKER_01: Portabilul nu ajunge pentru ecocardiografie, rezoluția e slabă, eu nu pot lucra pe el.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        65
+      ],
+      "tokens_est": 27
+    },
+    {
+      "id": 59,
+      "speaker": "SPEAKER_04",
+      "start": 718.723,
+      "end": 727.159,
+      "line": "[11:58] SPEAKER_04: Pentru urgență portabilul e suficient, FAST, pleură, vezică. Ecocardiografia oricum o facem la voi.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        66
+      ],
+      "tokens_est": 30
+    },
+    {
+      "id": 60,
+      "speaker": "SPEAKER_00",
+      "start": 729.531,
+      "end": 739.32,
+      "line": "[12:09] SPEAKER_00: Bine, nu decidem azi. Aștept a doua ofertă și revenim cu ambele variante, staționar și portabil.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        67
+      ],
+      "tokens_est": 29
+    },
+    {
+      "id": 61,
+      "speaker": "SPEAKER_04",
+      "start": 742.535,
+      "end": 746.875,
+      "line": "[12:22] SPEAKER_04: Doar să nu dureze iarăși trei luni...",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        68
+      ],
+      "tokens_est": 15
+    },
+    {
+      "id": 62,
+      "speaker": "SPEAKER_04",
+      "start": 750.397,
+      "end": 756.709,
+      "line": "[12:30] SPEAKER_04: Scuzați, se aude ceva din difuzor, e cineva conectat online? [?]",
+      "low_confidence": true,
+      "low_confidence_ratio": 0.35,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        69
+      ],
+      "tokens_est": 21
+    },
+    {
+      "id": 63,
+      "speaker": "SPEAKER_00",
+      "start": 759.195,
+      "end": 763.204,
+      "line": "[12:39] SPEAKER_00: Nu, e proiectorul. Îl închid acum.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        70
+      ],
+      "tokens_est": 14
+    },
+    {
+      "id": 64,
+      "speaker": "SPEAKER_02",
+      "start": 765.7,
+      "end": 769.142,
+      "line": "[12:45] SPEAKER_02: Можно окно открыть? Очень душно.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        71
+      ],
+      "tokens_est": 13
+    },
+    {
+      "id": 65,
+      "speaker": "SPEAKER_00",
+      "start": 772.62,
+      "end": 774.851,
+      "line": "[12:52] SPEAKER_00: Da, deschideți. Continuăm.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        72
+      ],
+      "tokens_est": 12
+    },
+    {
+      "id": 66,
+      "speaker": "SPEAKER_00",
+      "start": 795.191,
+      "end": 799.952,
+      "line": "[13:15] SPEAKER_00: Farmacia clinică, protocolul de antibiotice. Doamna Ceban.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        73
+      ],
+      "tokens_est": 20
+    },
+    {
+      "id": 67,
+      "speaker": "SPEAKER_05",
+      "start": 802.031,
+      "end": 820.209,
+      "line": "[13:22] SPEAKER_05: Da. Am analizat consumul de ceftriaxonă pe ultimele trei luni. E cu 40 la sută peste recomandările din guideline-ul intern, și nu doar la noi, e o tendință pe tot spitalul.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro",
+        "en"
+      ],
+      "segment_ids": [
+        74,
+        75
+      ],
+      "tokens_est": 48
+    },
+    {
+      "id": 68,
+      "speaker": "SPEAKER_05",
+      "start": 822.211,
+      "end": 833.901,
+      "line": "[13:42] SPEAKER_05: Mai ales în profilaxia chirurgicală, antibioticul se continuă după 24 de ore fără indicație documentată. Asta crește rezistența și costurile.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        76
+      ],
+      "tokens_est": 41
+    },
+    {
+      "id": 69,
+      "speaker": "SPEAKER_03",
+      "start": 835.946,
+      "end": 843.344,
+      "line": "[13:55] SPEAKER_03: Ну, у нас иногда есть причины продолжать, например, если операция была грязная...",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        77
+      ],
+      "tokens_est": 26
+    },
+    {
+      "id": 70,
+      "speaker": "SPEAKER_05",
+      "start": 846.746,
+      "end": 860.884,
+      "line": "[14:06] SPEAKER_05: Înțeleg, dar în majoritatea cazurilor nu e documentat. Propun să actualizăm protocolul de profilaxie și să introducem stop automat la 24 de ore în sistem.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        78
+      ],
+      "tokens_est": 44
+    },
+    {
+      "id": 71,
+      "speaker": "SPEAKER_02",
+      "start": 864.109,
+      "end": 872.648,
+      "line": "[14:24] SPEAKER_02: Автоматический стоп — это хорошо, но нужен override для врача, иначе будут проблемы ночью.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru",
+        "en"
+      ],
+      "segment_ids": [
+        79
+      ],
+      "tokens_est": 28
+    },
+    {
+      "id": 72,
+      "speaker": "SPEAKER_05",
+      "start": 874.684,
+      "end": 879.847,
+      "line": "[14:34] SPEAKER_05: Sigur, cu override și justificare obligatorie în fișă.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        80
+      ],
+      "tokens_est": 19
+    },
+    {
+      "id": 73,
+      "speaker": "SPEAKER_03",
+      "start": 883.108,
+      "end": 887.991,
+      "line": "[14:43] SPEAKER_03: Если с override, то я не против.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        81
+      ],
+      "tokens_est": 13
+    },
+    {
+      "id": 74,
+      "speaker": "SPEAKER_00",
+      "start": 891.529,
+      "end": 903.498,
+      "line": "[14:51] SPEAKER_00: Bine. Decizia: actualizăm protocolul de profilaxie antibiotică, cu stop automat la 24 de ore și override justificat. Cât vă trebuie?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        82
+      ],
+      "tokens_est": 38
+    },
+    {
+      "id": 75,
+      "speaker": "SPEAKER_05",
+      "start": 906.454,
+      "end": 910.771,
+      "line": "[15:06] SPEAKER_05: În două săptămâni vă prezint varianta finală. [?]",
+      "low_confidence": true,
+      "low_confidence_ratio": 0.45,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        83
+      ],
+      "tokens_est": 18
+    },
+    {
+      "id": 76,
+      "speaker": "SPEAKER_00",
+      "start": 913.175,
+      "end": 920.35,
+      "line": "[15:13] SPEAKER_00: Perfect, antimicrobial stewardship e și pe agenda de acreditare, deci e important.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro",
+        "en"
+      ],
+      "segment_ids": [
+        84
+      ],
+      "tokens_est": 26
+    },
+    {
+      "id": 77,
+      "speaker": "SPEAKER_00",
+      "start": 947.712,
+      "end": 954.003,
+      "line": "[15:47] SPEAKER_00: Pneumologia, pacientul 15, pe scurt, că e un caz simplu.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        85
+      ],
+      "tokens_est": 19
+    },
+    {
+      "id": 78,
+      "speaker": "SPEAKER_07",
+      "start": 956.012,
+      "end": 974.564,
+      "line": "[15:56] SPEAKER_07: Pacient de 54 de ani, pneumonie comunitară în lobul inferior drept, internat acum șase zile. Afebril de trei zile, saturația 96 la sută fără oxigen, CRP a scăzut de la 180 la 22.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        86,
+        87
+      ],
+      "tokens_est": 50
+    },
+    {
+      "id": 79,
+      "speaker": "SPEAKER_05",
+      "start": 976.363,
+      "end": 980.266,
+      "line": "[16:16] SPEAKER_05: Ce antibiotic a primit? Amoxicilină-clavulanat intravenos?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        88
+      ],
+      "tokens_est": 20
+    },
+    {
+      "id": 80,
+      "speaker": "SPEAKER_07",
+      "start": 983.787,
+      "end": 991.344,
+      "line": "[16:23] SPEAKER_07: Da, și din ieri l-am trecut pe per os. Tolerează bine, fără diaree.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        89
+      ],
+      "tokens_est": 22
+    },
+    {
+      "id": 81,
+      "speaker": "SPEAKER_02",
+      "start": 994.287,
+      "end": 996.247,
+      "line": "[16:34] SPEAKER_02: Рентген контрольный делали?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        90
+      ],
+      "tokens_est": 12
+    },
+    {
+      "id": 82,
+      "speaker": "SPEAKER_07",
+      "start": 998.968,
+      "end": 1009.771,
+      "line": "[16:38] SPEAKER_07: Încă nu, dar clinic e foarte bine. Controlul radiologic îl poate face ambulatoriu peste patru-șase săptămâni, cum zice ghidul.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        91
+      ],
+      "tokens_est": 37
+    },
+    {
+      "id": 83,
+      "speaker": "SPEAKER_00",
+      "start": 1013.225,
+      "end": 1015.151,
+      "line": "[16:53] SPEAKER_00: Atunci externare?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        92
+      ],
+      "tokens_est": 10
+    },
+    {
+      "id": 84,
+      "speaker": "SPEAKER_07",
+      "start": 1017.705,
+      "end": 1027.453,
+      "line": "[16:57] SPEAKER_07: Da, propun externarea vineri, cu antibiotic per os încă trei zile și control la medicul de familie.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        93
+      ],
+      "tokens_est": 30
+    },
+    {
+      "id": 85,
+      "speaker": "SPEAKER_00",
+      "start": 1030.795,
+      "end": 1032.86,
+      "line": "[17:10] SPEAKER_00: Aprobat, externare vineri.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        94
+      ],
+      "tokens_est": 12
+    },
+    {
+      "id": 86,
+      "speaker": "SPEAKER_00",
+      "start": 1059.992,
+      "end": 1062.171,
+      "line": "[17:39] SPEAKER_00: ATI, pacientul 5.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        95
+      ],
+      "tokens_est": 10
+    },
+    {
+      "id": 87,
+      "speaker": "SPEAKER_02",
+      "start": 1064.324,
+      "end": 1077.444,
+      "line": "[17:44] SPEAKER_02: Пациент 5, 49 лет, после тяжёлой черепно-мозговой травмы, на ИВЛ уже двенадцатые сутки. Попыток экстубации не было, сознание по Глазго восемь баллов.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        96,
+        97
+      ],
+      "tokens_est": 43
+    },
+    {
+      "id": 88,
+      "speaker": "SPEAKER_02",
+      "start": 1079.671,
+      "end": 1087.157,
+      "line": "[17:59] SPEAKER_02: Вентиляция долгая, нужна трахеостомия, чтобы снизить риск пневмонии и начать отлучение от аппарата.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        98
+      ],
+      "tokens_est": 30
+    },
+    {
+      "id": 89,
+      "speaker": "SPEAKER_04",
+      "start": 1089.458,
+      "end": 1100.573,
+      "line": "[18:09] SPEAKER_04: Neurologic nu ne așteptăm la o trezire rapidă. CT-ul de control e stabil, fără hemoragie nouă, edemul s-a redus.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        99
+      ],
+      "tokens_est": 33
+    },
+    {
+      "id": 90,
+      "speaker": "SPEAKER_03",
+      "start": 1102.779,
+      "end": 1109.53,
+      "line": "[18:22] SPEAKER_03: Percutanat sau chirurgical? Dacă e percutanat, o faceți voi la pat.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        100
+      ],
+      "tokens_est": 22
+    },
+    {
+      "id": 91,
+      "speaker": "SPEAKER_02",
+      "start": 1112.359,
+      "end": 1119.377,
+      "line": "[18:32] SPEAKER_02: Перкутанно, у нас есть набор. Bronhoscopul ne trebuie de la pneumologie.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru",
+        "ro"
+      ],
+      "segment_ids": [
+        101
+      ],
+      "tokens_est": 23
+    },
+    {
+      "id": 92,
+      "speaker": "SPEAKER_07",
+      "start": 1121.617,
+      "end": 1127.473,
+      "line": "[18:41] SPEAKER_07: Bronhoscopul e liber mâine după-amiază și poimâine toată ziua.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        102
+      ],
+      "tokens_est": 21
+    },
+    {
+      "id": 93,
+      "speaker": "SPEAKER_02",
+      "start": 1130.001,
+      "end": 1134.781,
+      "line": "[18:50] SPEAKER_02: Тогда трахеостомия послезавтра утром, под бронхоскопическим контролем.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        103
+      ],
+      "tokens_est": 23
+    },
+    {
+      "id": 94,
+      "speaker": "SPEAKER_00",
+      "start": 1136.79,
+      "end": 1140.546,
+      "line": "[18:56] SPEAKER_00: De acord, traheostomie percutanată poimâine dimineață.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        104
+      ],
+      "tokens_est": 19
+    },
+    {
+      "id": 95,
+      "speaker": "SPEAKER_02",
+      "start": 1143.957,
+      "end": 1149.49,
+      "line": "[19:03] SPEAKER_02: И родственникам надо подписать согласие, я им сегодня позвоню.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        105
+      ],
+      "tokens_est": 21
+    },
+    {
+      "id": 96,
+      "speaker": "SPEAKER_00",
+      "start": 1169.013,
+      "end": 1171.166,
+      "line": "[19:29] SPEAKER_00: Gastroenterologia, pacientul 40.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        106
+      ],
+      "tokens_est": 13
+    },
+    {
+      "id": 97,
+      "speaker": "SPEAKER_08",
+      "start": 1173.764,
+      "end": 1184.671,
+      "line": "[19:33] SPEAKER_08: Пациент 40, 58 лет, кровотечение из язвы двенадцатиперстной кишки, Forrest два А. Сделали эндоскопический гемостаз, клипсы и адреналин.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        107,
+        108
+      ],
+      "tokens_est": 39
+    },
+    {
+      "id": 98,
+      "speaker": "SPEAKER_08",
+      "start": 1187.494,
+      "end": 1199.572,
+      "line": "[19:47] SPEAKER_08: Hemoglobina a scăzut de la 110 la 78, am transfuzat două unități. De ieri e stabilă, 84, fără melenă nouă.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        109
+      ],
+      "tokens_est": 32
+    },
+    {
+      "id": 99,
+      "speaker": "SPEAKER_03",
+      "start": 1202.973,
+      "end": 1212.183,
+      "line": "[20:02] SPEAKER_03: Dacă resângerează, noi suntem gata, dar nu vreau să operez fără o a doua încercare endoscopică.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        110
+      ],
+      "tokens_est": 29
+    },
+    {
+      "id": 100,
+      "speaker": "SPEAKER_08",
+      "start": 1214.713,
+      "end": 1222.277,
+      "line": "[20:14] SPEAKER_08: Да, конечно. Предлагаю контрольную эндоскопию через 48 часов и ингибиторы протонной помпы внутривенно.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        111
+      ],
+      "tokens_est": 31
+    },
+    {
+      "id": 101,
+      "speaker": "SPEAKER_00",
+      "start": 1225.702,
+      "end": 1230.532,
+      "line": "[20:25] SPEAKER_00: Aprobat, endoscopie de control peste 48 de ore.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        112
+      ],
+      "tokens_est": 17
+    },
+    {
+      "id": 102,
+      "speaker": "SPEAKER_05",
+      "start": 1233.208,
+      "end": 1238.039,
+      "line": "[20:33] SPEAKER_05: Și testul pentru Helicobacter, dacă nu s-a făcut.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        113
+      ],
+      "tokens_est": 18
+    },
+    {
+      "id": 103,
+      "speaker": "SPEAKER_08",
+      "start": 1240.77,
+      "end": 1244.135,
+      "line": "[20:40] SPEAKER_08: Biopsia s-a luat, așteptăm rezultatul.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        114
+      ],
+      "tokens_est": 15
+    },
+    {
+      "id": 104,
+      "speaker": "SPEAKER_00",
+      "start": 1273.63,
+      "end": 1275.968,
+      "line": "[21:13] SPEAKER_00: Neurologia. Pacientul 31.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        115
+      ],
+      "tokens_est": 12
+    },
+    {
+      "id": 105,
+      "speaker": "SPEAKER_04",
+      "start": 1277.775,
+      "end": 1290.407,
+      "line": "[21:17] SPEAKER_04: Pacient 71 de ani, AVC ischemic în teritoriul arterei cerebrale medii stângi, a făcut tromboliză în fereastră, acum e ziua a cincea.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        116,
+        117
+      ],
+      "tokens_est": 38
+    },
+    {
+      "id": 106,
+      "speaker": "SPEAKER_04",
+      "start": 1292.973,
+      "end": 1304.843,
+      "line": "[21:32] SPEAKER_04: Neurologic stabil, NIHSS a scăzut de la 14 la 6. Rămâne afazie motorie și pareză pe dreapta, mai ales la mână.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        118
+      ],
+      "tokens_est": 33
+    },
+    {
+      "id": 107,
+      "speaker": "SPEAKER_02",
+      "start": 1306.946,
+      "end": 1309.703,
+      "line": "[21:46] SPEAKER_02: Глотание проверяли? Аспирация была?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        119
+      ],
+      "tokens_est": 14
+    },
+    {
+      "id": 108,
+      "speaker": "SPEAKER_04",
+      "start": 1311.483,
+      "end": 1318.645,
+      "line": "[21:51] SPEAKER_04: Da, testul de deglutiție e trecut, mănâncă piure, fără episoade de aspirație.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        120
+      ],
+      "tokens_est": 25
+    },
+    {
+      "id": 109,
+      "speaker": "SPEAKER_01",
+      "start": 1321.857,
+      "end": 1325.843,
+      "line": "[22:01] SPEAKER_01: Anticoagulare are nevoie? Are fibrilație atrială?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        121
+      ],
+      "tokens_est": 18
+    },
+    {
+      "id": 110,
+      "speaker": "SPEAKER_04",
+      "start": 1327.927,
+      "end": 1334.445,
+      "line": "[22:07] SPEAKER_04: Нет, ритм синусовый, Holter чистый. Rămâne pe antiagregant și statină.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ro",
+        "ru"
+      ],
+      "segment_ids": [
+        122
+      ],
+      "tokens_est": 23
+    },
+    {
+      "id": 111,
+      "speaker": "SPEAKER_00",
+      "start": 1337.071,
+      "end": 1339.49,
+      "line": "[22:17] SPEAKER_00: Deci ce propuneți?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        123
+      ],
+      "tokens_est": 10
+    },
+    {
+      "id": 112,
+      "speaker": "SPEAKER_04",
+      "start": 1342.569,
+      "end": 1352.07,
+      "line": "[22:22] SPEAKER_04: Transfer în recuperare neurologică cât mai curând, are loc la centrul de reabilitare, doar trebuie confirmat.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        124
+      ],
+      "tokens_est": 33
+    },
+    {
+      "id": 113,
+      "speaker": "SPEAKER_00",
+      "start": 1354.845,
+      "end": 1359.984,
+      "line": "[22:34] SPEAKER_00: De acord, transferul în recuperare, cât mai curând.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        125
+      ],
+      "tokens_est": 18
+    },
+    {
+      "id": 114,
+      "speaker": "SPEAKER_04",
+      "start": 1362.344,
+      "end": 1367.53,
+      "line": "[22:42] SPEAKER_04: Mulțumesc. Familia e de acord, au semnat deja.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        126
+      ],
+      "tokens_est": 17
+    },
+    {
+      "id": 115,
+      "speaker": "SPEAKER_00",
+      "start": 1398.123,
+      "end": 1402.811,
+      "line": "[23:18] SPEAKER_00: Oncologia, pacientul 22. Irina Petrovna, ați ajuns, bine.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        127
+      ],
+      "tokens_est": 20
+    },
+    {
+      "id": 116,
+      "speaker": "SPEAKER_06",
+      "start": 1405.584,
+      "end": 1416.504,
+      "line": "[23:25] SPEAKER_06: Пациент 22, 68 лет, рак желудка четвёртой стадии, прогрессия после первой линии химиотерапии, метастазы в печень и брюшину.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        128,
+        129
+      ],
+      "tokens_est": 36
+    },
+    {
+      "id": 117,
+      "speaker": "SPEAKER_06",
+      "start": 1419.689,
+      "end": 1426.069,
+      "line": "[23:39] SPEAKER_06: Propunerea inițială a fost linia a doua, ramucirumab cu paclitaxel.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        130
+      ],
+      "tokens_est": 22
+    },
+    {
+      "id": 118,
+      "speaker": "SPEAKER_06",
+      "start": 1428.033,
+      "end": 1437.822,
+      "line": "[23:48] SPEAKER_06: Но ECOG сейчас три, альбумин 24, он почти не встаёт, похудел на восемь килограммов за месяц.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ru",
+        "en"
+      ],
+      "segment_ids": [
+        131
+      ],
+      "tokens_est": 28
+    },
+    {
+      "id": 119,
+      "speaker": "SPEAKER_05",
+      "start": 1440.604,
+      "end": 1447.553,
+      "line": "[24:00] SPEAKER_05: Cu ECOG 3, beneficiul e minim, toxicitatea mare. Guideline-ul nu recomandă.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro",
+        "en"
+      ],
+      "segment_ids": [
+        132
+      ],
+      "tokens_est": 24
+    },
+    {
+      "id": 120,
+      "speaker": "SPEAKER_00",
+      "start": 1449.774,
+      "end": 1455.288,
+      "line": "[24:09] SPEAKER_00: Deci chimioterapia de linia a doua nu se face?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        133
+      ],
+      "tokens_est": 17
+    },
+    {
+      "id": 121,
+      "speaker": "SPEAKER_06",
+      "start": 1457.56,
+      "end": 1464.19,
+      "line": "[24:17] SPEAKER_06: Нет. Предлагаю отказаться от второй линии и перевести на паллиативную помощь.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        134
+      ],
+      "tokens_est": 25
+    },
+    {
+      "id": 122,
+      "speaker": "SPEAKER_00",
+      "start": 1467.353,
+      "end": 1473.747,
+      "line": "[24:27] SPEAKER_00: De acord. Respingem linia a doua. Trecem pacientul la îngrijire paliativă.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        135
+      ],
+      "tokens_est": 24
+    },
+    {
+      "id": 123,
+      "speaker": "SPEAKER_06",
+      "start": 1476.434,
+      "end": 1483.808,
+      "line": "[24:36] SPEAKER_06: И контроль каждый месяц в паллиативном кабинете, с оценкой боли и питания.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        136
+      ],
+      "tokens_est": 24
+    },
+    {
+      "id": 124,
+      "speaker": "SPEAKER_00",
+      "start": 1486.592,
+      "end": 1490.731,
+      "line": "[24:46] SPEAKER_00: Da, reevaluare lunară. Familia a fost informată?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        137
+      ],
+      "tokens_est": 17
+    },
+    {
+      "id": 125,
+      "speaker": "SPEAKER_06",
+      "start": 1493.872,
+      "end": 1499.126,
+      "line": "[24:53] SPEAKER_06: Da, am vorbit ieri cu fiica lui, înțelege situația.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        138
+      ],
+      "tokens_est": 18
+    },
+    {
+      "id": 126,
+      "speaker": "SPEAKER_00",
+      "start": 1520.655,
+      "end": 1524.911,
+      "line": "[25:20] SPEAKER_00: Ultimul punct, graficul de gărzi pentru octombrie.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        139
+      ],
+      "tokens_est": 18
+    },
+    {
+      "id": 127,
+      "speaker": "SPEAKER_04",
+      "start": 1527.482,
+      "end": 1538.368,
+      "line": "[25:27] SPEAKER_04: Avem două colege în concediu de maternitate, rămân goluri în weekenduri, mai ales în a doua jumătate a lunii.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        140
+      ],
+      "tokens_est": 33
+    },
+    {
+      "id": 128,
+      "speaker": "SPEAKER_02",
+      "start": 1541.244,
+      "end": 1550.049,
+      "line": "[25:41] SPEAKER_02: В реанимации тоже не хватает людей на выходные, я уже два раза сам дежурил подряд.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        141
+      ],
+      "tokens_est": 26
+    },
+    {
+      "id": 129,
+      "speaker": "SPEAKER_00",
+      "start": 1552.732,
+      "end": 1561.308,
+      "line": "[25:52] SPEAKER_00: Nu avem toate datele de la resurse umane. Amânăm discuția pentru ședința de săptămâna viitoare.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        142
+      ],
+      "tokens_est": 29
+    },
+    {
+      "id": 130,
+      "speaker": "SPEAKER_04",
+      "start": 1564.003,
+      "end": 1568.648,
+      "line": "[26:04] SPEAKER_04: Bine, până atunci vă trimit golurile pe mail.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        143
+      ],
+      "tokens_est": 17
+    },
+    {
+      "id": 131,
+      "speaker": "SPEAKER_00",
+      "start": 1599.358,
+      "end": 1609.124,
+      "line": "[26:39] SPEAKER_00: Mai am un punct care nu era pe agendă. Incidentul de joi, căderea din secția de chirurgie.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        144
+      ],
+      "tokens_est": 28
+    },
+    {
+      "id": 132,
+      "speaker": "SPEAKER_03",
+      "start": 1611.712,
+      "end": 1624.771,
+      "line": "[26:51] SPEAKER_03: Da, o pacientă de 82 de ani a căzut noaptea, mergând singură la baie. Are fractură de col femural, acum e la ortopedie.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        145
+      ],
+      "tokens_est": 35
+    },
+    {
+      "id": 133,
+      "speaker": "SPEAKER_05",
+      "start": 1627.504,
+      "end": 1633.551,
+      "line": "[27:07] SPEAKER_05: Evaluarea riscului de cădere s-a făcut la internare? Scala Morse?",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        146
+      ],
+      "tokens_est": 22
+    },
+    {
+      "id": 134,
+      "speaker": "SPEAKER_03",
+      "start": 1636.185,
+      "end": 1644.183,
+      "line": "[27:16] SPEAKER_03: Formal da, dar scorul nu s-a reevaluat după ce i s-a dat sedativ seara.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.05,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        147
+      ],
+      "tokens_est": 23
+    },
+    {
+      "id": 135,
+      "speaker": "SPEAKER_02",
+      "start": 1647.651,
+      "end": 1656.328,
+      "line": "[27:27] SPEAKER_02: Это системная проблема, не только в хирургии. Ночью у нас мало сестёр на отделение.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        148
+      ],
+      "tokens_est": 26
+    },
+    {
+      "id": 136,
+      "speaker": "SPEAKER_00",
+      "start": 1659.36,
+      "end": 1672.273,
+      "line": "[27:39] SPEAKER_00: Sunt de acord că e sistemic. Propun un audit al prevenției căderilor în toate secțiile, cu reevaluarea scalei Morse după orice sedativ.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        149
+      ],
+      "tokens_est": 39
+    },
+    {
+      "id": 137,
+      "speaker": "SPEAKER_04",
+      "start": 1675.624,
+      "end": 1682.054,
+      "line": "[27:55] SPEAKER_04: Și paturi cu senzor, cel puțin pentru pacienții cu risc mare.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        150
+      ],
+      "tokens_est": 21
+    },
+    {
+      "id": 138,
+      "speaker": "SPEAKER_00",
+      "start": 1685.523,
+      "end": 1694.258,
+      "line": "[28:05] SPEAKER_00: Senzorii îi discutăm separat, e buget. Auditul îl facem. Până la sfârșitul lunii vreau raportul.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        151
+      ],
+      "tokens_est": 29
+    },
+    {
+      "id": 139,
+      "speaker": "SPEAKER_05",
+      "start": 1696.499,
+      "end": 1700.31,
+      "line": "[28:16] SPEAKER_05: Îl coordonez eu, împreună cu asistenta-șefă.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        152
+      ],
+      "tokens_est": 16
+    },
+    {
+      "id": 140,
+      "speaker": "SPEAKER_03",
+      "start": 1723.538,
+      "end": 1730.696,
+      "line": "[28:43] SPEAKER_03: Scuzați, înainte să închidem, revin la patul 8. Mi-a scris acum anestezistul.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        153
+      ],
+      "tokens_est": 25
+    },
+    {
+      "id": 141,
+      "speaker": "SPEAKER_03",
+      "start": 1734.167,
+      "end": 1741.132,
+      "line": "[28:54] SPEAKER_03: INR-ul e 2.8, pacienta lua warfarină acasă, nu ne-a spus la internare.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.15,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        154
+      ],
+      "tokens_est": 23
+    },
+    {
+      "id": 142,
+      "speaker": "SPEAKER_02",
+      "start": 1744.417,
+      "end": 1749.741,
+      "line": "[29:04] SPEAKER_02: С таким INR оперировать нельзя, риск кровотечения большой.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ru",
+        "en"
+      ],
+      "segment_ids": [
+        155
+      ],
+      "tokens_est": 20
+    },
+    {
+      "id": 143,
+      "speaker": "SPEAKER_00",
+      "start": 1751.761,
+      "end": 1756.645,
+      "line": "[29:11] SPEAKER_00: Atunci amânăm colecistectomia. Nu mai operăm joi.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        156
+      ],
+      "tokens_est": 18
+    },
+    {
+      "id": 144,
+      "speaker": "SPEAKER_03",
+      "start": 1758.637,
+      "end": 1766.988,
+      "line": "[29:18] SPEAKER_03: Да. Corectăm INR-ul cu vitamina K și operăm după ce INR-ul scade sub 1.5.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.1,
+      "langs": [
+        "ro",
+        "ru"
+      ],
+      "segment_ids": [
+        157
+      ],
+      "tokens_est": 24
+    },
+    {
+      "id": 145,
+      "speaker": "SPEAKER_00",
+      "start": 1769.557,
+      "end": 1773.478,
+      "line": "[29:29] SPEAKER_00: De acord, operația după corecția INR.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        158
+      ],
+      "tokens_est": 15
+    },
+    {
+      "id": 146,
+      "speaker": "SPEAKER_00",
+      "start": 1796.993,
+      "end": 1800.595,
+      "line": "[29:56] SPEAKER_00: Mulțumesc tuturor. Procesul-verbal vine pe mail.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ro"
+      ],
+      "segment_ids": [
+        159
+      ],
+      "tokens_est": 17
+    },
+    {
+      "id": 147,
+      "speaker": "SPEAKER_02",
+      "start": 1802.801,
+      "end": 1804.75,
+      "line": "[30:02] SPEAKER_02: Спасибо, до свидания.",
+      "low_confidence": false,
+      "low_confidence_ratio": 0.0,
+      "langs": [
+        "ru"
+      ],
+      "segment_ids": [
+        160
+      ],
+      "tokens_est": 11
+    }
+  ],
+  "windows": [
+    {
+      "index": 0,
+      "turn_ids": [
+        0,
+        25
+      ],
+      "overlap_turns": 0,
+      "start": 3.1,
+      "end": 312.013,
+      "tokens_est": 733,
+      "text": "[00:03] SPEAKER_00: Bună dimineața tuturor. Se aude? Să pornit parcă înregistrare. [?]\n[00:10] SPEAKER_02: Да, всё слышно. Подождём Ирину Петровну или начинаем?\n[00:18] SPEAKER_00: Începem, vine ea pe parcurs. Avem mai multe puncte azi, încercăm să ne încadrăm în jumătate de oră. Primul caz, cardiologia, vă rog.\n[00:50] SPEAKER_01: Pacientul 48, bărbat de 62 de ani, internat pe dată de optsprezece cu infarct miocardic acut, STEMI inferior. S-a făcut trombospirație și stent pe coronara dreaptă, fluxul TIMI trei la final.\n[01:09] SPEAKER_01: Ecografic are insuficiență mitrală de gradul trei, compracție de 38-40 la sută. Și avem suspecție de ruptură de cordaj, pentru că jetul a apărut brusc, pe ecografia de la internare nu era.\n[01:31] SPEAKER_00: Trivascular, nu?\n[01:36] SPEAKER_01: Trivascular, da. Descendenta anterioară și circumflexa au stenoze de 70-80 la sută, dar acum nu sunt vinovate de eveniment.\n[01:48] SPEAKER_03: А ruptura de cordaj e confirmată sau doar suspiciune? Потому что если это cordaj, это уже хирургический вопрос, и тогда всё меняется.\n[02:04] SPEAKER_01: Doar suspiciune. Pe transtoracică nu se vede clar, jetul e excentric și fereastra e proastă, pacientul e obez.\n[02:16] SPEAKER_02: Гемодинамически он стабилен? Лактат какой? На аминах?\n[02:23] SPEAKER_01: Stabil, tensiunea 110 pe 70, fără suport inotrop. Lactatul a fost 1.8 ieri, azi n-am repetat.\n[02:36] SPEAKER_02: Надо повторить лактат сегодня, на всякий случай.\n[02:43] SPEAKER_01: Da, îl repetăm.\n[02:49] SPEAKER_03: Atunci eu aș vrea să văd o transesofagiană înainte să discutăm de operație. Without TEE I can't decide anything, nu știu dacă e plastie sau protezare.\n[03:06] SPEAKER_00: Bine. Deci facem ecografie transesofagiană. Când puteți?\n[03:13] SPEAKER_01: Mâine dimineață, la opt, am loc în laborator.\n[03:20] SPEAKER_00: Atunci decizia: ecografie transesofagiană mâine dimineață, și în funcție de rezultat, consult cu chirurgia cardiacă pentru plastie sau protezare mitrală.\n[03:35] SPEAKER_03: Да, согласен. Și pentru restul leziunilor, heart team după, nu acum.\n[03:44] SPEAKER_01: Corect, revascularizarea completă o discutăm în heart team după ce stabilim ce facem cu valva.\n[03:57] SPEAKER_01: Poate ar merita și un RMN cardiac pentru viabilitate, dar... mă rog, vedem după TEE.\n[04:08] SPEAKER_04: Anticoagulant are? Pentru stent vreau să zic, dubla antiagregare.\n[04:16] SPEAKER_01: Da, aspirină și ticagrelor, standard.\n[04:22] SPEAKER_02: Почки у него как? Контраст он получил много во время коронарографии.\n[04:33] SPEAKER_01: Creatinina a fost 98 la internare, azi 105, deci stabilă. L-am hidratat după procedură, diureza e bună.\n[04:46] SPEAKER_03: Și dacă TEE confirmă ruptura, noi îl putem lua în sală chiar săptămâna asta, dar trebuie să știu din timp, ca să rezerv perfuzionistul și sângele, că la noi circulația extracorporeală nu se organizează în două ore.\n[05:10] SPEAKER_00: Clar, înțeleg."
+    },
+    {
+      "index": 1,
+      "turn_ids": [
+        24,
+        65
+      ],
+      "overlap_turns": 2,
+      "start": 286.512,
+      "end": 774.851,
+      "tokens_est": 1000,
+      "text": "[04:46] SPEAKER_03: Și dacă TEE confirmă ruptura, noi îl putem lua în sală chiar săptămâna asta, dar trebuie să știu din timp, ca să rezerv perfuzionistul și sângele, că la noi circulația extracorporeală nu se organizează în două ore.\n[05:10] SPEAKER_00: Clar, înțeleg.\n[05:39] SPEAKER_00: Mergem mai departe. Salonul 12, nefrologia, Andrei Mihailovici.\n[05:47] SPEAKER_02: Пациентка 57 лет, салон 12, острое повреждение почек на фоне сепсиса, источник — пиелонефрит. Креатинин вырос со 110 до 240 за двое суток.\n[06:03] SPEAKER_00: Diureza cum este?\n[06:07] SPEAKER_02: Диурез снижен, 400 мл за ночь, несмотря на фуросемид. Калий 5.6, бикарбонат 17.\n[06:18] SPEAKER_05: Ce antibiotic primește acum? Dacă e vancomicină, trebuie să ajustăm doza, the trough levels were high yesterday.\n[06:30] SPEAKER_02: Да, ванкомицин плюс меропенем. Уровень ванкомицина был 28. Мы уже снизили дозу вдвое.\n[06:39] SPEAKER_05: Bine, am văzut, doza acum e corectă pentru clearance-ul ei.\n[06:48] SPEAKER_02: Посевы крови пришли? Там Klebsiella, чувствительная к меропенему, так что оставляем.\n[06:56] SPEAKER_04: Hemodializa o luați în calcul? Kaliul 5.6 nu e mic.\n[07:05] SPEAKER_02: Давайте повторим креатинин вечером и решим по гемодиализу. Если креатинин будет выше 300 или калий выше шести — начинаем диализ.\n[07:20] SPEAKER_00: De acord. Și ecografia renală? [?]\n[07:26] SPEAKER_02: Сделали вчера, без обструкции, почки нормальных размеров.\n[07:34] SPEAKER_00: Bine, deci repetăm creatinina și kaliemia diseară, și decidem dializa după rezultat.\n[07:45] SPEAKER_02: Да, и катетер для диализа поставим заранее, чтобы не терять время ночью.\n[07:55] SPEAKER_00: Asta e decizia voastră clinică, nu am obiecții.\n[08:28] SPEAKER_00: Chirurgia. Patul 8.\n[08:33] SPEAKER_03: Пациентка 45 лет, patul 8, colecistită acută calculoasă, a treia zi de antibiotic, febra a scăzut, болей почти нет.\n[08:46] SPEAKER_03: Leucocitele au scăzut de la 16 la 11 mii. Ecografic, peretele colecistului e 6 milimetri, fără lichid perivezicular, calea biliară principală nu e dilatată.\n[09:02] SPEAKER_05: Pe ce antibiotic e? Ceftriaxonă cu metronidazol?\n[09:09] SPEAKER_03: Da, ceftriaxonă plus metronidazol.\n[09:15] SPEAKER_00: Deci propuneți colecistectomie laparoscopică în această internare?\n[09:23] SPEAKER_03: Da. Propun să o operăm pe 24 septembrie, joi, avem sala liberă dimineața.\n[09:34] SPEAKER_00: Bine, aprobat. Colecistectomie laparoscopică pe 24 septembrie.\n[09:41] SPEAKER_04: Anestezistul a văzut-o?\n[09:46] SPEAKER_03: Încă nu, azi o vede. Думаю, проблем не будет, она молодая.\n[10:24] SPEAKER_00: Punctul patru, puțin administrativ. Ecograful din secția de urgență, cel vechi, se strică tot mai des.\n[10:35] SPEAKER_04: Săptămâna trecută a stat două zile nefuncțional. Am trimis pacienții la etajul trei, și asta înseamnă o oră de așteptare pentru fiecare.\n[10:50] SPEAKER_02: Надо покупать новый, не ремонтировать. Ремонт уже третий раз в этом году, это деньги на ветер.\n[11:04] SPEAKER_00: Problema e bugetul. Am cerut ofertă de la doi furnizori, dar încă n-am primit răspuns de la al doilea.\n[11:18] SPEAKER_02: Так давайте купим тот, первый, и...\n[11:25] SPEAKER_00: Stați, stați, încă nu avem aprobarea financiară, nu putem cumpăra nimic acum.\n[11:34] SPEAKER_05: Poate ar trebui să luăm unul portabil, point-of-care, e mai ieftin și îl folosim și în ATI.\n[11:46] SPEAKER_01: Portabilul nu ajunge pentru ecocardiografie, rezoluția e slabă, eu nu pot lucra pe el.\n[11:58] SPEAKER_04: Pentru urgență portabilul e suficient, FAST, pleură, vezică. Ecocardiografia oricum o facem la voi.\n[12:09] SPEAKER_00: Bine, nu decidem azi. Aștept a doua ofertă și revenim cu ambele variante, staționar și portabil.\n[12:22] SPEAKER_04: Doar să nu dureze iarăși trei luni...\n[12:30] SPEAKER_04: Scuzați, se aude ceva din difuzor, e cineva conectat online? [?]\n[12:39] SPEAKER_00: Nu, e proiectorul. Îl închid acum.\n[12:45] SPEAKER_02: Можно окно открыть? Очень душно.\n[12:52] SPEAKER_00: Da, deschideți. Continuăm."
+    },
+    {
+      "index": 2,
+      "turn_ids": [
+        64,
+        103
+      ],
+      "overlap_turns": 2,
+      "start": 765.7,
+      "end": 1244.135,
+      "tokens_est": 997,
+      "text": "[12:45] SPEAKER_02: Можно окно открыть? Очень душно.\n[12:52] SPEAKER_00: Da, deschideți. Continuăm.\n[13:15] SPEAKER_00: Farmacia clinică, protocolul de antibiotice. Doamna Ceban.\n[13:22] SPEAKER_05: Da. Am analizat consumul de ceftriaxonă pe ultimele trei luni. E cu 40 la sută peste recomandările din guideline-ul intern, și nu doar la noi, e o tendință pe tot spitalul.\n[13:42] SPEAKER_05: Mai ales în profilaxia chirurgicală, antibioticul se continuă după 24 de ore fără indicație documentată. Asta crește rezistența și costurile.\n[13:55] SPEAKER_03: Ну, у нас иногда есть причины продолжать, например, если операция была грязная...\n[14:06] SPEAKER_05: Înțeleg, dar în majoritatea cazurilor nu e documentat. Propun să actualizăm protocolul de profilaxie și să introducem stop automat la 24 de ore în sistem.\n[14:24] SPEAKER_02: Автоматический стоп — это хорошо, но нужен override для врача, иначе будут проблемы ночью.\n[14:34] SPEAKER_05: Sigur, cu override și justificare obligatorie în fișă.\n[14:43] SPEAKER_03: Если с override, то я не против.\n[14:51] SPEAKER_00: Bine. Decizia: actualizăm protocolul de profilaxie antibiotică, cu stop automat la 24 de ore și override justificat. Cât vă trebuie?\n[15:06] SPEAKER_05: În două săptămâni vă prezint varianta finală. [?]\n[15:13] SPEAKER_00: Perfect, antimicrobial stewardship e și pe agenda de acreditare, deci e important.\n[15:47] SPEAKER_00: Pneumologia, pacientul 15, pe scurt, că e un caz simplu.\n[15:56] SPEAKER_07: Pacient de 54 de ani, pneumonie comunitară în lobul inferior drept, internat acum șase zile. Afebril de trei zile, saturația 96 la sută fără oxigen, CRP a scăzut de la 180 la 22.\n[16:16] SPEAKER_05: Ce antibiotic a primit? Amoxicilină-clavulanat intravenos?\n[16:23] SPEAKER_07: Da, și din ieri l-am trecut pe per os. Tolerează bine, fără diaree.\n[16:34] SPEAKER_02: Рентген контрольный делали?\n[16:38] SPEAKER_07: Încă nu, dar clinic e foarte bine. Controlul radiologic îl poate face ambulatoriu peste patru-șase săptămâni, cum zice ghidul.\n[16:53] SPEAKER_00: Atunci externare?\n[16:57] SPEAKER_07: Da, propun externarea vineri, cu antibiotic per os încă trei zile și control la medicul de familie.\n[17:10] SPEAKER_00: Aprobat, externare vineri.\n[17:39] SPEAKER_00: ATI, pacientul 5.\n[17:44] SPEAKER_02: Пациент 5, 49 лет, после тяжёлой черепно-мозговой травмы, на ИВЛ уже двенадцатые сутки. Попыток экстубации не было, сознание по Глазго восемь баллов.\n[17:59] SPEAKER_02: Вентиляция долгая, нужна трахеостомия, чтобы снизить риск пневмонии и начать отлучение от аппарата.\n[18:09] SPEAKER_04: Neurologic nu ne așteptăm la o trezire rapidă. CT-ul de control e stabil, fără hemoragie nouă, edemul s-a redus.\n[18:22] SPEAKER_03: Percutanat sau chirurgical? Dacă e percutanat, o faceți voi la pat.\n[18:32] SPEAKER_02: Перкутанно, у нас есть набор. Bronhoscopul ne trebuie de la pneumologie.\n[18:41] SPEAKER_07: Bronhoscopul e liber mâine după-amiază și poimâine toată ziua.\n[18:50] SPEAKER_02: Тогда трахеостомия послезавтра утром, под бронхоскопическим контролем.\n[18:56] SPEAKER_00: De acord, traheostomie percutanată poimâine dimineață.\n[19:03] SPEAKER_02: И родственникам надо подписать согласие, я им сегодня позвоню.\n[19:29] SPEAKER_00: Gastroenterologia, pacientul 40.\n[19:33] SPEAKER_08: Пациент 40, 58 лет, кровотечение из язвы двенадцатиперстной кишки, Forrest два А. Сделали эндоскопический гемостаз, клипсы и адреналин.\n[19:47] SPEAKER_08: Hemoglobina a scăzut de la 110 la 78, am transfuzat două unități. De ieri e stabilă, 84, fără melenă nouă.\n[20:02] SPEAKER_03: Dacă resângerează, noi suntem gata, dar nu vreau să operez fără o a doua încercare endoscopică.\n[20:14] SPEAKER_08: Да, конечно. Предлагаю контрольную эндоскопию через 48 часов и ингибиторы протонной помпы внутривенно.\n[20:25] SPEAKER_00: Aprobat, endoscopie de control peste 48 de ore.\n[20:33] SPEAKER_05: Și testul pentru Helicobacter, dacă nu s-a făcut.\n[20:40] SPEAKER_08: Biopsia s-a luat, așteptăm rezultatul."
+    },
+    {
+      "index": 3,
+      "turn_ids": [
+        102,
+        113
+      ],
+      "overlap_turns": 2,
+      "start": 1233.208,
+      "end": 1359.984,
+      "tokens_est": 257,
+      "text": "[20:33] SPEAKER_05: Și testul pentru Helicobacter, dacă nu s-a făcut.\n[20:40] SPEAKER_08: Biopsia s-a luat, așteptăm rezultatul.\n[21:13] SPEAKER_00: Neurologia. Pacientul 31.\n[21:17] SPEAKER_04: Pacient 71 de ani, AVC ischemic în teritoriul arterei cerebrale medii stângi, a făcut tromboliză în fereastră, acum e ziua a cincea.\n[21:32] SPEAKER_04: Neurologic stabil, NIHSS a scăzut de la 14 la 6. Rămâne afazie motorie și pareză pe dreapta, mai ales la mână.\n[21:46] SPEAKER_02: Глотание проверяли? Аспирация была?\n[21:51] SPEAKER_04: Da, testul de deglutiție e trecut, mănâncă piure, fără episoade de aspirație.\n[22:01] SPEAKER_01: Anticoagulare are nevoie? Are fibrilație atrială?\n[22:07] SPEAKER_04: Нет, ритм синусовый, Holter чистый. Rămâne pe antiagregant și statină.\n[22:17] SPEAKER_00: Deci ce propuneți?\n[22:22] SPEAKER_04: Transfer în recuperare neurologică cât mai curând, are loc la centrul de reabilitare, doar trebuie confirmat.\n[22:34] SPEAKER_00: De acord, transferul în recuperare, cât mai curând."
+    },
+    {
+      "index": 4,
+      "turn_ids": [
+        112,
+        147
+      ],
+      "overlap_turns": 2,
+      "start": 1342.569,
+      "end": 1804.75,
+      "tokens_est": 838,
+      "text": "[22:22] SPEAKER_04: Transfer în recuperare neurologică cât mai curând, are loc la centrul de reabilitare, doar trebuie confirmat.\n[22:34] SPEAKER_00: De acord, transferul în recuperare, cât mai curând.\n[22:42] SPEAKER_04: Mulțumesc. Familia e de acord, au semnat deja.\n[23:18] SPEAKER_00: Oncologia, pacientul 22. Irina Petrovna, ați ajuns, bine.\n[23:25] SPEAKER_06: Пациент 22, 68 лет, рак желудка четвёртой стадии, прогрессия после первой линии химиотерапии, метастазы в печень и брюшину.\n[23:39] SPEAKER_06: Propunerea inițială a fost linia a doua, ramucirumab cu paclitaxel.\n[23:48] SPEAKER_06: Но ECOG сейчас три, альбумин 24, он почти не встаёт, похудел на восемь килограммов за месяц.\n[24:00] SPEAKER_05: Cu ECOG 3, beneficiul e minim, toxicitatea mare. Guideline-ul nu recomandă.\n[24:09] SPEAKER_00: Deci chimioterapia de linia a doua nu se face?\n[24:17] SPEAKER_06: Нет. Предлагаю отказаться от второй линии и перевести на паллиативную помощь.\n[24:27] SPEAKER_00: De acord. Respingem linia a doua. Trecem pacientul la îngrijire paliativă.\n[24:36] SPEAKER_06: И контроль каждый месяц в паллиативном кабинете, с оценкой боли и питания.\n[24:46] SPEAKER_00: Da, reevaluare lunară. Familia a fost informată?\n[24:53] SPEAKER_06: Da, am vorbit ieri cu fiica lui, înțelege situația.\n[25:20] SPEAKER_00: Ultimul punct, graficul de gărzi pentru octombrie.\n[25:27] SPEAKER_04: Avem două colege în concediu de maternitate, rămân goluri în weekenduri, mai ales în a doua jumătate a lunii.\n[25:41] SPEAKER_02: В реанимации тоже не хватает людей на выходные, я уже два раза сам дежурил подряд.\n[25:52] SPEAKER_00: Nu avem toate datele de la resurse umane. Amânăm discuția pentru ședința de săptămâna viitoare.\n[26:04] SPEAKER_04: Bine, până atunci vă trimit golurile pe mail.\n[26:39] SPEAKER_00: Mai am un punct care nu era pe agendă. Incidentul de joi, căderea din secția de chirurgie.\n[26:51] SPEAKER_03: Da, o pacientă de 82 de ani a căzut noaptea, mergând singură la baie. Are fractură de col femural, acum e la ortopedie.\n[27:07] SPEAKER_05: Evaluarea riscului de cădere s-a făcut la internare? Scala Morse?\n[27:16] SPEAKER_03: Formal da, dar scorul nu s-a reevaluat după ce i s-a dat sedativ seara.\n[27:27] SPEAKER_02: Это системная проблема, не только в хирургии. Ночью у нас мало сестёр на отделение.\n[27:39] SPEAKER_00: Sunt de acord că e sistemic. Propun un audit al prevenției căderilor în toate secțiile, cu reevaluarea scalei Morse după orice sedativ.\n[27:55] SPEAKER_04: Și paturi cu senzor, cel puțin pentru pacienții cu risc mare.\n[28:05] SPEAKER_00: Senzorii îi discutăm separat, e buget. Auditul îl facem. Până la sfârșitul lunii vreau raportul.\n[28:16] SPEAKER_05: Îl coordonez eu, împreună cu asistenta-șefă.\n[28:43] SPEAKER_03: Scuzați, înainte să închidem, revin la patul 8. Mi-a scris acum anestezistul.\n[28:54] SPEAKER_03: INR-ul e 2.8, pacienta lua warfarină acasă, nu ne-a spus la internare.\n[29:04] SPEAKER_02: С таким INR оперировать нельзя, риск кровотечения большой.\n[29:11] SPEAKER_00: Atunci amânăm colecistectomia. Nu mai operăm joi.\n[29:18] SPEAKER_03: Да. Corectăm INR-ul cu vitamina K și operăm după ce INR-ul scade sub 1.5.\n[29:29] SPEAKER_00: De acord, operația după corecția INR.\n[29:56] SPEAKER_00: Mulțumesc tuturor. Procesul-verbal vine pe mail.\n[30:02] SPEAKER_02: Спасибо, до свидания."
+    }
+  ]
+}

@@ -61,6 +61,12 @@ def extract_schema(max_cases=None, max_decisions=None):
     return {**EXTRACT, "properties": {**EXTRACT["properties"], "cases": cases}}
 
 
+TRANSLATE = {
+    "type": "object",
+    "properties": {"texts": {"type": "array", "items": _str}},
+    "required": ["texts"],
+}
+
 SUPERSEDE = {
     "type": "object",
     "properties": {"superseded": {"type": "array", "items": {"type": "integer"}}},

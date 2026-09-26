@@ -45,6 +45,7 @@ class OllamaClient:
             if attempt and body["options"]["seed"] is not None:
                 body["options"]["seed"] += attempt  # altfel reîncercarea reproduce exact aceeași buclă
             t0 = time.perf_counter()
+            meta = {}
             try:
                 resp = self._post(body)
                 meta = {k: resp.get(k) for k in ("prompt_eval_count", "eval_count", "done_reason",
@@ -59,6 +60,11 @@ class OllamaClient:
                 # json.JSONDecodeError e ValueError
                 errors.append(f"încercarea {attempt + 1}: {type(e).__name__}: {e}")
                 print(f"[llm] {stage}: {errors[-1]}")
+                opts = body["options"]
+                if meta.get("done_reason") == "length" and meta.get("prompt_eval_count"):
+                    # mai mult loc pentru răspuns, cât încape lângă promptul real, fără a mări num_ctx
+                    room = opts["num_ctx"] - meta["prompt_eval_count"] - 64
+                    opts["num_predict"] = max(opts["num_predict"], min(st.get("max_predict", 0), room))
         return {"data": None, "raw": raw, "error": errors[-1], "errors": errors,
                 "attempts": len(errors), "meta": meta, "thinking": None}
 

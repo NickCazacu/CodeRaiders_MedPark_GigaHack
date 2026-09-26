@@ -22,18 +22,8 @@ def build(job_id, script, window_tokens=3500, overlap=3, tail=3.0):
 
 
 # ---------------------------------------------------------------------------------------------
-# exemplul din documentația ASR: 7 replici, 2 ferestre, a doua cu 2 replici de suprapunere
-EXAMPLE = [  # timpii din documentație: [00:21], [00:26], [00:32], [00:41], sfârșit 58.1 s, durată 61 s
-    (S0, "Pacientul 48 din salonul 12, internat cu insuficiență renală acută după coronarografie cu contrast.",
-     {"at": 0.8, "dur": 9.4}),
-    (S0, "S-a pornit parcă diureza ieri, dar azi creatinina a crescut din nou, potasiul 5,6.", {"at": 10.6, "dur": 10.3}),
-    (S1, "Diureza cum este?", {"at": 21.5, "dur": 3.5}),
-    (S0, "Diureza e scăzută, 400 ml pe noapte, creatinina 240.", {"at": 26.1, "dur": 5.3}),
-    (S2, "Давайте повторим креатинин вечером и решим по гемодиализу.", {"at": 32.0, "dur": 8.2}),
-    (S1, "De acord. Și ecografia?", {"at": 41.3, "dur": 2.7, "low": True}),
-    (S2, "Эхо почек пока не знаю, посмотрим.", {"at": 44.8, "dur": 6.2}),
-    (S0, "Bine, atunci trecem la următorul pacient.", {"at": 51.9, "dur": 6.2}),
-]
+# llm_input.example.json nu se generează aici: e copia exactă a AI/docs/llm_input.example.json
+# (exemplul oficial al echipei ASR). consiliu_30min.json e tot o copie (din LLM/test_meetings/).
 
 SHORT_TWO_CASES = [
     (S0, "Bună dimineața, începem. Primul caz: pacienta din salonul 3, neurologie, 67 de ani, AVC ischemic de ieri seară."),
@@ -144,7 +134,6 @@ LONG = [
 ]
 
 FIXTURES = {
-    "llm_input.example.json": dict(job_id="exemplu_sedinta", script=EXAMPLE, window_tokens=116, overlap=2, tail=2.1),
     "short_two_cases.json": dict(job_id="scurt_doua_cazuri", script=SHORT_TWO_CASES),
     "no_decisions.json": dict(job_id="fara_decizii", script=NO_DECISIONS),
     "eta_types.json": dict(job_id="tipuri_eta", script=ETA_TYPES),

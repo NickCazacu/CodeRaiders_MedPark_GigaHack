@@ -12,9 +12,11 @@ from rapidfuzz import fuzz
 
 from LLM.quotes import norm
 
-PATIENT = re.compile(r"\b(?:pacient\w*|patient\w*|пациент\w*)\s+(?:nr\s+|№\s*)?(\d+)")
-WARD = re.compile(r"\b(?:salon\w*|палат\w*|room)\s+(?:nr\s+|№\s*)?(\d+)")
-LOOKBACK = 10  # câte replici înapoi căutăm ultimul pacient menționat
+# „Pacient 71 de ani” / „Пациентка 45 лет” e vârsta, nu numărul pacientului
+AGE = r"(?!\d)(?!\s+(?:de\s+)?(?:ani|an|лет|года|год|years|year)\b)"
+PATIENT = re.compile(r"\b(?:pacient\w*|patient\w*|пациент\w*)\s+(?:nr\s+|№\s*)?(\d+)" + AGE)
+WARD = re.compile(r"\b(?:salon\w*|палат\w*|room|patul|pat|койк\w*)\s+(?:nr\s+|№\s*)?(\d+)" + AGE)  # salon / pat
+LOOKBACK = 25  # câte replici înapoi căutăm ultimul pacient menționat (o discuție pe un caz are ușor 10+ replici)
 
 
 def ids(text):
@@ -84,9 +86,15 @@ def fix_attribution(cases, turns, known_keys=()):
             events.append({"event": "decision_moved", "turn_id": d["turn_id"], "from": c["case_key"],
                            "to": tgt["case_key"]})
             raw = c["eta"]["raw"]
-            if raw and norm(raw) in norm(turns[d["turn_id"]].text) and tgt["eta"]["type"] == "none":
-                tgt["eta"], c["eta"] = c["eta"], empty_case("")["eta"]
-                events.append({"event": "eta_moved", "raw": raw, "from": c["case_key"], "to": tgt["case_key"]})
+            if raw and norm(raw) in norm(turns[d["turn_id"]].text):
+                # termenul vine din replica mutată: nu mai aparține cazului sursă
+                if tgt["eta"]["type"] == "none":
+                    tgt["eta"] = c["eta"]
+                    events.append({"event": "eta_moved", "raw": raw, "from": c["case_key"], "to": tgt["case_key"]})
+                else:
+                    events.append({"event": "eta_dropped", "raw": raw, "from": c["case_key"],
+                                   "reason": f"aparține replicii mutate la {tgt['case_key']}"})
+                c["eta"] = empty_case("")["eta"]
 
     # aceeași replică în mai multe cazuri
     claims = {}
@@ -154,6 +162,19 @@ def realign(raw, turns, min_score=85):
     return span if 0.6 <= len(span) / max(len(raw), 1) <= 1.6 else None
 
 
+REPEAT_WORD = r"((?:la\s+)?(?:кажд\w*|fiecare|every|each|ежедневн\w*))\s+"
+
+
+def extend_recurring(raw, turns):
+    """„месяц” copiat din „каждый месяц” -> „каждый месяц”: cuvântul de repetare dinaintea expresiei
+    face parte din termen (altfel tipul pare relative în loc de recurring)."""
+    for t in turns:
+        m = re.search(REPEAT_WORD + re.escape(raw), t.text, re.IGNORECASE)
+        if m:
+            return t.text[m.start():m.end()]
+    return None
+
+
 def check_eta_raw(cases, window_turns):
     """eta.raw trebuie să fie copiat din transcriere: parafrazele apropiate se înlocuiesc cu
     fragmentul exact, restul devine null (tipul rămâne, validarea decide).
@@ -169,6 +190,10 @@ def check_eta_raw(cases, window_turns):
             events.append({"event": "eta_raw_realigned" if span else "eta_raw_not_in_transcript",
                            "case_key": c["case_key"], "raw": raw, "span": span})
             c["eta"]["raw"] = raw = span
+        longer = extend_recurring(raw, window_turns) if raw else None
+        if longer:
+            events.append({"event": "eta_raw_extended", "case_key": c["case_key"], "raw": raw, "span": longer})
+            c["eta"]["raw"] = raw = longer
         fixed = eta_type_rule(c["eta"]["type"], raw) if raw else None
         if fixed:
             events.append({"event": "eta_type_fixed", "case_key": c["case_key"], "raw": raw,

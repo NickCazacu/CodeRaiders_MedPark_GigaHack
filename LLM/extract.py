@@ -1,6 +1,6 @@
-"""Extracție LLM: jobs/<id>/llm_input.json -> minutes.json (proces-verbal structurat).
+"""Extracție LLM: AI/jobs/<id>/llm_input.json -> minutes.json (proces-verbal structurat).
 
-    python -m LLM.extract jobs/<job_id>/llm_input.json --date 2026-09-21 [--out minutes.json]
+    python -m LLM.extract AI/jobs/<job_id>/llm_input.json --date 2026-09-21 [--out minutes.json]
     python -m LLM.extract <job_id> --date 2026-09-21
 
 O fereastră => un singur apel (rezumat + cazuri). Mai multe => un apel per fereastră
@@ -8,11 +8,13 @@ O fereastră => un singur apel (rezumat + cazuri). Mai multe => un apel per fere
 Rulează doar pe Ollama local. Tot ce s-a trimis și primit: <job>/llm_debug/.
 """
 import argparse
+import ctypes
 import json
 import statistics
 import sys
 import time
 from collections import Counter
+from contextlib import contextmanager
 from datetime import date as Date, datetime, timezone
 from pathlib import Path
 
@@ -22,8 +24,24 @@ from LLM.loader import est_tokens, fmt_ts, load, ts_seconds
 from LLM.merge import Merger
 from LLM.ollama import OllamaClient
 
-DEBUG_PATTERNS = ["window_*.prompt.txt", "window_*.response.json", "final.*", "same_case.json",
+DEBUG_PATTERNS = ["window_*.prompt.txt", "window_*.response.json", "final.*", "same_case.json", "translate.json",
                   "supersede.json", "checks.json", "quotes.json", "merge.json", "context_check.json", "run.json"]
+
+
+@contextmanager
+def keep_awake():
+    """Windows: fără somn automat cât rulează extracția (o ședință lungă durează minute; un laptop
+    adormit la mijloc a întins o rulare de 5 min la 47). Doar pentru acest proces; închiderea
+    capacului adoarme oricum laptopul."""
+    k32 = getattr(getattr(ctypes, "windll", None), "kernel32", None)
+    ES_CONTINUOUS, ES_SYSTEM_REQUIRED = 0x80000000, 0x00000001
+    if k32:
+        k32.SetThreadExecutionState(ES_CONTINUOUS | ES_SYSTEM_REQUIRED)
+    try:
+        yield
+    finally:
+        if k32:
+            k32.SetThreadExecutionState(ES_CONTINUOUS)
 
 
 class Debug:
@@ -54,11 +72,17 @@ class Extractor:
         self.calls, self.errors, self.warnings = [], [], list(meeting.warnings)
         self.quotes, self.same_case_log, self.supersede_log, self.checks = [], [], [], []
         self._order = 0
+        self.observed_factor = None  # tokeni Qwen reali / estimare, măsurat pe apelurile acestei ședințe
 
     # ---------- context ----------
+    def factor(self):
+        # config.token_factor e prudent (ferestre doar de transcriere ~1.56, prompt întreg ~1.4); după primul
+        # apel folosim raportul real, altfel num_ctx crește degeaba și modelul nu mai încape tot în VRAM
+        return self.observed_factor * 1.03 if self.observed_factor else self.ctx["token_factor"]
+
     def budget(self, msgs, stage):
         """(num_ctx de folosit sau None = nu încape, estimare)."""
-        est = int(msgs_tokens(msgs) * self.ctx["token_factor"]) + self.cfg["stages"][stage]["num_predict"]
+        est = int(msgs_tokens(msgs) * self.factor()) + self.cfg["stages"][stage]["num_predict"]
         base = self.cfg["ollama"]["num_ctx"]
         if est <= base:
             return base, est
@@ -103,6 +127,9 @@ class Extractor:
         res = self.client.chat(stage, msgs, schema, num_ctx=num_ctx)
         rec.update(attempts=res["attempts"], error=res["error"],
                    est_prompt_raw=msgs_tokens(msgs), **res.get("meta", {}))
+        real = (res.get("meta") or {}).get("prompt_eval_count")
+        if real and stage == "extract":  # promptul mare e reprezentativ; cele scurte au alt raport
+            self.observed_factor = max(self.observed_factor or 0, real / rec["est_prompt_raw"])
         self.calls.append(rec)
         if res["error"]:
             self.errors.append(f"{label}: {res['error']}")
@@ -203,7 +230,7 @@ class Extractor:
                        | {"parsed": res["data"]})
 
         data = res["data"] or {}
-        summary = sanitize.s(data.get("meeting_summary"))
+        summary = sanitize.fix_ranges(sanitize.s(data.get("meeting_summary")))
         if not summary:
             summary = " ".join(s for _, s in summaries if s)
             self.warn("meeting_summary lipsă din apelul final: folosesc rezumatele ferestrelor")
@@ -214,6 +241,25 @@ class Extractor:
                 seen.add(i)
         order += [i for i in range(len(cases)) if i not in seen]
         return summary, [cases[i] for i in order]
+
+    def translate(self, minutes):
+        """Rusa rămasă în câmpurile care trebuie să fie în română -> un apel scurt de traducere.
+        Se acceptă doar traduceri complete și fără chirilică; altfel textul rămâne (și e semnalat)."""
+        refs = sanitize.non_romanian_fields(minutes)
+        if not refs:
+            return
+        texts = [obj[key] for obj, key in refs]
+        res = self.call("translate", prompt.translate_messages(texts), schemas.TRANSLATE, "translate")
+        out = (res["data"] or {}).get("texts") if res["data"] else None
+        log = {"texts": texts, "raw": res["raw"], "error": res["error"], "applied": []}
+        if isinstance(out, list) and len(out) == len(texts):
+            for (obj, key), old, new in zip(refs, texts, out):
+                new = sanitize.s(new)
+                if new and not sanitize.CYRILLIC.search(new):
+                    obj[key] = sanitize.fix_ranges(new)
+                    log["applied"].append({"from": old, "to": obj[key]})
+                    self.checks.append({"window": None, "event": "translated_to_romanian", "from": old, "to": obj[key]})
+        self.dbg.write("translate.json", log)
 
     # ---------- tot ----------
     def run(self):
@@ -234,7 +280,12 @@ class Extractor:
         self.dbg.write("supersede.json", self.supersede_log)
         self.dbg.write("checks.json", self.checks)
         self.dbg.write("merge.json", {"events": merger.events, "cases": cases})
-        return {"meeting_summary": meeting_summary, "cases": cases}
+        minutes = {"meeting_summary": meeting_summary, "cases": cases}
+        self.translate(minutes)
+        # deocamdată ieșirea e doar în română; alte limbi vor veni mai târziu
+        for p in sanitize.romanian_problems(minutes):
+            self.warn(f"nu e în română: {p}")
+        return minutes
 
 
 def extract(input_path, date, out=None, debug_dir=None, cfg=None, client=None):
@@ -252,7 +303,8 @@ def extract(input_path, date, out=None, debug_dir=None, cfg=None, client=None):
         print(f"[llm] ATENȚIE: {w}")
 
     ex = Extractor(meeting, date, cfg, client or OllamaClient(cfg), dbg)
-    minutes = ex.run()
+    with keep_awake():
+        minutes = ex.run()
 
     out.parent.mkdir(parents=True, exist_ok=True)
     tmp = out.with_name(out.name + ".part")
@@ -282,7 +334,7 @@ def extract(input_path, date, out=None, debug_dir=None, cfg=None, client=None):
 
 
 def extract_job(job_id, date, cfg=None, force=False):
-    """Pentru run_pipeline.py: jobs/<job_id>/llm_input.json -> minutes.json, cu etapa „llm” în status.json."""
+    """Pentru AI/run_pipeline.py: AI/jobs/<job_id>/llm_input.json -> minutes.json, cu etapa „llm” în status.json."""
     from pipeline.common import jobs_dir, load_config as load_pipeline_config, run_stage
 
     job_dir = jobs_dir(load_pipeline_config()) / job_id
@@ -306,7 +358,7 @@ def resolve_input(arg):
     job = ROOT / "jobs" / arg / "llm_input.json"
     if job.is_file():
         return job
-    raise SystemExit(f"Nu găsesc {arg} (nici ca fișier, nici ca jobs/{arg}/llm_input.json)")
+    raise SystemExit(f"Nu găsesc {arg} (nici ca fișier, nici ca AI/jobs/{arg}/llm_input.json)")
 
 
 def main():

@@ -72,5 +72,17 @@ def test_sanitize_eta_none_and_bad_status():
     assert c["eta"]["raw"] is None and c["eta"]["type"] == "none"
 
 
+def test_romanian_only_fields_checked():
+    minutes = {"meeting_summary": "Se repetă creatinina вечером [00:32].", "cases": [{
+        "case_key": "Pacient 48", "topic": "t", "discussion_summary": "ok",
+        "decisions": [{"decision": "Повторить креатинин", "quote": "Давайте повторим креатинин вечером."}],
+        "eta": {"type": "relative", "raw": "вечером", "condition": None}, "open_questions": ["Эхо?"]}]}
+    probs = sanitize.romanian_problems(minutes)
+    assert [p.split(":")[0] for p in probs] == ["meeting_summary", "C1.decisions[1].decision",
+                                                "C1.open_questions[1]"], probs   # quote și eta.raw: verbatim, permise
+    minutes["meeting_summary"] = "Se repetă creatinina seara [00:32]."
+    assert len(sanitize.romanian_problems(minutes)) == 2
+
+
 if __name__ == "__main__":
     sys.exit(run(globals()))

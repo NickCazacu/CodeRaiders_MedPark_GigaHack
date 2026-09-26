@@ -1,13 +1,15 @@
 """Teste manuale: dai un JSON cu ședința, vezi ce a extras modelul (punctele principale, termenele).
 
-    python -m LLM.manual sedinta.json [--date YYYY-MM-DD]     # rulează modelul și afișează rezultatul
+    python -m LLM.manual all                                  # toate din LLM/test_meetings/ -> LLM/test_moms/*.md
+    python -m LLM.manual NUME                                 # doar LLM/test_meetings/NUME.json
+    python -m LLM.manual sedinta.json [--date YYYY-MM-DD]     # orice JSON; rulează modelul și afișează rezultatul
     python -m LLM.manual review sedinta.json|JOB_ID           # doar afișarea, din rezultatele existente
     python -m LLM.manual new NUME                             # alternativ: ședință scrisă ca text
 
 JSON-ul poate fi llm_input.json (ieșirea pipeline-ului), transcript.json (segmente, se împachetează
 cu pipeline.pack_for_llm) sau o listă de replici cu "line". Data: --date, altfel câmpul
-"meeting_date" din JSON, altfel azi. Rezultatele: lângă jobs/<id>/llm_input.json pentru un job real,
-altfel în jobs/manual-<nume_fișier>/ (minutes.json, llm_debug/, review.md).
+"meeting_date" din JSON, altfel azi. Rezultatele: lângă AI/jobs/<id>/llm_input.json pentru un job real,
+altfel în LLM/runs/<nume_fișier>/ (minutes.json, llm_debug/, review.md).
 
 În terminal: punctele principale, termenele (când, ce, tip, condiție), deciziile pe cazuri.
 review.md: în plus, fiecare decizie lângă replica citată, corecțiile din cod, transcrierea
@@ -27,11 +29,15 @@ from collections import Counter
 from datetime import date as Date
 from pathlib import Path
 
+from LLM import mom
 from LLM.config import LLM_DIR, ROOT
 from LLM.loader import load, ts_seconds
 
 MANUAL = LLM_DIR / "manual_tests"
-JOBS = ROOT / "jobs"
+MEETINGS = LLM_DIR / "test_meetings"   # ședințele de test (.json), câte un fișier per ședință
+MOMS = LLM_DIR / "test_moms"           # MoM-ul generat pentru fiecare: <nume>.md
+JOBS = ROOT / "jobs"                        # joburile pipeline-ului: AI/jobs/<job_id>/
+RUNS = LLM_DIR / "runs"                     # rulările manuale (în LLM/.gitignore)
 LINE = re.compile(r"^(?:\[(?P<ts>\d+:\d{2}(?::\d{2})?)\]\s*)?(?:(?P<spk>UNK|SPEAKER_\d+):\s*)?(?P<text>.*?)"
                   r"\s*(?P<low>\[\?\])?\s*$")
 SETTING = re.compile(r"^#\s*(date|window_tokens|overlap)\s*:\s*(\S+)")
@@ -213,7 +219,9 @@ def overview(job_dir):
     n_unres = sum(q["turn_id"] is None for q in quotes)
     out.append(f"DE VERIFICAT: {len(checks)} corecții în cod, {n_unres} citate negăsite, "
                f"{len(run.get('warnings', []))} avertismente, {len(run.get('errors', []))} erori")
-    out.append(f"  raport complet (citate lângă replici, transcriere, listă de verificare): {Path(job_dir) / 'review.md'}")
+    out.append(f"  proces-verbal (MoM): {MOMS / (Path(job_dir).name.removeprefix('manual-') + '.md')}")
+    out.append(f"                       {Path(job_dir) / 'mom.html'} (aceeași, pentru browser)")
+    out.append(f"  raport tehnic (citate lângă replici, transcriere, listă de verificare): {Path(job_dir) / 'review.md'}")
     return "\n".join(out)
 
 
@@ -314,10 +322,16 @@ def review(job_dir, title=None):
 
 
 # ---------- intrare JSON ----------
-def normalize_input(data, job_id, window_tokens=3500, overlap=3):
+def normalize_input(data, job_id, window_tokens=None, overlap=3):
     """Acceptă llm_input.json (obiect cu turns/windows), o listă de replici (cu "line") sau
-    transcript.json (listă de segmente cu "text", ieșirea postprocess) -> obiect llm_input."""
+    transcript.json (listă de segmente cu "text", ieșirea postprocess) -> obiect llm_input.
+    window_tokens dat pentru un llm_input => ferestrele se refac (experimente cu ferestre mai mici)."""
     if isinstance(data, dict) and "turns" in data:
+        if window_tokens:
+            from pipeline.pack_for_llm import make_windows
+
+            windows = make_windows(data["turns"], window_tokens, overlap)
+            data = dict(data, windows=windows, n_windows=len(windows))
         return data
     if isinstance(data, list) and data and "line" in data[0]:
         return {"job_id": job_id, "turns": data}  # loader-ul face o singură fereastră
@@ -328,7 +342,7 @@ def normalize_input(data, job_id, window_tokens=3500, overlap=3):
                      lang=s.get("lang", "ro"), speaker=s.get("speaker", "UNK"))
                 for s in data if not s.get("dropped") and s.get("text")]
         turns = make_turns(segs, 800, True)
-        windows = make_windows(turns, window_tokens, overlap)
+        windows = make_windows(turns, window_tokens or 3500, overlap)
         return {"job_id": job_id, "audio_duration_s": segs[-1]["end"] if segs else None,
                 "speakers": sorted({t["speaker"] for t in turns}),
                 "languages": dict(Counter(s["lang"] for s in segs)), "n_turns": len(turns),
@@ -339,21 +353,34 @@ def normalize_input(data, job_id, window_tokens=3500, overlap=3):
 
 # ---------- comenzi ----------
 def resolve(target):
-    """NUME din manual_tests / job_id din jobs / cale spre un .json -> (job_dir, meeting.txt, json sursă)."""
+    """NUME din test_meetings / manual_tests, job_id din AI/jobs, sau cale spre un .json
+    -> (job_dir, meeting.txt, json sursă)."""
     p = Path(target)
+    if p.suffix != ".json" and (MEETINGS / f"{target}.json").is_file():
+        p = MEETINGS / f"{target}.json"
     if p.suffix == ".json":
         if not p.is_file():
             raise SystemExit(f"Nu există: {p}")
         p = p.resolve()
         if p.name == "llm_input.json" and p.parent.parent == JOBS.resolve():
             return p.parent, None, None  # job real: rezultatele lângă el
-        return JOBS / f"manual-{re.sub(r'[^A-Za-z0-9_-]+', '_', p.stem)}", None, p
+        return RUNS / re.sub(r'[^A-Za-z0-9_-]+', '_', p.stem), None, p
     if (MANUAL / target / "meeting.txt").is_file():
-        return JOBS / f"manual-{target}", MANUAL / target / "meeting.txt", None
+        return RUNS / target, MANUAL / target / "meeting.txt", None
     if (JOBS / target / "llm_input.json").is_file():
         return JOBS / target, None, None
-    raise SystemExit(f"Nu găsesc {target}: nici un fișier .json, nici jobs/{target}/llm_input.json, "
-                     f"nici LLM/manual_tests/{target}/meeting.txt.")
+    raise SystemExit(f"Nu găsesc {target}: nici LLM/test_meetings/{target}.json, nici un fișier .json, "
+                     f"nici AI/jobs/{target}/llm_input.json, nici LLM/manual_tests/{target}/meeting.txt.")
+
+
+def export_mom(job_dir, moms_dir=None):
+    """mom.md din job -> LLM/test_moms/<nume>.md (numele ședinței, fără prefixul manual-)."""
+    moms_dir = Path(moms_dir or MOMS)
+    moms_dir.mkdir(parents=True, exist_ok=True)
+    name = Path(job_dir).name.removeprefix("manual-")
+    dst = moms_dir / f"{name}.md"
+    dst.write_text((Path(job_dir) / "mom.md").read_text(encoding="utf-8"), encoding="utf-8")
+    return dst
 
 
 def cmd_new(args):
@@ -366,24 +393,59 @@ def cmd_new(args):
 
 
 def cmd_run(args):
+    job_dir, report = run_one(args.target, args.date, args.window_tokens, args.tag)
+    print("\n" + overview(job_dir))
+
+
+def cmd_all(args):
+    """Toate ședințele din LLM/test_meetings/*.json -> câte un MoM în LLM/test_moms/<nume>.md."""
+    files = sorted(MEETINGS.glob("*.json"))
+    if not files:
+        raise SystemExit(f"Nicio ședință în {MEETINGS}: pune acolo fișierele .json")
+    rows = []
+    for i, f in enumerate(files, 1):
+        print(f"\n━━ [{i}/{len(files)}] {f.name} ━━")
+        try:
+            job_dir, r = run_one(str(f), args.date, None, args.tag)
+            rows.append((f.stem, r["n_cases"], r["n_decisions"], r["seconds"], len(r["errors"]),
+                         export_mom_path(job_dir)))
+        except SystemExit as e:  # un fișier stricat nu oprește restul
+            rows.append((f.stem, "-", "-", "-", f"eșuat: {e}", ""))
+    print(f"\n{'ședința':32s} {'cazuri':>6s} {'decizii':>7s} {'sec':>7s}  erori  MoM")
+    for name, n_c, n_d, sec, err, path in rows:
+        print(f"{name:32s} {n_c!s:>6s} {n_d!s:>7s} {sec!s:>7s}  {err!s:5s}  {path}")
+
+
+def export_mom_path(job_dir):
+    return MOMS / f"{Path(job_dir).name.removeprefix('manual-')}.md"
+
+
+def run_one(target, date=None, window_tokens=None, tag=None):
+    """Un JSON / meeting.txt / job -> model -> minutes.json, review.md, mom.html/.md + LLM/test_moms/<nume>.md."""
     from LLM.extract import extract
 
-    job_dir, meeting, source = resolve(args.target)
-    date = args.date
+    job_dir, meeting, source = resolve(target)
+    tag = tag or (f"w{window_tokens}" if window_tokens and not meeting else None)
+    if tag:
+        # variantă de experiment: folder separat, ca rulările să poată fi comparate; un job real nu se atinge
+        if not source and not meeting:
+            source = job_dir / "llm_input.json"
+            job_dir = RUNS / job_dir.name
+        job_dir = job_dir.with_name(f"{job_dir.name}-{re.sub(r'[^A-Za-z0-9_-]+', '_', tag)}")
     if source:
         raw = json.loads(source.read_text(encoding="utf-8"))
         if isinstance(raw, dict):
             date = date or raw.get("meeting_date") or raw.get("date")
-        data = normalize_input(raw, job_dir.name, args.window_tokens or 3500)
+        data = normalize_input(raw, job_dir.name, window_tokens)
         job_dir.mkdir(parents=True, exist_ok=True)
         (job_dir / "llm_input.json").write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
-        print(f"[manual] {source} -> {job_dir / 'llm_input.json'}")
+        print(f"[manual] {source} -> {job_dir / 'llm_input.json'} ({data.get('n_windows', '?')} ferestre)")
     elif meeting:
         settings, utts = parse_meeting(meeting)
         if not utts:
             raise SystemExit(f"{meeting} nu are nicio replică")
         date = date or settings.get("date")
-        data = build_llm_input(job_dir.name, utts, int(args.window_tokens or settings.get("window_tokens", 3500)),
+        data = build_llm_input(job_dir.name, utts, int(window_tokens or settings.get("window_tokens", 3500)),
                                int(settings.get("overlap", 3)))
         job_dir.mkdir(parents=True, exist_ok=True)
         (job_dir / "llm_input.json").write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -392,20 +454,24 @@ def cmd_run(args):
     if not date:
         date = Date.today().isoformat()
         print(f"[manual] fără dată (--date, 'meeting_date' în JSON sau '# date:' în meeting.txt): folosesc {date}")
-    extract(job_dir / "llm_input.json", date, job_dir / "minutes.json", job_dir / "llm_debug")
+    report = extract(job_dir / "llm_input.json", date, job_dir / "minutes.json", job_dir / "llm_debug")
     review(job_dir, job_dir.name)
-    print("\n" + overview(job_dir))
+    mom.write(job_dir)
+    export_mom(job_dir)
+    return job_dir, report
 
 
 def cmd_review(args):
     job_dir, _, _ = resolve(args.target)
     review(job_dir, job_dir.name)
+    mom.write(job_dir)
+    export_mom(job_dir)
     print(overview(job_dir))
 
 
 def main(argv=None):
     argv = list(sys.argv[1:] if argv is None else argv)
-    if argv and argv[0] not in ("new", "run", "review", "-h", "--help"):
+    if argv and argv[0] not in ("new", "run", "review", "all", "-h", "--help"):
         argv.insert(0, "run")  # python -m LLM.manual sedinta.json  ==  ... run sedinta.json
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")  # ⚠ ✓ „” și în console vechi / redirect
@@ -414,11 +480,18 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("run", help="JSON / meeting.txt -> model -> punctele principale și termenele + review.md")
-    p.add_argument("target", help="fișier .json (llm_input.json sau transcript.json), job_id din jobs/, "
-                                  "sau NUME din LLM/manual_tests")
+    p.add_argument("target", help="NUME din LLM/test_meetings (fără .json), fișier .json (llm_input.json sau "
+                                  "transcript.json), job_id din AI/jobs/, sau NUME din LLM/manual_tests")
     p.add_argument("--date", help="YYYY-MM-DD (altfel 'meeting_date' din JSON / '# date:' din meeting.txt, apoi azi)")
-    p.add_argument("--window-tokens", type=int, help="la construirea ferestrelor (transcript.json / meeting.txt)")
+    p.add_argument("--window-tokens", type=int, help="refă ferestrele cu această mărime (experiment; "
+                                                     "rezultatele în LLM/runs/<nume>-w<N>/)")
+    p.add_argument("--tag", help="sufix pentru folderul rezultatelor, ca variantele să nu se suprascrie "
+                                 "(ex. --tag think, cu LLM_THINK_EXTRACT=1)")
     p.set_defaults(fn=cmd_run)
+    p = sub.add_parser("all", help="toate ședințele din LLM/test_meetings/ -> MoM-uri în LLM/test_moms/")
+    p.add_argument("--date", help="YYYY-MM-DD pentru ședințele fără 'meeting_date' (altfel azi)")
+    p.add_argument("--tag", help="sufix pentru folderele din LLM/runs/ și numele MoM-urilor")
+    p.set_defaults(fn=cmd_all)
     p = sub.add_parser("review", help="doar afișarea și review.md, din rezultatele existente (fără model)")
     p.add_argument("target")
     p.set_defaults(fn=cmd_review)

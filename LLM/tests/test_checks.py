@@ -19,8 +19,8 @@ def eta(t="none", raw=None):
     return {"type": t, "raw": raw, "date": None, "condition": None, "needs_review": False}
 
 
-def d(turn_id, text="d"):
-    return {"decision": text, "status": "aprobat", "quote": "q", "timestamp": "00:00", "replaces_previous": False,
+def d(turn_id, text=None):
+    return {"decision": text or f"{["ecografie", "dializa", "cateter", "operatie", "transfer", "externare", "analize"][(turn_id or 0) % 7]} {turn_id}", "status": "aprobat", "quote": "q", "timestamp": "00:00", "replaces_previous": False,
             "turn_id": turn_id, "_t": 0, "_window": 0, "_order": turn_id}
 
 
@@ -39,6 +39,41 @@ def test_ids_and_relation():
     assert relation(ids("Pacient, cardiologie"), ids("pacientul 21")) == "unknown"
 
 
+def test_age_is_not_patient_number_and_bed_is_location():
+    assert ids("Pacient 71 de ani, AVC ischemic") == (set(), set())
+    assert ids("Пациентка 45 лет, patul 8, colecistită") == (set(), {"8"})
+    assert ids("Пациент 5, 49 лет, после травмы") == ({"5"}, set())
+    assert ids("Pacienta 22 ani") == (set(), set())
+    assert ids("Pacientul 31") == ({"31"}, set()) and ids("Chirurgia. Patul 8.") == (set(), {"8"})
+
+
+def test_30min_patient31_decision_not_moved_to_age():
+    # „Neurologia. Pacientul 31.” urmat de „Pacient 71 de ani, AVC…”: deciziile rămân la 31
+    m30 = load(fixture("consiliu_30min.json"))
+    cases = [c("Pacientul 31, neurologie", [d(112), d(113)])]
+    assert fix_attribution(cases, m30.turns) == [] and len(cases[0]["decisions"]) == 2
+    # iar dacă modelul a pus cheia „Pacientul 71” (vârsta), deciziile se mută la 31
+    cases = [c("Pacientul 71, neurologie", [d(112)]), c("Pacientul 31, neurologie", [])]
+    fix_attribution(cases, m30.turns)
+    assert [x["case_key"] for x in cases if x["decisions"]] == ["Pacientul 31, neurologie"], cases
+
+
+def test_timestamp_ranges_split():
+    from LLM.sanitize import fix_ranges
+    assert fix_ranges("Tratamente [07:05–21:17] și [15:06-27:39].") == "Tratamente [07:05] [21:17] și [15:06] [27:39]."
+    assert fix_ranges("Fără interval [00:32].") == "Fără interval [00:32]."
+
+
+def test_unresolved_duplicate_dropped():
+    m = Merger(cfg())
+    same = dict(d(None, "Ecografie transesofagiană programată pentru mâine dimineață la ora 8"), _t=200)
+    m.add_window(0, [], -1, [c("Pacient 48", [same, dict(d(16, "Ecografie transesofagiană mâine dimineață la ora 8"),
+                                                          _t=200), dict(d(None, "Consult cu chirurgia cardiacă"), _t=210)])])
+    decs = m.result()[0]["decisions"]
+    assert [x["turn_id"] for x in decs] == [16, None], decs   # dublura fără replică dispare, cea diferită rămâne
+    assert any(e["event"] == "drop_unresolved_duplicate" for e in m.events)
+
+
 def test_decision_moved_to_patient_being_discussed():
     # turn 10 („Da, aprobat, pe 2 octombrie.”) vine după „Al doilea caz: pacientul 21”
     cases = [c("Pacienta salon 3, neurologie", [d(4), d(10)], eta("absolute", "pe 2 octombrie")),
@@ -48,6 +83,20 @@ def test_decision_moved_to_patient_being_discussed():
     assert [x["turn_id"] for x in cases[1]["decisions"]] == [9, 10], cases
     assert cases[0]["eta"]["type"] == "none" and cases[1]["eta"]["raw"] == "pe 2 octombrie", cases   # ETA mutat
     assert {e["event"] for e in ev} == {"decision_moved", "eta_moved"}, ev
+    # ținta are deja termen: cel din replica mutată tot dispare din cazul sursă
+    cases = [c("Pacienta salon 3, neurologie", [d(4), d(10)], eta("absolute", "pe 2 octombrie")),
+             c("Pacient 21, chirurgie", [d(9)], eta("absolute", "pe 2 octombrie"))]
+    ev = fix_attribution(cases, SHORT.turns)
+    assert cases[0]["eta"]["type"] == "none" and any(e["event"] == "eta_dropped" for e in ev), (cases, ev)
+
+
+def test_proposal_and_confirmation_collapsed():
+    m = Merger(cfg())
+    m.add_window(0, [], -1, [c("Pacient 21", [
+        dict(d(9, "Operația hernioplastie cu plasă programată pentru 2 octombrie"), _t=79),
+        dict(d(10, "Operația hernioplastie cu plasă programată pentru 2 octombrie"), _t=85),
+        dict(d(30, "Operația hernioplastie cu plasă programată pentru 2 octombrie"), _t=300)])])  # departe: rămâne
+    assert [x["turn_id"] for x in m.result()[0]["decisions"]] == [10, 30], m.events
 
 
 def test_same_turn_in_two_cases_kept_once():
@@ -94,6 +143,17 @@ def test_eta_raw_paraphrase_realigned_translation_dropped():
     raw14 = cases[0]["eta"]["raw"]
     assert raw14 and raw14 in eta_fx.turns[7].text and "troponina a doua" in raw14.casefold(), raw14
     assert cases[1]["eta"]["raw"] is None   # tradus, nu există în transcriere
+
+
+def test_eta_raw_extended_with_repeat_word():
+    m30 = load(fixture("consiliu_30min.json"))
+    turns = [m30.turns[i] for i in range(115, 126)]   # „И контроль каждый месяц в паллиативном кабинете”
+    cases = [c("Pacientul 22", [d(123)], eta("relative", "месяц"))]
+    ev = check_eta_raw(cases, turns)
+    assert cases[0]["eta"]["raw"] == "каждый месяц" and cases[0]["eta"]["type"] == "recurring", (cases, ev)
+    cases = [c("P 15", [d(84)], eta("relative", "vineri"))]
+    check_eta_raw(cases, [m30.turns[84]])
+    assert cases[0]["eta"] == eta("relative", "vineri")     # fără cuvânt de repetare: neschimbat
 
 
 def test_eta_type_rule():
@@ -161,6 +221,22 @@ def test_retry_uses_new_seed_and_penalty():
     res = client.chat("extract", [{"role": "user", "content": "x"}], {})
     assert res["data"] == {"cases": [], "summary": ""} and res["attempts"] == 2, res
     assert sent[0]["seed"] != sent[1]["seed"] and sent[0]["repeat_penalty"] == 1.1, sent
+
+
+def test_truncated_retry_gets_more_room_without_bigger_ctx():
+    client = OllamaClient(load_config(env={}))
+    sent = []
+
+    def post(body):
+        sent.append(dict(body["options"]))
+        if len(sent) == 1:
+            return {"message": {"content": "{\"cases\": ["}, "done_reason": "length", "prompt_eval_count": 5500}
+        return {"message": {"content": "{\"cases\": [], \"summary\": \"\"}"}, "done_reason": "stop"}
+
+    client._post = post
+    client.chat("extract", [{"role": "user", "content": "x"}], {}, num_ctx=8192)
+    assert sent[0]["num_predict"] == 2048 and sent[1]["num_predict"] == 8192 - 5500 - 64, sent
+    assert sent[1]["num_ctx"] == 8192   # num_ctx neschimbat => modelul rămâne în VRAM
 
 
 def test_only_local_ollama():

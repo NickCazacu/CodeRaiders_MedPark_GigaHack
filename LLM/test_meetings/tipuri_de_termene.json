@@ -1,0 +1,255 @@
+{
+ "job_id": "tipuri_eta",
+ "audio_duration_s": 79.0,
+ "speakers": [
+  "UNK"
+ ],
+ "languages": {
+  "ro": 12,
+  "ru": 2
+ },
+ "format": "[mm:ss] SPEAKER: text  (\" [?]\" = încredere scăzută)",
+ "token_estimate": "utf8_bytes/4",
+ "n_turns": 14,
+ "n_windows": 1,
+ "turns": [
+  {
+   "id": 0,
+   "speaker": "UNK",
+   "start": 1.0,
+   "end": 5.8,
+   "line": "[00:01] UNK: Pacientul 3 din salonul 2, după colecistectomie, evoluție bună.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    0
+   ],
+   "tokens_est": 21
+  },
+  {
+   "id": 1,
+   "speaker": "UNK",
+   "start": 6.6,
+   "end": 10.8,
+   "line": "[00:06] UNK: Controlul CT îl facem pe 5 octombrie, e programat deja.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    1
+   ],
+   "tokens_est": 19
+  },
+  {
+   "id": 2,
+   "speaker": "UNK",
+   "start": 11.6,
+   "end": 16.0,
+   "line": "[00:11] UNK: Pacienta 9, pneumonie, afebrilă a treia zi, saturația 97.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    2
+   ],
+   "tokens_est": 19
+  },
+  {
+   "id": 3,
+   "speaker": "UNK",
+   "start": 16.8,
+   "end": 20.2,
+   "line": "[00:16] UNK: Externarea mâine, cu tratament per os acasă.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    3
+   ],
+   "tokens_est": 16
+  },
+  {
+   "id": 4,
+   "speaker": "UNK",
+   "start": 21.0,
+   "end": 27.2,
+   "line": "[00:21] UNK: Pacientul 11, pielonefrită, urocultura a crescut E. coli sensibil la ceftriaxonă.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    4
+   ],
+   "tokens_est": 25
+  },
+  {
+   "id": 5,
+   "speaker": "UNK",
+   "start": 28.0,
+   "end": 32.4,
+   "line": "[00:28] UNK: Продолжаем цефтриаксон, курс 7 дней, потом контроль мочи.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ru"
+   ],
+   "segment_ids": [
+    5
+   ],
+   "tokens_est": 30
+  },
+  {
+   "id": 6,
+   "speaker": "UNK",
+   "start": 33.2,
+   "end": 38.1,
+   "line": "[00:33] UNK: Pacientul 14, durere toracică atipică, prima troponină negativă.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    6
+   ],
+   "tokens_est": 22
+  },
+  {
+   "id": 7,
+   "speaker": "UNK",
+   "start": 38.9,
+   "end": 44.5,
+   "line": "[00:38] UNK: Dacă troponina a doua crește, facem coronarografie, dacă nu, îl externăm.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    7
+   ],
+   "tokens_est": 24
+  },
+  {
+   "id": 8,
+   "speaker": "UNK",
+   "start": 45.3,
+   "end": 49.9,
+   "line": "[00:45] UNK: Pacientul 20 din neurologie, cefalee persistentă, CT normal.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    8
+   ],
+   "tokens_est": 20
+  },
+  {
+   "id": 9,
+   "speaker": "UNK",
+   "start": 50.7,
+   "end": 55.6,
+   "line": "[00:50] UNK: RMN-ul îl facem cât de curând, when possible, aparatul e ocupat.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    9
+   ],
+   "tokens_est": 21
+  },
+  {
+   "id": 10,
+   "speaker": "UNK",
+   "start": 56.4,
+   "end": 60.9,
+   "line": "[00:56] UNK: Pacientul 25, diabet decompensat, glicemia 18 la internare.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    10
+   ],
+   "tokens_est": 19
+  },
+  {
+   "id": 11,
+   "speaker": "UNK",
+   "start": 61.7,
+   "end": 66.0,
+   "line": "[01:01] UNK: Контроль гликемии каждые 6 часов и корректируем инсулин.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ru"
+   ],
+   "segment_ids": [
+    11
+   ],
+   "tokens_est": 30
+  },
+  {
+   "id": 12,
+   "speaker": "UNK",
+   "start": 66.8,
+   "end": 71.4,
+   "line": "[01:06] UNK: Pacientul 30, după fractura de radius, ghips, fără probleme.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    12
+   ],
+   "tokens_est": 20
+  },
+  {
+   "id": 13,
+   "speaker": "UNK",
+   "start": 72.2,
+   "end": 75.2,
+   "line": "[01:12] UNK: Continuăm același tratament, nimic nou.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    13
+   ],
+   "tokens_est": 15
+  }
+ ],
+ "windows": [
+  {
+   "index": 0,
+   "turn_ids": [
+    0,
+    13
+   ],
+   "overlap_turns": 0,
+   "start": 1.0,
+   "end": 75.2,
+   "tokens_est": 301,
+   "text": "[00:01] UNK: Pacientul 3 din salonul 2, după colecistectomie, evoluție bună.\n[00:06] UNK: Controlul CT îl facem pe 5 octombrie, e programat deja.\n[00:11] UNK: Pacienta 9, pneumonie, afebrilă a treia zi, saturația 97.\n[00:16] UNK: Externarea mâine, cu tratament per os acasă.\n[00:21] UNK: Pacientul 11, pielonefrită, urocultura a crescut E. coli sensibil la ceftriaxonă.\n[00:28] UNK: Продолжаем цефтриаксон, курс 7 дней, потом контроль мочи.\n[00:33] UNK: Pacientul 14, durere toracică atipică, prima troponină negativă.\n[00:38] UNK: Dacă troponina a doua crește, facem coronarografie, dacă nu, îl externăm.\n[00:45] UNK: Pacientul 20 din neurologie, cefalee persistentă, CT normal.\n[00:50] UNK: RMN-ul îl facem cât de curând, when possible, aparatul e ocupat.\n[00:56] UNK: Pacientul 25, diabet decompensat, glicemia 18 la internare.\n[01:01] UNK: Контроль гликемии каждые 6 часов и корректируем инсулин.\n[01:06] UNK: Pacientul 30, după fractura de radius, ghips, fără probleme.\n[01:12] UNK: Continuăm același tratament, nimic nou."
+  }
+ ]
+}

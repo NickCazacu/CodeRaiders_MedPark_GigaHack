@@ -4,7 +4,7 @@
 import json
 import sys
 
-from LLM import extract as ex
+from LLM import extract as ex, mom
 from LLM.loader import load
 from LLM.manual import build_llm_input, normalize_input, overview, parse_meeting, resolve, review
 from LLM.tests.helpers import FakeClient, case, cfg, dec, fixture, run, tmpdir
@@ -56,14 +56,15 @@ def test_review_report():
     job = tmpdir()
     (job / "llm_input.json").write_text(json.dumps(build_llm_input("t", utts), ensure_ascii=False), encoding="utf-8")
     client = FakeClient({"extract": [{"summary": "Amiodaronă azi [00:20]. Ecografie azi [00:43].", "cases": [
-        case("Pacient 12, cardiologie", [dec("Давайте начнём амиодарон сегодня.", "00:20")],
+        case("Pacient 12, cardiologie", [dec("Давайте начнём амиодарон сегодня.", "00:20", "Amiodaronă azi")],
              {"type": "relative", "raw": "сегодня", "condition": ""}),
-        case("Pacientă salon 4", [dec("Facem ecografie azi.", "00:43"), dec("Îl operăm mâine.", "00:50")]),
+        case("Pacientă salon 4", [dec("Facem ecografie azi.", "00:43", "Ecografie azi"),
+                                  dec("Îl operăm mâine.", "00:50", "Operație mâine")]),
     ]}]})
     ex.extract(job / "llm_input.json", "2026-09-21", job / "minutes.json", job / "llm_debug", cfg(), client)
     text = review(job, "test").read_text(encoding="utf-8")
     assert "| C1 | Pacient 12, cardiologie |" in text and "relative „сегодня”" in text, text
-    assert "## Termene" in text and "| C1 | Pacient 12, cardiologie | d | „сегодня” | relativ |" in text, text
+    assert "## Termene" in text and "| C1 | Pacient 12, cardiologie | Amiodaronă azi | „сегодня” | relativ |" in text, text
     assert "⚠ replică nesigură" in text                         # decizia pe linia [?]
     assert "⛔ citat negăsit" in text                            # citat inventat => turn_id null
     assert "▶ C1" in text and "▶ C2" in text and "## Listă de verificare" in text
@@ -71,7 +72,45 @@ def test_review_report():
     screen = overview(job)
     assert "PUNCTELE PRINCIPALE\nAmiodaronă azi [00:20]" in screen, screen
     assert "când: „сегодня” (relativ)" in screen and "fără termen: C2 Pacientă salon 4" in screen, screen
-    assert "⛔ citat negăsit" in screen and "review.md" in screen
+    assert "⛔ citat negăsit" in screen and "review.md" in screen and "mom.html" in screen
+
+    page = mom.write(job).read_text(encoding="utf-8")
+    md = (job / "mom.md").read_text(encoding="utf-8")
+    for doc in (page, md):
+        assert "Proces-verbal al ședinței" in doc and "Sinteza deciziilor și termenelor" in doc
+        assert "citatul nu a fost găsit în transcriere" in doc and "bazată pe o replică transcrisă nesigur" in doc
+        assert "spus în înregistrare: „Давайте начнём амиодарон сегодня.” · termen spus: „сегодня”" in doc
+    # coloana „Termen” din sinteză e în română; expresia rusă apare doar în adnotarea „termen spus”
+    assert "| 1. Pacient 12, cardiologie | Amiodaronă azi | aprobat | relativ | [00:20] |" in md, md
+    assert "<!doctype html>" in page and "&lt;" not in page.split("<body>")[0]
+
+
+def test_mom_escapes_and_empty_minutes():
+    job = tmpdir()
+    (job / "minutes.json").write_text(json.dumps({"meeting_summary": "<b>x</b> & y", "cases": []}), encoding="utf-8")
+    page = mom.write(job).read_text(encoding="utf-8")
+    assert "&lt;b&gt;x&lt;/b&gt; &amp; y" in page and "Niciun punct." in page and "Nicio decizie." in page
+
+
+def test_test_meetings_folder_by_name_and_mom_export():
+    from LLM.manual import MEETINGS, export_mom
+    job_dir, meeting, source = resolve("consiliu_30min")
+    assert source == (MEETINGS / "consiliu_30min.json").resolve() and job_dir.name == "consiliu_30min"
+    job = tmpdir() / "manual-sedinta_x"
+    job.mkdir()
+    (job / "minutes.json").write_text(json.dumps({"meeting_summary": "S [00:01].", "cases": []}), encoding="utf-8")
+    mom.write(job)
+    moms = tmpdir()
+    dst = export_mom(job, moms)
+    assert dst == moms / "sedinta_x.md" and dst.read_text(encoding="utf-8").startswith("# Proces-verbal"), dst
+    assert all(f.suffix in (".json", ".md") for f in MEETINGS.iterdir())
+
+
+def test_rewindow_existing_input():
+    lli = json.loads(fixture("consiliu_30min.json").read_text(encoding="utf-8"))
+    small = normalize_input(json.loads(json.dumps(lli)), "x", window_tokens=500)
+    assert small["n_windows"] > lli["n_windows"] and small["turns"] == lli["turns"], small["n_windows"]
+    assert all(w["tokens_est"] <= 500 or w["turn_ids"][0] == w["turn_ids"][1] for w in small["windows"])
 
 
 def test_json_inputs_normalized():
@@ -102,7 +141,7 @@ def test_json_outside_jobs_goes_to_manual_dir():
     p = tmpdir() / "Ședința mea.json"
     p.write_text("{}", encoding="utf-8")
     job_dir, meeting, source = resolve(str(p))
-    assert job_dir.name == "manual-_edin_a_mea" and source == p.resolve() and meeting is None, job_dir
+    assert job_dir.name == "_edin_a_mea" and source == p.resolve() and meeting is None, job_dir
 
 
 if __name__ == "__main__":

@@ -133,11 +133,21 @@ class Merger:
         if case["discussion_summary"] and case["discussion_summary"] not in acc["summaries"]:
             acc["summaries"].append(case["discussion_summary"])
         have = {d["turn_id"] for d in acc["decisions"] if d["turn_id"] is not None}
-        for d in case["decisions"]:
+        # întâi deciziile cu replică găsită, apoi cele fără: o decizie fără replică identică cu una
+        # ancorată (modelul a reformulat citatul) e un duplicat
+        for d in sorted(case["decisions"], key=lambda x: x["turn_id"] is None):
             if d["turn_id"] is not None and d["turn_id"] in have:
                 self.events.append({"event": "drop_duplicate_turn", "window": w, "case_key": acc["case_key"],
                                     "turn_id": d["turn_id"]})
                 continue
+            if d["turn_id"] is None:
+                twin = next((x for x in acc["decisions"] if x["turn_id"] is not None and
+                             fuzz.token_set_ratio(norm(d["decision"]), norm(x["decision"])) >= 85), None)
+                if twin:
+                    self.events.append({"event": "drop_unresolved_duplicate", "window": w,
+                                        "case_key": acc["case_key"], "decision": d["decision"],
+                                        "same_as_turn": twin["turn_id"]})
+                    continue
             have.add(d["turn_id"])
             acc["decisions"].append(d)
         acc["etas"].append((w, case["eta"]))
@@ -181,11 +191,27 @@ class Merger:
                     sup[j] = True
         return sup
 
+    def _collapse(self, acc, decs):
+        """Propunere + confirmare imediată („programăm operația pe 2 octombrie” / „Da, aprobat, pe 2
+        octombrie”) extrase ca două decizii cu același text -> una singură: confirmarea (cea mai recentă)."""
+        out = []
+        for d in decs:
+            prev = out[-1] if out else None
+            if (prev and prev["turn_id"] is not None and d["turn_id"] is not None
+                    and 0 < d["turn_id"] - prev["turn_id"] <= 5
+                    and fuzz.token_set_ratio(norm(prev["decision"]), norm(d["decision"])) >= 90):
+                self.events.append({"event": "collapse_confirmed_decision", "case_key": acc["case_key"],
+                                    "dropped_turn": prev["turn_id"], "kept_turn": d["turn_id"]})
+                out[-1] = d
+            else:
+                out.append(d)
+        return out
+
     def result(self, supersede=None):
         """supersede(case_key, decizii) -> set de indici înlocuiți sau None (apel eșuat)."""
         out = []
         for acc in self.cases:
-            decs = self._ordered(acc)
+            decs = self._collapse(acc, self._ordered(acc))
             sup = self._superseded(acc, decs, supersede)
             etas = [e for _, e in sorted(acc["etas"], key=lambda x: x[0]) if e["type"] != "none"]
             eta = dict(etas[-1]) if etas else {"type": "none", "raw": None, "date": None,

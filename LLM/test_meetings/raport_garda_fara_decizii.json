@@ -1,0 +1,175 @@
+{
+ "job_id": "fara_decizii",
+ "audio_duration_s": 51.0,
+ "speakers": [
+  "UNK"
+ ],
+ "languages": {
+  "ro": 8,
+  "ru": 1
+ },
+ "format": "[mm:ss] SPEAKER: text  (\" [?]\" = încredere scăzută)",
+ "token_estimate": "utf8_bytes/4",
+ "n_turns": 9,
+ "n_windows": 1,
+ "turns": [
+  {
+   "id": 0,
+   "speaker": "UNK",
+   "start": 1.0,
+   "end": 5.9,
+   "line": "[00:01] UNK: Raportul de gardă. Noaptea a fost liniștită, fără internări noi.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    0
+   ],
+   "tokens_est": 22
+  },
+  {
+   "id": 1,
+   "speaker": "UNK",
+   "start": 6.7,
+   "end": 12.1,
+   "line": "[00:06] UNK: Pacientul 5 din salonul 2 afebril, tensiunea 130 pe 80, a dormit bine.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    1
+   ],
+   "tokens_est": 22
+  },
+  {
+   "id": 2,
+   "speaker": "UNK",
+   "start": 12.9,
+   "end": 18.6,
+   "line": "[00:12] UNK: У пациентки из восьмой палаты боли уменьшились, она уже ходит по коридору.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ru"
+   ],
+   "segment_ids": [
+    2
+   ],
+   "tokens_est": 38
+  },
+  {
+   "id": 3,
+   "speaker": "UNK",
+   "start": 19.4,
+   "end": 24.6,
+   "line": "[00:19] UNK: Pacientul 9 fără plângeri, drenul a fost scos ieri conform planului.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    3
+   ],
+   "tokens_est": 22
+  },
+  {
+   "id": 4,
+   "speaker": "UNK",
+   "start": 25.4,
+   "end": 27.9,
+   "line": "[00:25] UNK: Analizele de dimineață au venit?",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    4
+   ],
+   "tokens_est": 13
+  },
+  {
+   "id": 5,
+   "speaker": "UNK",
+   "start": 28.7,
+   "end": 33.7,
+   "line": "[00:28] UNK: Încă nu, laboratorul a avut o defecțiune la analizor, ne sună ei.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    5
+   ],
+   "tokens_est": 22
+  },
+  {
+   "id": 6,
+   "speaker": "UNK",
+   "start": 34.5,
+   "end": 38.9,
+   "line": "[00:34] UNK: Pacienta din salonul 11, glicemia pe noapte între 7 și 9.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    6
+   ],
+   "tokens_est": 19
+  },
+  {
+   "id": 7,
+   "speaker": "UNK",
+   "start": 39.7,
+   "end": 43.3,
+   "line": "[00:39] UNK: Everything else is stable, no events overnight.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    7
+   ],
+   "tokens_est": 16
+  },
+  {
+   "id": 8,
+   "speaker": "UNK",
+   "start": 44.1,
+   "end": 47.2,
+   "line": "[00:44] UNK: Bine, mulțumesc, asta e tot de la gardă.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    8
+   ],
+   "tokens_est": 15
+  }
+ ],
+ "windows": [
+  {
+   "index": 0,
+   "turn_ids": [
+    0,
+    8
+   ],
+   "overlap_turns": 0,
+   "start": 1.0,
+   "end": 47.2,
+   "tokens_est": 189,
+   "text": "[00:01] UNK: Raportul de gardă. Noaptea a fost liniștită, fără internări noi.\n[00:06] UNK: Pacientul 5 din salonul 2 afebril, tensiunea 130 pe 80, a dormit bine.\n[00:12] UNK: У пациентки из восьмой палаты боли уменьшились, она уже ходит по коридору.\n[00:19] UNK: Pacientul 9 fără plângeri, drenul a fost scos ieri conform planului.\n[00:25] UNK: Analizele de dimineață au venit?\n[00:28] UNK: Încă nu, laboratorul a avut o defecțiune la analizor, ne sună ei.\n[00:34] UNK: Pacienta din salonul 11, glicemia pe noapte între 7 și 9.\n[00:39] UNK: Everything else is stable, no events overnight.\n[00:44] UNK: Bine, mulțumesc, asta e tot de la gardă."
+  }
+ ]
+}

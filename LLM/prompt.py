@@ -56,6 +56,11 @@ def same_case_messages(a, b):
         key_b=b["case_key"], topic_b=b["topic"], summary_b=b["discussion_summary"])}]
 
 
+def translate_messages(texts):
+    items = "\n".join(f"{i}. {t}" for i, t in enumerate(texts))
+    return [{"role": "user", "content": render(read("translate.md"), texts=items, n=len(texts))}]
+
+
 def supersede_messages(case_key, decisions):
     lines = [f"{i}. [{d['timestamp']}] {d['decision']} (citat: „{d['quote']}”)" for i, d in enumerate(decisions)]
     return [{"role": "user", "content": render(read("supersede.md"), case_key=case_key,

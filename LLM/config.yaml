@@ -14,9 +14,12 @@ ollama:
 
 # setări per etapă; think: true doar de testat (mult mai lent)
 stages:
-  extract:   {think: false, num_predict: 2048}   # o fereastră / ședință scurtă
+  # o fereastră / ședință scurtă. Dacă răspunsul e tăiat, reîncercarea folosește până la max_predict,
+  # cât încape în num_ctx lângă promptul real (fără să mărească num_ctx => modelul rămâne tot în VRAM)
+  extract:   {think: false, num_predict: 2048, max_predict: 3072}
   same_case: {think: false, num_predict: 32}     # „același caz?” pentru chei ambigue
   supersede: {think: false, num_predict: 128}    # ce decizii au fost înlocuite (caz cu >= 2 decizii)
+  translate: {think: false, num_predict: 1024}   # rusa rămasă în câmpurile care trebuie să fie în română
   final:     {think: false, num_predict: 1024}   # meeting_summary + ordinea cazurilor
 
 context:
