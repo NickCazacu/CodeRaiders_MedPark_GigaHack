@@ -39,10 +39,18 @@ def norm_key(key):
     return " ".join(re.sub(r"[^\w\s]", " ", t).split())
 
 
+LOCATION = re.compile(r"\b(pat(?:ul)?|box[aăe]?|salon(?:ul)?|rezerva)\s+(?:nr\s*)?(\d+)")
+
+
 def key_score(a, b):
     na, nb = norm_key(a), norm_key(b)
     if na == nb:
         return 100.0
+    # același loc („Pacienta 45, patul 8” și „Pacienta din patul 8”): același pacient, orice alte numere (vârsta)
+    la = {(m[1][:3], m[2]) for m in LOCATION.finditer(na)}
+    lb = {(m[1][:3], m[2]) for m in LOCATION.finditer(nb)}
+    if la and lb:
+        return 100.0 if la & lb else 0.0
     # „Pacient 48” vs „Pacient 84”: text aproape identic, pacienți diferiți
     da, db = set(re.findall(r"\d+", na)), set(re.findall(r"\d+", nb))
     if da and db and da != db:

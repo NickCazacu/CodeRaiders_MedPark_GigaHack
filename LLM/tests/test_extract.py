@@ -278,6 +278,34 @@ def test_complete_pass_adds_missed_facts():
     assert "Diureza 400 ml pe noapte" in facts and "Potasiu 6" in facts, facts  # „mmol/l” nu s-a spus
 
 
+def test_new_patient_needs_cue_in_transcript():
+    # 00:52 are „палата” (semn) => pacient nou; 00:41 („Și ecografia?”) nu are niciun semn => rămâne patul 8
+    seg = {"patients": [{"start": "00:03", "label": "Pacient patul 8", "cue": ""},
+                        {"start": "00:41", "label": "Pacientul cu insuficiență renală", "cue": ""},
+                        {"start": "00:52", "label": "Pacient patul 9", "cue": ""}]}
+    w = {"summary": "", "cases": []}
+    _, report, client, d = go("llm_input.example.json", {"segment": [seg], "extract": [w, w], "final": [None]},
+                              **{"segment.enabled": True})
+    starts = json.loads((d / "llm_debug" / "segment.response.json").read_text(encoding="utf-8"))
+    assert [s["ts"] for s in starts["starts"]] == ["00:03", "00:52"], starts
+    assert [x["ts"] for x in starts["dropped_no_cue"]] == ["00:41"], starts
+    assert ex.is_patient_label("Pacientul cu sepsis") and not ex.is_patient_label("Organizare: graficul de gărzi")
+
+
+def test_missed_patient_added_by_location():
+    # modelul listează doar patul 8; replica [00:52] începe cu „Хорошо. Следующий пациент, седьмая палата” (fără cifră)
+    # => nu se adaugă nimic; o replică ce începe cu „Boxa” ar deschide „Pacient boxă”
+    seg = {"patients": [{"start": "00:03", "label": "Pacient patul 8", "cue": ""}]}
+    w = {"summary": "", "cases": []}
+    _, report, client, d = go("llm_input.example.json", {"segment": [seg], "extract": [w, w], "final": [None]},
+                              **{"segment.enabled": True})
+    s = json.loads((d / "llm_debug" / "segment.response.json").read_text(encoding="utf-8"))
+    assert s["added_by_location"] == [], s   # „палата” fără număr și fără boxă: nu e un identificator sigur
+    # ce recunoaște la începutul unei replici (Medpark: „Так, боксы, да” după patul 9)
+    assert ex.patient_ids("Так, боксы, да") == {("box", "")}
+    assert ex.patient_ids("Patul 12, după operație") == {("pat", "12")}
+
+
 def test_canonical_key_from_fragment():
     ck = ex.canonical_key
     assert ck("Apătul nou mei (patul nouă), reanimare", "Apătul nou mei ... departi de box") == "Pacient boxă"

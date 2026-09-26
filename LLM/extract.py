@@ -33,6 +33,18 @@ PATIENT_ID = re.compile(r"\b(pat(?:ul)?|box[aăe]?|salon(?:ul)?|rezerva|pacient(
 BOX = re.compile(r"\b(box|bocs|бокс)\w*", re.I)
 
 
+# semnele din transcriere că începe alt pacient (ro/ru/en): un loc, „pacientul/cazul”, o trecere
+NEW_PATIENT_CUE = re.compile(
+    r"\b(pat(?:ul|ului)?|salon\w*|box\w*|bocs\w*|rezerv\w*|izolator\w*|pacient\w*|caz(?:ul)?|următor\w*|trecem|"
+    r"палат\w*|бокс\w*|пациент\w*|больн\w*|следующ\w*|дальше|bed|room|patient|next)\b", re.I)
+PATIENT_WORDS = re.compile(r"\b(pacient\w*|pat(?:ul)?|box\w*|bocs\w*|salon\w*|rezerv\w*|bolnav\w*)\b", re.I)
+
+
+def is_patient_label(label):
+    """Eticheta de la împărțire descrie un pacient (nu un subiect ca „Organizare: gărzi”)?"""
+    return bool(PATIENT_WORDS.search(label or ""))
+
+
 CANON = {"pat": "Pacient patul {}", "box": "Pacient boxă {}", "sal": "Pacient salonul {}", "rez": "Pacient rezerva {}",
          "pac": "Pacientul {}"}
 
@@ -260,6 +272,7 @@ class Extractor:
                     found.append((max(sec, lo) if n else sec, label, sanitize.s(p.get("cue"))))
                     previous = label
         starts = []  # (poziția primei replici în ids, label, cue)
+        dropped = []
         merge_s = sc.get("min_patient_s", 15)
         for sec, label, cue in sorted(found, key=lambda x: x[0]):
             k = next((j for j, i in enumerate(ids) if T[i].start >= sec - 1), None)
@@ -269,9 +282,42 @@ class Extractor:
                 continue  # două începuturi la câteva secunde (ex. 02:58 și 03:00): același pacient
             if starts and same_patient(starts[-1][1], label, starts[-1][2], cue):
                 continue  # la granița dintre bucăți modelul repetă uneori pacientul care continuă
+            if starts and sc.get("require_cue", True) and is_patient_label(label):
+                # un pacient nou doar cu un semn în TRANSCRIERE (pat, boxă, „pacientul”, „următorul”...);
+                # altfel e același pacient cu o problemă nouă (complicație, istoric, alt diagnostic)
+                near = " ".join(T[i].line for i in ids[k:k + 2])  # replica de început + următoarea
+                if not NEW_PATIENT_CUE.search(near):
+                    dropped.append({"ts": T[ids[k]].ts, "label": label, "cue": cue})
+                    continue
             starts.append((k, label, cue))
         res = {"raw": raws[0] if len(raws) == 1 else raws, "data": parsed[0] if len(parsed) == 1 else parsed}
-        self.dbg.write("segment.response.json", {"raw": res["raw"], "parsed": res["data"],
+        # plasă de siguranță pentru pacienții ratați de model: o replică ce ÎNCEPE cu alt loc (pat N, boxă, salon N)
+        # decât pacientul curent deschide un pacient nou („Так, боксы, да” după patul 9)
+        added = []
+        if starts and sc.get("location_starts", True):
+            for j, i in enumerate(ids):
+                head = " ".join(T[i].line.split(": ", 1)[-1].split()[:6])
+                here = {x for x in patient_ids(head) if x[0] != "pac"}
+                if not here:
+                    continue
+                cur = max((s for s in starts if s[0] <= j), key=lambda s: s[0], default=None)
+                if cur is None or T[i].start - T[ids[cur[0]]].start < merge_s:
+                    continue
+                if here & patient_ids(f"{cur[1]} {cur[2]}"):
+                    continue
+                kind, num = next(iter(here))
+                label = CANON[kind].format(num).strip()
+                starts.append((j, label, head))
+                starts.sort(key=lambda s: s[0])
+                added.append({"ts": T[i].ts, "label": label})
+        if added:
+            self.warn("împărțire: pacienți adăugați după locul numit la începutul replicii: "
+                      + "; ".join(f"[{a['ts']}] {a['label']}" for a in added))
+        if dropped:
+            self.warn(f"împărțire: {len(dropped)} „pacienți noi” fără semn în transcriere, unite cu punctul anterior: "
+                      + "; ".join(f"[{d['ts']}] {d['label'][:40]}" for d in dropped))
+        self.dbg.write("segment.response.json", {"dropped_no_cue": dropped, "added_by_location": added,
+                                                 "raw": res["raw"], "parsed": res["data"],
                                                  "starts": [{"turn_id": ids[k], "ts": T[ids[k]].ts, "label": lb,
                                                              "cue": cue} for k, lb, cue in starts]})
         if starts and starts[0][0] > 0:

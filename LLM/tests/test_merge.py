@@ -29,6 +29,9 @@ def test_key_score():
     assert key_score("Pacient 48", "Pacient 84") == 0          # numere diferite => alt pacient
     assert key_score("Pacientă salon 5, nefrologie", "Pacienta salon 5") >= 90
     assert key_score("Pacient 17, chirurgie", "Pacienta 22, neurologie") == 0
+    # același pat, alte numere (vârsta): același pacient; paturi diferite: pacienți diferiți
+    assert key_score("Pacienta 45, patul 8, chirurgie", "Pacienta din patul 8, chirurgie") == 100
+    assert key_score("Pacient patul 8", "Pacient patul 9") == 0
 
 
 def test_overlap_duplicate_dropped_once():
