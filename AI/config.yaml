@@ -28,7 +28,10 @@ whisper:
                              # până la 0.6. DOAR față de rusă: un bonus general traducea engleza în română.
                              # Măsurat: Medpark (vezi evaluation/RESULTS.md) și evaluation/lang_mix
                              # (rusă FLEURS: 92% limbă corectă cu 0.5).
-  short_segment_s: 2.0       # (doar fără compare_languages) segmentele mai scurte, cu detecție
+  compare_from_encoder: true # comparația ro/ru decodează direct din ieșirea encoderului de la detecție (beam 5, fără
+                             # prompt, fără timestamps), fără încă o trecere de encoder per limbă. Aceleași alegeri și
+                             # același WER, ASR cu ~30% mai rapid (Medpark 113.8 -> 79.6 s; evaluation/RESULTS.md).
+  short_segment_s: 2.0      # (doar fără compare_languages) segmentele mai scurte, cu detecție
                              # nesigură (<0.5), moștenesc limba segmentului anterior
   beam_size: 5
   batch_size: 8              # BatchedInferencePipeline; 1 = transcriere secvențială
@@ -53,6 +56,9 @@ postprocess:
   min_lang_margin: 0.1       # la decodare pe mai multe limbi: diferență de avg_logprob între prima și
                              # a doua limbă sub care segmentul primește flag "uncertain_language"
   min_lang_prob: 0.5         # la o singură limbă detectată: probabilitate sub care primește același flag
+  numbers_to_digits: true    # pipeline/itn.py, doar segmentele ro: „treizeci și opt” -> 38, „nouă spre zece” -> 19,
+                             # „zero virgulă zero opt” -> 0,08. Unitățile singure („doi”, „o”) rămân cuvinte.
+                             # Textul original rămâne în text_raw.
   glossary_correction:       # pipeline/correct.py: cuvinte apropiate de un termen din glossary/terms.tsv
     enabled: false           # se activează doar dacă evaluarea arată că ajută (evaluation/RESULTS.md)
     min_len: 6               # rădăcini mai scurte nu se corectează (prea multe coincidențe)

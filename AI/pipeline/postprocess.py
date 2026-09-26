@@ -1,7 +1,8 @@
 """Postprocesare: NFC, ş/ţ (sedilă) -> ș/ț (virgulă), scriptul fiecărui cuvânt
 (chirilic/latin/mixt), filtrarea halucinațiilor (repetiții, compression_ratio mare,
 fraze tipice Whisper, liniște transcrisă), post-corecție opțională după glosar
-(pipeline.correct, postprocess.glossary_correction.enabled).
+(pipeline.correct, postprocess.glossary_correction.enabled), numerele rostite în română
+-> cifre (pipeline.itn, postprocess.numbers_to_digits).
 
     python -m pipeline.postprocess JOB_ID
 
@@ -17,6 +18,7 @@ from collections import Counter
 
 from pipeline.common import jobs_dir, load_config, run_stage
 from pipeline.glossary import glossary_hash
+from pipeline.itn import normalize_numbers
 
 CEDILLA = str.maketrans({"ş": "ș", "Ş": "Ș", "ţ": "ț", "Ţ": "Ț"})
 
@@ -94,6 +96,12 @@ def process(r, p, corrector=None):
 
     if corrector and corrector.apply(r):
         flags.append("glossary_corrected")
+
+    if p.get("numbers_to_digits") and r.get("lang") == "ro":
+        text = normalize_numbers(r["text"])
+        if text != r["text"]:
+            r["text"] = text
+            flags.append("numbers_normalized")
 
     if r["text"] != raw:
         r["text_raw"] = raw

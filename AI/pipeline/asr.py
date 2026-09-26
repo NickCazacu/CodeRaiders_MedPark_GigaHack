@@ -76,18 +76,42 @@ def read_clip(f, s):
     return f.read(int((s["end"] - s["start"]) * SR), dtype="float32")
 
 
-def detect_languages(model, clips, allowed, batch_size):
-    """Per clip: [(limbă, prob), ...] descrescător, dintr-o trecere de encoder; restrâns la `allowed`."""
+def detect_languages(model, clips, allowed, batch_size, keep=False):
+    """Per clip: [(limbă, prob), ...] descrescător, dintr-o trecere de encoder; restrâns la `allowed`.
+    keep=True: întoarce și ieșirile encoderului [(StorageView, primul index)], refolosite la score_languages."""
     from faster_whisper.audio import pad_or_trim
 
-    out = []
+    out, encs = [], []
     for i in range(0, len(clips), batch_size):
         feats = np.stack([pad_or_trim(model.feature_extractor(c)[..., :-1]) for c in clips[i:i + batch_size]])
-        for res in model.model.detect_language(model.encode(feats)):
+        enc = model.encode(feats)
+        if keep:
+            encs.append((enc, i))
+        for res in model.model.detect_language(enc):
             probs = {tok[2:-2]: p for tok, p in res}  # "<|ro|>" -> "ro"
             cand = {k: v for k, v in probs.items() if not allowed or k in allowed} or probs
             out.append(sorted(((k, round(float(v), 3)) for k, v in cand.items()), key=lambda kv: -kv[1]))
-    return out
+    return (out, encs) if keep else out
+
+
+def score_languages(model, encs, cands, w):
+    """Scorul fiecărei limbi candidate, decodând direct din ieșirea encoderului de la detecție (fără încă o
+    trecere de encoder): beam w["beam_size"], fără prompt, fără timestamps, ca decodarea de comparație clasică.
+    Scorul = log-probabilitatea medie per token. -> {(k, lang): scor}"""
+    tok = model.hf_tokenizer
+    sot, tr, nots = (tok.token_to_id(t) for t in ("<|startoftranscript|>", "<|transcribe|>", "<|notimestamps|>"))
+    scores = {}
+    for enc, i0 in encs:
+        n = enc.shape[0]
+        for r in range(max(len(cands[i0 + j]) for j in range(n))):
+            langs = [cands[i0 + j][min(r, len(cands[i0 + j]) - 1)][0] for j in range(n)]
+            res = model.model.generate(enc, [[sot, tok.token_to_id(f"<|{l}|>"), tr, nots] for l in langs],
+                                       beam_size=w["beam_size"], return_scores=True, max_length=224,
+                                       suppress_blank=True)
+            for j, (l, x) in enumerate(zip(langs, res)):
+                if r < len(cands[i0 + j]) and x.scores:
+                    scores[(i0 + j, l)] = round(float(x.scores[0]), 4)
+    return scores
 
 
 def choose_candidates(det, seg, prev_lang, w):
@@ -100,6 +124,12 @@ def choose_candidates(det, seg, prev_lang, w):
         if seg["end"] - seg["start"] < w["short_segment_s"] and top[1] < 0.5 and prev_lang:
             top = (prev_lang, top[1])
         return [top]
+    # detector sigur pe o limbă în care nu greșește sistematic => o singură decodare (viteză).
+    # Limbile „pierzătoare” ale unei preferințe (ex. ru, în care e luată româna moldovenească) se compară mereu.
+    losers = {b for overs in (w.get("language_preference") or {}).values() for b in overs}
+    skip = w.get("compare_skip_prob")
+    if skip is not None and det[0][1] >= skip and det[0][0] not in losers:
+        return [det[0]]
     probs = dict(det)
     return [(l, probs.get(l, 0.0)) for l in dict.fromkeys(cmp + [det[0][0]])]
 
@@ -113,7 +143,7 @@ def transcribe_batched(pipe, clips, lang, prompt, hotwords, w):
         np.concatenate(clips), language=lang, clip_timestamps=clip_ts,
         batch_size=w["batch_size"], beam_size=w["beam_size"],
         initial_prompt=prompt, hotwords=hotwords,
-        word_timestamps=True, vad_filter=False,  # condition_on_previous_text e mereu False aici
+        word_timestamps=w.get("word_timestamps", True), vad_filter=False,  # condition_on_previous_text e mereu False aici
     )
     buckets = [[] for _ in clips]
     for s in segments:
@@ -127,7 +157,7 @@ def transcribe_one(model, clip, lang, prompt, hotwords, w):
     segments, _ = model.transcribe(
         clip, language=lang, beam_size=w["beam_size"],
         initial_prompt=prompt, hotwords=hotwords,
-        condition_on_previous_text=False, word_timestamps=True, vad_filter=False,
+        condition_on_previous_text=False, word_timestamps=w.get("word_timestamps", True), vad_filter=False,
     )
     return list(segments), 0.0
 
@@ -140,6 +170,10 @@ def setup(w, glossary):
         pref = w.get("language_preference") or {}
         if pref:
             lang += "-pref-" + "+".join(f"{a}>{b}{m:g}" for a, o in sorted(pref.items()) for b, m in sorted(o.items()))
+        if w.get("compare_skip_prob") is not None:
+            lang += f"-skip{w['compare_skip_prob']:g}"
+        if w.get("compare_from_encoder"):
+            lang += "-encscore"
     fp = hashlib.sha1(json.dumps(sorted(glossary.items()), ensure_ascii=False).encode("utf-8")).hexdigest()[:6]
     beam = f"/beam{w['beam_size']}" if w["beam_size"] != 5 else ""
     return f"{w['model']}/{w['compute_type']}/{lang}/p{fp}{beam}"
@@ -253,16 +287,18 @@ def asr(job_id, cfg=None):
                 clips = [read_clip(f, s) for s in chunk]
 
                 # limbile candidate per segment
+                enc_cmp = bool(w.get("compare_from_encoder")) and not forced
                 if forced:
                     cands = [[(forced, 1.0)] for _ in chunk]
                 else:
-                    det = detect_languages(model, clips, w["languages"], max(w["batch_size"], 1))
+                    det = detect_languages(model, clips, w["languages"], max(w["batch_size"], 1), keep=enc_cmp)
+                    det, encs = det if enc_cmp else (det, None)
                     cands = []
                     for s, d in zip(chunk, det):
                         cands.append(choose_candidates(d, s, prev_lang, w))
                         prev_lang = cands[-1][0][0]
 
-                def decode(idx_langs, use_prompt):
+                def decode(idx_langs, use_prompt, wd=w):
                     """idx_langs: [(k, lang)]. Un apel (batched) per limbă. -> {(k, lang): (subsegs, offset)}"""
                     nonlocal decodes
                     out = {}
@@ -272,24 +308,33 @@ def asr(job_id, cfg=None):
                             glossary[lang] = load_glossary(w, lang)
                         prompt, hotwords = glossary[lang] if use_prompt else (None, None)
                         if pipe:
-                            rs = transcribe_batched(pipe, [clips[k] for k in idx], lang, prompt, hotwords, w)
+                            rs = transcribe_batched(pipe, [clips[k] for k in idx], lang, prompt, hotwords, wd)
                         else:
-                            rs = [transcribe_one(model, clips[k], lang, prompt, hotwords, w) for k in idx]
+                            rs = [transcribe_one(model, clips[k], lang, prompt, hotwords, wd) for k in idx]
                         out.update({(k, lang): r for k, r in zip(idx, rs)})
                         decodes += len(idx)
                     return out
 
                 # 1) decizia de limbă: decodare FĂRĂ prompt în fiecare limbă candidată, ca scorurile
-                #    să fie comparabile (promptul umflă scorul și, pe limba greșită, e copiat în text)
+                #    să fie comparabile (promptul umflă scorul și, pe limba greșită, e copiat în text).
+                #    Cu compare_from_encoder, comparația decodează direct din encoderul de la detecție (fără încă
+                #    o trecere de encoder per limbă), iar rezultatul ei nu mai e folosit ca text final.
                 multi = [k for k, c in enumerate(cands) if len(c) > 1]
-                plain = decode([(k, l) for k in multi for l, _ in cands[k]], use_prompt=False)
+                if enc_cmp:
+                    plain, fast = {}, score_languages(model, encs, cands, w)
+                    del encs
+                else:
+                    plain = decode([(k, l) for k in multi for l, _ in cands[k]], use_prompt=False)
                 chosen, lang_scores = [], []
                 for k, cand in enumerate(cands):
                     if len(cand) == 1:
                         chosen.append(cand[0][0])
                         lang_scores.append({})
                         continue
-                    sc = {l: avg_logprob(plain[(k, l)][0]) for l, _ in cand}
+                    if enc_cmp:
+                        sc = {l: fast.get((k, l)) for l, _ in cand}
+                    else:
+                        sc = {l: avg_logprob(plain[(k, l)][0]) for l, _ in cand}
                     sc = {l: v for l, v in sc.items() if v is not None}
                     chosen.append(pick_language(sc, w.get("language_preference")) if sc else cand[0][0])
                     lang_scores.append(sc)
@@ -300,6 +345,7 @@ def asr(job_id, cfg=None):
                 pairs = list(enumerate(chosen))
                 for l in set(chosen):
                     glossary.setdefault(l, load_glossary(w, l))
+                # refacem doar ce lipsește: segmentele cu o singură limbă, sau prompt / hotwords nefolosite la pasul 1
                 redo = [(k, l) for k, l in pairs if (k, l) not in plain or any(glossary[l])]
                 final = {kl: plain[kl] for kl in pairs if kl not in redo}
                 final.update(decode(redo, use_prompt=True))

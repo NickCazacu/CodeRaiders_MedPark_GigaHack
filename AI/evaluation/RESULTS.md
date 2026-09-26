@@ -50,6 +50,29 @@ Medpark cu regula nouă: identic (55.6% / 33.1%), deci fără regresie. Regula n
 aceste fragmente e în mare corectă. Consecințe: (1) accentul moldovenesc pe vorbire clară nu e problema principală;
 (2) etichetele Kaggle nu pot fi folosite la fine-tuning fără filtrare, altfel modelul ar învăța să omită vorbire.
 
+## Viteza ASR (27.09)
+
+Baza: ~3 decodări beam 5 per segment (ro și ru fără hotwords pentru alegerea limbii, apoi limba aleasă cu
+hotwords). Medpark 12 min: ASR 113.8 s; amestecul de limbi 7.9 min: 71.9 s.
+
+| Variantă | ASR Medpark | WER / CER Medpark | ASR amestec | ru: limbă ok / WER | Decizie |
+|---|---|---|---|---|---|
+| bază | 113.8 s | 55.6% / 33.1% | 71.9 s | 92% / 25.6% | — |
+| B: hotwords și la decodările de comparație (fără decodare finală separată) | 89.2 s | 55.9% / 33.5% | 57.2 s | **83% / 41.0%** | respins: hotwords-urile românești umflă scorul ro și strică duelul cu rusa |
+| A+B: + fără comparație când detectorul e sigur (≥ 0.8) pe o limbă care nu e „pierzătoare” | 88.3 s | 55.9% / 33.5% | — | — | câștig neglijabil pe Medpark: româna moldovenească e rar detectată sigur |
+
+| C: comparația cu greedy (beam 1) | 109.8 s | 56.2% / 34.3%, 3.2% chirilic | 64.9 s | 100% / 14.5% | nu: scoruri pe altă scară decât cea pe care e reglată preferința ro>ru 0.5 (Medpark primește rusă); câștig mic |
+| C + batch 16 | 131.3 s | idem | 79.6 s | idem | respins: mai lent |
+| **D: comparația decodată direct din encoderul de la detecție** (`compare_from_encoder`) | **79.6 s** | **55.6% / 33.1%** | **50.3 s** | 92% / 25.6% | **adoptat**: rezultate identice, −30% timp |
+
+Măsurare pe 32 de segmente Medpark: encoder 3.6 s, decodare ro+ru 5.0 s (greedy) / 6.0 s (beam 5). Lățimea
+beam-ului contează puțin; costul era encoderul rulat de 4 ori per segment (detecție, ro, ru, final), acum de 2 ori.
+
+Concluzie: comparația între limbi trebuie făcută în condiții identice (fără hotwords/prompt).
+
+Normalizarea audio (ffmpeg): `aresample=16000` înainte de `loudnorm` (care lucrează intern la 192 kHz): 12 min
+13.6 s -> 6.5 s.
+
 ## Nevalidat încă
 
 - Bonusul ro 0.5 pe **rusă reală**: dacă rusa vorbită iese transcrisă ca română, bonusul trebuie scăzut.
