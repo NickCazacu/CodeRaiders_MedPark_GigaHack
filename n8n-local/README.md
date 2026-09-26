@@ -1,17 +1,19 @@
 # Local n8n for MedPark
 
-This runs a self-hosted n8n instance at http://localhost:5678, a local audio
-upload page at http://localhost:8080, and the local preprocessing service at
-http://localhost:8001. On first visit, n8n asks you to create the instance owner
-account.
+This runs a self-hosted n8n instance at http://localhost:5678 and a local audio
+upload page at http://localhost:8080. The optional preprocessing service
+(http://localhost:8001) starts only with `docker compose --profile preprocess up -d`.
 
 ## Full flow: upload → minutes
 
 ```
-upload page (:8080) ──► n8n "audio-upload" ──► preprocessing (Docker) ──► save to runtime/inbox/
+upload page (:8080) ──► n8n "audio-upload" ──► save to runtime/inbox/
                                    └──► AI/service.py on the host (GPU): ASR + diarization → LLM (Ollama qwen3:8b) → mom.html
 upload page ◄── minutes ◄── n8n "job-status" ◄── polled every 4 s ──┘
 ```
+
+The `preprocessing/` service is no longer in this flow: its output was not used by the ASR pipeline, which does its
+own normalization and VAD, and it added a second copy of every recording and extra time.
 
 The ASR and the LLM run on the Windows host next to the GPU, not in Docker. n8n reaches the host service at
 `http://host.docker.internal:8765`; the service listens on `127.0.0.1` only and accepts only file names
@@ -49,11 +51,9 @@ docker compose restart n8n
 After changing a workflow JSON, run the same import + publish + restart again.
 
 The upload page sends a multipart field named `audio` to the webhook. The
-workflow sanitizes the filename (prefixed with a unique job id), submits the binary to the local
-`preprocessing` service, saves the original upload under `runtime/inbox/`, and starts the
-AI job; it answers with `{"job_id", "state": "queued"}`. The page then polls `/api/jobs/<job_id>`
+workflow sanitizes the filename (prefixed with a unique job id), saves the upload under `runtime/inbox/`,
+and starts the AI job; it answers with `{"job_id", "state": "queued"}`. The page then polls `/api/jobs/<job_id>`
 (→ n8n `job-status` → AI service) and shows the minutes from `/api/jobs/<job_id>/minutes` when done.
-The preprocessing service writes the normalized WAV, VAD result, and status below `runtime/preprocess/<id>/`.
 
 ### End-to-end test
 
@@ -77,7 +77,7 @@ credentials survive a container restart. The MedPark repository is mounted in
 the container at `/workspace/medpark`; `runtime/` is mounted at
 `/workspace/runtime` in n8n and `/shared` in the preprocessing service.
 
-## Preprocessing workflow contract
+## Optional: preprocessing service contract (not used by the upload flow)
 
 Put an input recording in `runtime/inbox/`. In an n8n **HTTP Request** node,
 send a `POST` request to `http://preprocess:8000/jobs` with JSON such as:

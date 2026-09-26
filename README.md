@@ -6,7 +6,8 @@ Sistem on-premise: înregistrarea ședinței → transcriere (ro/ru/en) cu vorbi
 |---|---|---|
 | `AI/` | pipeline-ul audio: normalizare, diarizare, ASR (Whisper), pregătirea textului pentru LLM; `service.py` = serviciul local apelat de n8n | [AI/SETUP.md](AI/SETUP.md), [AI/docs/LLM_INPUT.md](AI/docs/LLM_INPUT.md) |
 | `LLM/` | procesul-verbal din transcriere (Ollama `qwen3:8b`, local) | [LLM/README.md](LLM/README.md) |
-| `preprocessing/` | serviciu de preprocesare audio (Docker, CPU) | [preprocessing/SERVICE.md](preprocessing/SERVICE.md) |
+| `preprocessing/` | serviciu de preprocesare audio (Docker, CPU); **opțional**, nu e în fluxul de upload | [preprocessing/SERVICE.md](preprocessing/SERVICE.md) |
+| `docs/` | arhitectura propusă a sistemului | [docs/architecture.md](docs/architecture.md) |
 | `n8n-local/` | n8n + pagina de upload, rulează local în Docker | [n8n-local/README.md](n8n-local/README.md) |
 
 ## Pornire (demo)

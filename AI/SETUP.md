@@ -73,8 +73,8 @@ grep -v '^--extra-index-url' requirements.txt | sed 's/+cu128//' > /tmp/requirem
 ### 5a. Whisper (faster-whisper)
 ```powershell
 .\.venv\Scripts\hf.exe download Systran/faster-whisper-large-v3 --local-dir models\faster-whisper-large-v3
-# opțional, mai rapid:
-.\.venv\Scripts\hf.exe download mobiuslabsgmbh/faster-whisper-large-v3-turbo --local-dir models\faster-whisper-large-v3-turbo
+# opțional: medium, pentru calculatoare fără GPU NVIDIA
+.\.venv\Scripts\hf.exe download Systran/faster-whisper-medium --local-dir models\faster-whisper-medium
 ```
 
 ### 5b. pyannote (diarizare: speaker-diarization-3.1), modele gated
@@ -125,8 +125,9 @@ Nu trebuie descărcat nimic. Modelul e inclus în pachetul pip `silero-vad`.
 
 Tot pipeline-ul (ingest → normalize → segment → asr → postprocess → pack), reluabil:
 ```powershell
-.\.venv\Scripts\python.exe run_pipeline.py sedinta.m4a --model medium --device cuda [--no-diarization] [--denoise] [--language ro]
+.\.venv\Scripts\python.exe run_pipeline.py sedinta.m4a [--job-id NUME] [--no-diarization] [--language ro]
 ```
+Pipeline-ul complet cu LLM și pagina web (n8n): `start_demo.ps1` din rădăcina repo-ului; vezi README-ul principal.
 Ieșirea finală e `jobs/<job_id>/llm_input.json`: replici `[mm:ss] SPEAKER: text`, cu ` [?]` la încredere scăzută, grupate în
 ferestre de ~3500 tokeni cu suprapunere de 3 replici. Fișiere intermediare: `asr.jsonl` (scris incremental,
 reluat de la ultimul segment) și `transcript.json` (după postprocesare; segmentele eliminate rămân cu `dropped`).
@@ -136,28 +137,20 @@ Pentru a compara modele sau setări pe același fișier, dă fiecărei variante 
 
 Formatul `llm_input.json` pentru echipa LLM e descris în [docs/LLM_INPUT.md](docs/LLM_INPUT.md), cu exemplu în `docs/llm_input.example.json`.
 
-**Limba** (`whisper.compare_languages: [ro, ru]` + `language_bias: {ro: 0.5}`): fiecare segment e decodat în ro și ru (plus
-limba detectată, dacă e alta) și se alege scorul cel mai bun. Româna primește un bonus de 0.5, pentru că large-v3 scrie
-dialectul moldovenesc cu litere chirilice și îl „câștigă” ca rusă. Rusa și engleza rămân posibile când scorul lor e clar
-mai bun. Costă ~2 decodări pe segment (≈80 s de ASR pentru 12 min de audio pe RTX 5070). `--language ro` forțează o
-limbă și e mai rapid, dar nu mai recunoaște rusa. `--language-bias ro=0.3` schimbă bonusul pentru o rulare.
+**Setările implicite** (`config.yaml`), alese prin măsurători (istoricul complet: [evaluation/RESULTS.md](evaluation/RESULTS.md)):
+- **limba**: fiecare segment e decodat în ro și ru (plus limba detectată, dacă e alta) și câștigă scorul cel mai bun; româna
+  primește un bonus de 0.5, pentru că large-v3 scrie dialectul moldovenesc cu litere chirilice și îl „câștigă” ca rusă.
+  `--language ro` forțează o limbă (mai rapid, dar pierde rusa); `--language-bias ro=0.3` schimbă bonusul pentru o rulare;
+- **hotwords** din `glossary/` da, **prompt de domeniu** nu (vezi [glossary/README.md](glossary/README.md));
+- fără `--denoise`.
 
-**Evaluare** pe o transcriere de referință (vezi `tests/reference/README.md`):
+Promptul și hotwords fac parte din amprenta `setup`: dacă le schimbi, rulează ASR-ul într-un job nou sau șterge `asr.jsonl`.
+
+**Evaluare** pe o transcriere de referință: rapid, pe fragmente aproximative (`tests/reference/README.md`):
 ```powershell
 .\.venv\Scripts\python.exe -m tests.evaluate tests\reference\medpark.txt JOB1 JOB2 ...
 ```
-Pe Medpark (2 fragmente, 346 de cuvinte), cu large-v3 și diarizare: fără bonus WER 65.9%, bonus 0.3 → 60.1%,
-**bonus 0.5 → 59.5%** (egal cu româna forțată), cu prompt de domeniu → 63.0%.
-Alte teste pe setarea finală: `--denoise` → 63.0% (mai rău, rămâne oprit), `--beam-size 10` → 57.8% WER dar CER mai slab
-(diferență de ~6 cuvinte, neconcludentă), VAD mai sensibil (prag 0.35) → 59.8% WER / 38.0% CER (neconcludent).
-Descompunere la setarea finală: 44.8% cuvinte corecte, 37.9% înlocuite, 17.3% lipsă (mai ales intervenții scurte
-suprapuse peste alt vorbitor), 4.3% în plus.
-
-Actualizare (referința corectată: „patul 8”, 349 de cuvinte): setarea de mai sus → 59.9%; **cu hotwords → 55.6% WER,
-33.1% CER**, activat implicit; cu prompt de domeniu → 71.1%.
-
-Glosar: vezi [glossary/README.md](glossary/README.md). Implicit hotwords da, prompt nu, conform măsurătorilor.
-Promptul și hotwords fac parte din amprenta `setup`: dacă le schimbi, rulează ASR-ul într-un job nou sau șterge `asr.jsonl`.
+și detaliat, pe etichete precise din Audacity (termeni, suprapuneri, decizii): [evaluation/README.md](evaluation/README.md).
 
 Etapele pe rând:
 ```powershell

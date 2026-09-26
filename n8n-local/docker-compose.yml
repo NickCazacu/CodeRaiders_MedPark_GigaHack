@@ -40,9 +40,6 @@ services:
       - ./runtime:/workspace/runtime:rw
       # Versioned local webhook definition; import it once with the command in README.
       - ./workflows:/workflows:ro
-    depends_on:
-      preprocess:
-        condition: service_healthy
 
   frontend:
     build:
@@ -56,7 +53,10 @@ services:
     depends_on:
       - n8n
 
+  # Not in the upload flow: the ASR pipeline (AI/service.py) does its own normalization and VAD.
+  # Start it only when needed: docker compose --profile preprocess up -d
   preprocess:
+    profiles: ["preprocess"]
     build:
       context: ../preprocessing
     restart: unless-stopped

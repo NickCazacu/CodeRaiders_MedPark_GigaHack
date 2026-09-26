@@ -4,6 +4,10 @@ __pycache__/
 *.pyc
 **/.claude/settings.local.json
 
+# Seturi de date descărcate (GB, licențe proprii): nu intră în git
+archive/
+datasets/
+
 # Plasă de siguranță: înregistrările de ședințe sunt date medicale. Un fișier audio de test
 # sintetic se poate adăuga explicit cu `git add -f`.
 *.m4a
