@@ -10,3 +10,5 @@ numpy
 jiwer
 tqdm
 pyyaml
+pyarrow          # citirea parquet (datasetul extern de evaluare)
+rapidfuzz        # post-corecția după glosar

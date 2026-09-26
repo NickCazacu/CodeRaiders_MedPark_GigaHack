@@ -34,6 +34,8 @@ whisper:
   beam_size: 5
   batch_size: 8              # BatchedInferencePipeline; 1 = transcriere secvențială
   low_confidence_logprob: -0.7
+  use_hotwords: false        # glossary/hotwords.<lang>.txt (generat din glossary/terms.tsv:
+                             # python -m pipeline.glossary hotwords); doar dacă scade WER-ul măsurat
   # prompt per limbă; glossary/prompt.<lang>.txt și glossary/prompt.txt au prioritate dacă există
   # (la fel hotwords.<lang>.txt / hotwords.txt)
   # Implicit FĂRĂ prompt: pe referința Medpark, promptul de domeniu a crescut WER-ul de la 59.5% la 63.0%
@@ -51,6 +53,10 @@ postprocess:
   min_lang_margin: 0.1       # la decodare pe mai multe limbi: diferență de avg_logprob între prima și
                              # a doua limbă sub care segmentul primește flag "uncertain_language"
   min_lang_prob: 0.5         # la o singură limbă detectată: probabilitate sub care primește același flag
+  glossary_correction:       # pipeline/correct.py: cuvinte apropiate de un termen din glossary/terms.tsv
+    enabled: false           # se activează doar dacă evaluarea arată că ajută (evaluation/RESULTS.md)
+    min_len: 6               # rădăcini mai scurte nu se corectează (prea multe coincidențe)
+    min_score: 88            # rapidfuzz ratio minim (0-100); 85 prinde și „pensiunea” -> „tensiunea”
 
 pack:
   window_tokens: 3500        # estimare: octeți UTF-8 / 4 (conservator pentru chirilic)

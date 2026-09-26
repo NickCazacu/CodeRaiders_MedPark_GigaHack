@@ -1,0 +1,26 @@
+# generat din terms.tsv (python -m pipeline.glossary hotwords); nu editați manual
+angioplastie
+antibioterapie
+coronarografie
+creatinină
+diureză
+ecocardiografie
+electrocardiogramă
+fibrilație atrială
+fracție de ejecție
+furosemid
+hemodializă
+hemoleucogramă
+heparină
+infarct miocardic
+insuficiență cardiacă
+intubație
+noradrenalină
+proteina C reactivă
+reanimare
+rezonanță magnetică
+tomografie computerizată
+tromboaspirație
+tromboembolism pulmonar
+troponină
+ventilație artificială

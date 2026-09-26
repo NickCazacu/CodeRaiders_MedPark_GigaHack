@@ -1,0 +1,121 @@
+# Glosar medical RO/RU/EN + abrevieri. Un rând = un concept. Coloane separate prin TAB.
+# Variante în aceeași celulă: separate prin |. Prima variantă e forma canonică (pentru hotwords și corecție).
+# hotword: 1 = intră în glossary/hotwords.<lang>.txt (python -m pipeline.glossary hotwords). Păstrați ~25/limbă:
+#          hotwords și initial_prompt împart ~224 de tokeni.
+# stem (opțional): rădăcinile pentru potrivire, per cuvânt, separate prin spațiu; implicit se calculează automat.
+# Abrevierile se potrivesc exact, cu majuscule (TA ≠ „ta”).
+id	category	ro	ru	en	abbr_ro	abbr_ru	abbr_en	hotword
+reanimare	sectie	reanimare|terapie intensivă	реанимация|интенсивная терапия	intensive care unit	ATI	ОРИТ	ICU	1
+cardiologie	sectie	cardiologie	кардиология	cardiology				0
+chirurgie	sectie	chirurgie	хирургия	surgery				0
+neurologie	sectie	neurologie	неврология	neurology				0
+ginecologie	sectie	ginecologie	гинекология	gynecology				0
+pediatrie	sectie	pediatrie	педиатрия	pediatrics				0
+urgenta	sectie	urgență	приёмное отделение	emergency department			ED	0
+bloc_operator	sectie	bloc operator	операционный блок|операционная	operating room			OR	0
+garda	organizatoric	gardă	дежурство	on-call shift				0
+externare	organizatoric	externare	выписка	discharge				0
+internare	organizatoric	internare	госпитализация	admission				0
+consult	organizatoric	consult|consultație	консультация	consultation				0
+foaie_observatie	organizatoric	foaie de observație	история болезни	medical record				0
+anamneza	general	anamneză	анамнез	medical history				0
+diagnostic	general	diagnostic	диагноз	diagnosis				0
+infarct	diagnostic	infarct miocardic	инфаркт миокарда	myocardial infarction	IMA	ИМ	MI	1
+insuf_cardiaca	diagnostic	insuficiență cardiacă	сердечная недостаточность	heart failure	ICC	ХСН	HF	1
+insuf_renala	diagnostic	insuficiență renală	почечная недостаточность	renal failure	IRA	ОПН	AKI	0
+insuf_respiratorie	diagnostic	insuficiență respiratorie	дыхательная недостаточность	respiratory failure		ДН		0
+avc	diagnostic	accident vascular cerebral	инсульт	stroke	AVC	ОНМК		0
+pneumonie	diagnostic	pneumonie	пневмония	pneumonia				0
+sepsis	diagnostic	sepsis	сепсис	sepsis				0
+soc	diagnostic	șoc	шок	shock				0
+hta	diagnostic	hipertensiune arterială	артериальная гипертензия|гипертония	hypertension	HTA	АГ		0
+diabet	diagnostic	diabet zaharat	сахарный диабет	diabetes mellitus	DZ	СД	DM	0
+fibrilatie	diagnostic	fibrilație atrială	фибрилляция предсердий	atrial fibrillation	FA	ФП	AF	1
+tep	diagnostic	tromboembolism pulmonar	тромбоэмболия легочной артерии	pulmonary embolism	TEP	ТЭЛА	PE	1
+angina	diagnostic	angină pectorală	стенокардия	angina pectoris				0
+pancreatita	diagnostic	pancreatită	панкреатит	pancreatitis				0
+colecistita	diagnostic	colecistită	холецистит	cholecystitis				0
+apendicita	diagnostic	apendicită	аппендицит	appendicitis				0
+hemoragie	diagnostic	hemoragie	кровотечение	hemorrhage				0
+tromboza	diagnostic	tromboză	тромбоз	thrombosis				0
+edem_pulmonar	diagnostic	edem pulmonar	отёк лёгких	pulmonary edema				0
+fractura	diagnostic	fractură	перелом	fracture				0
+anemie	diagnostic	anemie	анемия	anemia				0
+febra	simptom	febră	лихорадка	fever				0
+dispnee	simptom	dispnee	одышка	dyspnea				0
+durere_toracica	simptom	durere toracică	боль в груди	chest pain				0
+hipotensiune	simptom	hipotensiune	гипотония|гипотензия	hypotension				0
+tahicardie	simptom	tahicardie	тахикардия	tachycardia				0
+bradicardie	simptom	bradicardie	брадикардия	bradycardia				0
+ct	investigatie	tomografie computerizată|tomografie	компьютерная томография|томография	computed tomography	CT	КТ	CT	1
+rmn	investigatie	rezonanță magnetică	магнитно-резонансная томография	magnetic resonance imaging	RMN	МРТ	MRI	1
+ecografie	investigatie	ecografie	ультразвуковое исследование	ultrasound		УЗИ	US	0
+ecg	investigatie	electrocardiogramă	электрокардиограмма	electrocardiogram	ECG	ЭКГ	ECG	1
+ecocg	investigatie	ecocardiografie	эхокардиография	echocardiography		ЭхоКГ		1
+radiografie	investigatie	radiografie	рентгенография|рентген	X-ray				0
+coronarografie	investigatie	coronarografie	коронарография	coronary angiography				1
+endoscopie	investigatie	endoscopie|gastroscopie	гастроскопия	endoscopy		ФГДС		0
+holter	investigatie	holter	холтер	Holter monitoring				0
+doppler	investigatie	doppler	допплерография	Doppler ultrasound				0
+hlg	laborator	hemoleucogramă	общий анализ крови	complete blood count	HLG	ОАК	CBC	1
+hemoglobina	laborator	hemoglobină	гемоглобин	hemoglobin				0
+leucocite	laborator	leucocite	лейкоциты	leukocytes				0
+trombocite	laborator	trombocite	тромбоциты	platelets				0
+creatinina	laborator	creatinină	креатинин	creatinine				1
+uree	laborator	uree	мочевина	urea				0
+glicemie	laborator	glicemie	глюкоза|гликемия	blood glucose				0
+troponina	laborator	troponină	тропонин	troponin				1
+pcr	laborator	proteina C reactivă	С-реактивный белок	C-reactive protein	PCR	СРБ	CRP	1
+procalcitonina	laborator	procalcitonină	прокальцитонин	procalcitonin				0
+ddimeri	laborator	D-dimeri	Д-димер	D-dimer				0
+inr	laborator	INR	МНО	INR	INR	МНО	INR	0
+potasiu	laborator	potasiu	калий	potassium				0
+sodiu	laborator	sodiu	натрий	sodium				0
+gazometrie	laborator	gazometrie	газы крови	blood gas analysis		КЩС	ABG	0
+lactat	laborator	lactat	лактат	lactate				0
+bilirubina	laborator	bilirubină	билирубин	bilirubin				0
+transaminaze	laborator	transaminaze	трансаминазы	transaminases	ALT|AST	АЛТ|АСТ	ALT|AST	0
+hemocultura	laborator	hemocultură	гемокультура|посев крови	blood culture				0
+sumar_urina	laborator	sumarul urinei	общий анализ мочи	urinalysis		ОАМ		0
+ta	parametru	tensiune arterială|tensiunea	артериальное давление|давление	blood pressure	TA	АД	BP	0
+saturatie	parametru	saturație	сатурация	oxygen saturation	SpO2	SpO2	SpO2	0
+puls	parametru	puls|frecvență cardiacă	пульс|частота сердечных сокращений	heart rate	FCC	ЧСС	HR	0
+frecventa_resp	parametru	frecvență respiratorie	частота дыхания	respiratory rate	FR	ЧДД	RR	0
+temperatura	parametru	temperatură	температура	temperature				0
+diureza	parametru	diureză	диурез	diuresis				1
+fe	parametru	fracție de ejecție	фракция выброса	ejection fraction	FE	ФВ	EF	1
+glasgow	parametru	scor Glasgow	шкала Глазго	Glasgow Coma Scale	GCS	ШКГ	GCS	0
+noradrenalina	medicament	noradrenalină	норадреналин	norepinephrine				1
+adrenalina	medicament	adrenalină	адреналин	epinephrine				0
+dopamina	medicament	dopamină	дофамин|допамин	dopamine				0
+heparina	medicament	heparină	гепарин	heparin				1
+enoxaparina	medicament	enoxaparină|clexan	эноксапарин|клексан	enoxaparin				0
+antibioterapie	medicament	antibioterapie	антибиотикотерапия	antibiotic therapy				1
+ceftriaxona	medicament	ceftriaxonă	цефтриаксон	ceftriaxone				0
+meropenem	medicament	meropenem	меропенем	meropenem				0
+vancomicina	medicament	vancomicină	ванкомицин	vancomycin				0
+amiodarona	medicament	amiodaronă	амиодарон	amiodarone				0
+furosemid	medicament	furosemid	фуросемид	furosemide				1
+aspirina	medicament	aspirină	аспирин	aspirin				0
+clopidogrel	medicament	clopidogrel	клопидогрел	clopidogrel				0
+insulina	medicament	insulină	инсулин	insulin				0
+omeprazol	medicament	omeprazol|pantoprazol	омепразол|пантопразол	omeprazole				0
+morfina	medicament	morfină	морфин	morphine				0
+paracetamol	medicament	paracetamol	парацетамол	paracetamol				0
+ser_fiziologic	medicament	ser fiziologic	физраствор	normal saline				0
+sedare	medicament	sedare	седация	sedation				0
+tromboaspiratie	procedura	tromboaspirație	тромбоаспирация	thrombus aspiration				1
+angioplastie	procedura	angioplastie	ангиопластика	angioplasty				1
+stent	procedura	stentare|stent	стентирование|стент	stenting				0
+intubatie	procedura	intubație	интубация	intubation				1
+vap	procedura	ventilație artificială|ventilație mecanică	искусственная вентиляция легких	mechanical ventilation	VAP	ИВЛ	MV	1
+hemodializa	procedura	hemodializă	гемодиализ	hemodialysis				1
+transfuzie	procedura	transfuzie	переливание|трансфузия	transfusion				0
+operatie	procedura	operație|intervenție chirurgicală	операция	surgery				0
+laparoscopie	procedura	laparoscopie	лапароскопия	laparoscopy				0
+cvc	procedura	cateter venos central	центральный венозный катетер	central venous catheter	CVC	ЦВК	CVC	0
+drenaj	procedura	drenaj	дренаж	drainage				0
+punctie	procedura	puncție	пункция	puncture				0
+rcr	procedura	resuscitare cardiorespiratorie|resuscitare	сердечно-легочная реанимация	cardiopulmonary resuscitation	RCR	СЛР	CPR	0
+oxigenoterapie	procedura	oxigenoterapie	оксигенотерапия	oxygen therapy				0
+anestezie	procedura	anestezie	анестезия|наркоз	anesthesia				0
