@@ -36,7 +36,7 @@ whisper:
   # (la fel hotwords.<lang>.txt / hotwords.txt)
   initial_prompt:
     ro: "Ședință spital. Termeni medicali: diagnostic, anamneză, tomografie, hemoleucogramă."
-    ru: "Совещание в больнице. Медицинские термины: диагноз, анамнез, томография, анализ крови."
+    ru: null   # fără prompt: pe audio în română decodat ca rusă, Whisper copia promptul în text
     en: null
 
 postprocess:

@@ -6,6 +6,7 @@ Scrie incremental jobs/{id}/asr.jsonl (un segment pe linie, fsync după fiecare
 grup). La reluare continuă de la segmentele care lipsesc din fișier.
 """
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -128,14 +129,15 @@ def transcribe_one(model, clip, lang, prompt, hotwords, w):
     return list(segments), 0.0
 
 
-def setup(w):
-    """Ce determină rezultatul ASR: model/compute_type/limbă (+ nr. de limbi decodate per segment)."""
+def setup(w, glossary):
+    """Ce determină rezultatul ASR: model/compute_type/limbă/amprenta prompturilor și hotwords."""
     lang = w["language"] or "auto"
     if not w["language"] and w.get("compare_languages"):
         lang += "-cmp-" + "+".join(w["compare_languages"])
         if w.get("language_bias"):
             lang += "-bias-" + "+".join(f"{k}{v:+g}" for k, v in sorted(w["language_bias"].items()))
-    return f"{w['model']}/{w['compute_type']}/{lang}"
+    fp = hashlib.sha1(json.dumps(sorted(glossary.items()), ensure_ascii=False).encode("utf-8")).hexdigest()[:6]
+    return f"{w['model']}/{w['compute_type']}/{lang}/p{fp}"
 
 
 def prompt_leak(text, prompt, min_cover=0.5):
@@ -166,7 +168,7 @@ def compression_ratio(text):
     return round(get_compression_ratio(text), 3) if text else 0.0
 
 
-def record(seg, lang, lang_prob, lang_scores, method, subsegs, offset, w):
+def record(seg, lang, lang_prob, lang_scores, method, subsegs, offset, w, su):
     text = "".join(s.text for s in subsegs).strip()
     words = [
         {"w": x.word, "start": round(seg["start"] + x.start - offset, 3),
@@ -176,7 +178,7 @@ def record(seg, lang, lang_prob, lang_scores, method, subsegs, offset, w):
     lp = avg_logprob(subsegs)
     no_speech = round(float(np.mean([s.no_speech_prob for s in subsegs])), 4) if subsegs else None
     return {
-        "id": seg["id"], "setup": setup(w),
+        "id": seg["id"], "setup": su,
         "speaker": seg["speaker"], "start": seg["start"], "end": seg["end"],
         "lang": lang,
         "lang_prob": lang_prob,        # probabilitatea dată de detector limbii alese
@@ -199,10 +201,14 @@ def asr(job_id, cfg=None):
     wav = job_dir / status["audio"]
     out = job_dir / "asr.jsonl"
 
-    # nu amestecăm modele/setări în același asr.jsonl (și nu sărim etapa cu rezultatele altui model)
+    forced = w["language"]
+    glossary = {l: load_glossary(w, l) for l in ([forced] if forced else w["languages"] or [])}
+    su = setup(w, glossary)
+
+    # nu amestecăm modele/setări/prompturi în același asr.jsonl (și nu sărim etapa cu rezultatele altora)
     used = {r.get("setup") for r in read_done(out).values()} - {None}
-    if used and used != {setup(w)}:
-        raise SystemExit(f"{out} e făcut cu {sorted(used)}, nu cu {setup(w)}. "
+    if used and used != {su}:
+        raise SystemExit(f"{out} e făcut cu {sorted(used)}, nu cu {su}. "
                          f"Folosește alt --job-id (ex.: {job_id}_{w['model']}) sau șterge asr.jsonl.")
 
     def work():
@@ -218,8 +224,6 @@ def asr(job_id, cfg=None):
             except ImportError:
                 print("[asr] BatchedInferencePipeline indisponibil în această versiune: transcriere secvențială")
 
-        forced = w["language"]
-        glossary = {l: load_glossary(w, l) for l in ([forced] if forced else w["languages"] or [])}
         pool = max(w["batch_size"], 1) * POOL_BATCHES
         prev_lang = done[max(done)]["lang"] if done else None
         langs_count, decodes = {}, 0
@@ -284,7 +288,7 @@ def asr(job_id, cfg=None):
                     if leak and (k, lang) in plain:
                         res, leak = plain[(k, lang)], False
                     method = "forced" if forced else ("logprob" if len(cand) > 1 else "detect")
-                    rec = record(s, lang, dict(cand)[lang], lang_scores[k], method, *res, w)
+                    rec = record(s, lang, dict(cand)[lang], lang_scores[k], method, *res, w, su)
                     rec["prompt_leak"] = leak
                     fo.write(json.dumps(rec, ensure_ascii=False) + "\n")
                     langs_count[lang] = langs_count.get(lang, 0) + 1
@@ -293,7 +297,7 @@ def asr(job_id, cfg=None):
                 bar.update(round(sum(s["end"] - s["start"] for s in chunk)))
 
         return {"model": w["model"], "device": w["device"], "compute_type": w["compute_type"],
-                "setup": setup(w), "batched": pipe is not None, "resumed_from": len(done),
+                "setup": su, "batched": pipe is not None, "resumed_from": len(done),
                 "transcribed": len(todo), "decodes": decodes, "languages": langs_count,
                 "initial_prompt": {l: bool(p) for l, (p, _) in glossary.items()},
                 "hotwords": {l: bool(h) for l, (_, h) in glossary.items()}}

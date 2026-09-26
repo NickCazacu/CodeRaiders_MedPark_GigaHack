@@ -87,10 +87,11 @@ O replică foarte lungă (monolog) se împarte în mai multe replici ale aceluia
 
 ## Stadiul actual (26.09.2026)
 
-- **Diarizarea nu e încă activă** (lipsesc modelele pyannote), deci pe înregistrările reale `speaker` e `UNK` și
-  fiecare segment e o replică separată. Formatul nu se schimbă când pornim diarizarea: apar doar `SPEAKER_NN`.
-- Calitatea ASR pe română moldovenească încă se evaluează. Structura JSON-ului e stabilă și puteți lucra pe ea.
-  Pentru teste folosiți `docs/llm_input.example.json` sau un job real din `jobs/`.
+- **Diarizarea e activă** (pyannote 3.1, local). Pe înregistrarea de test sunt 3 vorbitori: `SPEAKER_00..02`.
+  Fără diarizare (`--no-diarization`), vorbitorul e `UNK` și fiecare segment e o replică separată.
+- Calitatea ASR pe română moldovenească încă se evaluează. Unele replici în română apar încă scrise cu litere chirilice
+  sau traduse în rusă. Structura JSON-ului e stabilă și puteți lucra pe ea.
+  Pentru teste folosiți `docs/llm_input.example.json` sau un job real din `jobs/` (de exemplu `jobs/Medpark_diar/`).
 
 ## Dacă aveți nevoie de mai mult detaliu
 

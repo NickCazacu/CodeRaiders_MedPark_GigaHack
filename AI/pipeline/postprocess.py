@@ -24,6 +24,7 @@ HALLUCINATIONS = re.compile("|".join([
     r"продолжение следует", r"спасибо за просмотр", r"подписывайтесь на( наш)? канал",
     r"thanks? (you )?for watching", r"please subscribe", r"like and subscribe",
     r"mul[țţt]umesc pentru vizionare", r"abona[țţt]i-v[ăa]", r"v[ăa] mul[țţt]umim pentru vizionare",
+    r"v[ăa] abona[țţt]i", r"abona[țţt]i-v[ăa] la canal",
 ]), re.IGNORECASE)
 
 

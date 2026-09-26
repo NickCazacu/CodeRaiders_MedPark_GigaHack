@@ -1,11 +1,14 @@
+# Reguli pentru tot repo-ul. Regulile specifice pipeline-ului audio sunt în AI/.gitignore.
 .venv/
 __pycache__/
 *.pyc
-jobs/*
-!jobs/.gitkeep
-models/*
-!models/.gitkeep
-*.part
-tests/data/long_*.mp3
-.claude/settings.local.json
-*.part.wav
+**/.claude/settings.local.json
+
+# Plasă de siguranță: înregistrările de ședințe sunt date medicale. Un fișier audio de test
+# sintetic se poate adăuga explicit cu `git add -f`.
+*.m4a
+*.wav
+*.mp3
+*.ogg
+*.opus
+*.flac

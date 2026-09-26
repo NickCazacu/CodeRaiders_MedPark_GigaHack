@@ -1,0 +1,16 @@
+# Căile de aici sunt relative la AI/. jobs/ conține înregistrări și transcrieri reale (date medicale),
+# models/ conține modele de câțiva GB: niciunul nu intră în git.
+.venv/
+__pycache__/
+*.pyc
+jobs/*
+!jobs/.gitkeep
+models/*
+!models/.gitkeep
+*.part
+tests/data/long_*.mp3
+.claude/settings.local.json
+# transcrieri de referință făcute pe înregistrări reale = date medicale
+tests/reference/*
+!tests/reference/README.md
+*.part.wav

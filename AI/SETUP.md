@@ -144,7 +144,9 @@ româna moldovenească cu rusa. `--language ro` forțează o limbă și e mai ra
 Glossary (opțional), per limbă: `glossary/prompt.<lang>.txt` (sau `prompt.txt` pentru toate) înlocuiește
 `whisper.initial_prompt[<lang>]` din config, iar `glossary/hotwords.<lang>.txt` / `hotwords.txt` se trimite ca `hotwords`,
 câte un termen pe linie. Liniile care încep cu `#` sunt ignorate. Promptul descrie stilul și vocabularul, fără date reale.
-Whisper copiază uneori promptul în transcriere; aceste cazuri sunt detectate (`prompt_leak`) și nu intră la LLM.
+Whisper copiază uneori promptul în transcriere, mai ales când audio-ul e decodat în limba greșită. Copiile complete
+sunt detectate (`prompt_leak`) și nu intră la LLM. Din acest motiv rusa nu are prompt (`initial_prompt.ru: null`).
+Prompturile fac parte din `setup`: dacă le schimbi, rulează ASR-ul într-un job nou sau șterge `asr.jsonl`.
 
 Etapele pe rând:
 ```powershell
