@@ -77,11 +77,11 @@ def test_review_report():
     page = mom.write(job).read_text(encoding="utf-8")
     md = (job / "mom.md").read_text(encoding="utf-8")
     for doc in (page, md):
-        assert "Proces-verbal al ședinței" in doc and "Sinteza deciziilor și termenelor" in doc
+        assert "Proces-verbal al ședinței" in doc and "Plan / decizii" in doc
         assert "citatul nu a fost găsit în transcriere" in doc and "bazată pe o replică transcrisă nesigur" in doc
-        assert "spus în înregistrare: „Давайте начнём амиодарон сегодня.” · termen spus: „сегодня”" in doc
-    # coloana „Termen” din sinteză e în română; expresia rusă apare doar în adnotarea „termen spus”
-    assert "| 1. Pacient 12, cardiologie | Amiodaronă azi | aprobat | relativ | [00:20] |" in md, md
+        assert "„Давайте начнём амиодарон сегодня.”" in doc                  # replica sursă, verbatim
+    # statusul în limbajul vizitei; termenul concret, cum a fost spus
+    assert "- **decis**: Amiodaronă azi — termen: сегодня [00:20]" in md, md
     assert "<!doctype html>" in page and "&lt;" not in page.split("<body>")[0]
 
 
@@ -89,7 +89,7 @@ def test_mom_escapes_and_empty_minutes():
     job = tmpdir()
     (job / "minutes.json").write_text(json.dumps({"meeting_summary": "<b>x</b> & y", "cases": []}), encoding="utf-8")
     page = mom.write(job).read_text(encoding="utf-8")
-    assert "&lt;b&gt;x&lt;/b&gt; &amp; y" in page and "Niciun punct." in page and "Nicio decizie." in page
+    assert "&lt;b&gt;x&lt;/b&gt; &amp; y" in page and "Niciun pacient identificat." in page
 
 
 def test_test_meetings_folder_by_name_and_mom_export():

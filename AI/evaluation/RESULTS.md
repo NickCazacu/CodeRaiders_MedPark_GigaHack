@@ -95,6 +95,22 @@ LLM-ul pe 2 h: 9 apeluri de împărțire (128 s), 126 de extracții (~10 s fieca
 Fișierul sintetic e cel mai rău caz pentru LLM; o ședință reală de 2 h cu 20–40 de pacienți ar avea de 3–4 ori mai
 puține extracții (estimat ~27–30 min total, nemăsurat).
 
+## Procesul-verbal față de faptele confirmate (Medpark, 27.09)
+
+`python -m evaluation.mom_checklist tests/reference/medpark_facts.json JOB -v`: 43 de fapte confirmate de echipă
+(patul 8: 15, patul 9: 8, boxa: 20), căutate în cazul pacientului corect. Lista e locală (date medicale).
+qwen3:8b variază de la o rulare la alta cu ±3–4 fapte, deci fiecare variantă e rulată cu 3 seed-uri.
+
+| Variantă | Rulări | Medie |
+|---|---|---|
+| procesul-verbal din 26.09 după-amiază | 1 | 49% |
+| prompt + filtrele din 27.09 (adoptat) | 67%, 70%, 65% | **67%** |
+| + reguli de ortografie medicală, „nu scrie ce nu s-a discutat”, „starea nu e decizie” | 70%, 65%, 60% | 65%, respins |
+| + a doua trecere pe fragmentul fiecărui pacient (`complete.enabled`) | 67%, 74%, 63% | 68%, +20% timp, oprit |
+
+Din faptele lipsă, 3 nu există în transcriere (creatinină 240, linie arterială, Diacarb): le-a pierdut ASR-ul.
+Restul sunt în replici lungi și dense, pe care modelul de 8B le rezumă incomplet.
+
 ## Nevalidat încă
 
 - Bonusul ro 0.5 pe **rusă reală**: dacă rusa vorbită iese transcrisă ca română, bonusul trebuie scăzut.

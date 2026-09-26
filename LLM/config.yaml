@@ -19,6 +19,7 @@ stages:
   # 4096: cu `facts` (analize, doze, proceduri) răspunsul pentru 6–8 pacienți trece de 2048 de tokeni
   extract:   {think: false, num_predict: 4096, max_predict: 6144}
   segment:   {think: false, num_predict: 2048}   # împărțirea ședinței pe pacienți (vezi `segment`)
+  complete:  {think: false, num_predict: 2048}   # a doua trecere pe fragmentul unui pacient (vezi `complete`)
   same_case: {think: false, num_predict: 32}     # „același caz?” pentru chei ambigue
   supersede: {think: false, num_predict: 128}    # ce decizii au fost înlocuite (caz cu >= 2 decizii)
   translate: {think: false, num_predict: 1024}   # rusa rămasă în câmpurile care trebuie să fie în română
@@ -66,3 +67,7 @@ extract:
   max_cases: 12                # limită în schema JSON (maxItems) per fereastră, contra buclelor
   max_decisions: 8              # per caz
   max_facts: 20                 # constatări clinice per caz (analize, tratament, proceduri, evoluție)
+
+complete:
+  enabled: true                 # modul pe pacienți: încă un apel per fragment, doar pentru constatările ratate
+                                # (replicile lungi și dense); vezi AI/evaluation/RESULTS.md

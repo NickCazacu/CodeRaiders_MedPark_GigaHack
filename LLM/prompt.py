@@ -67,6 +67,12 @@ def segment_messages(lines, previous=None):
     return [{"role": "user", "content": render(read("segment.md"), lines="\n".join(lines), continuation=cont)}]
 
 
+def complete_messages(label, lines, facts):
+    listed = "\n".join(f"- [{f['timestamp']}] {f['category']}: {f['fact']}" for f in facts) or "(niciuna)"
+    return [{"role": "user", "content": render(read("complete.md"), label=label, facts=listed,
+                                                lines="\n".join(lines))}]
+
+
 def same_case_messages(a, b):
     return [{"role": "user", "content": render(
         read("same_case.md"), key_a=a["case_key"], topic_a=a["topic"], summary_a=a["discussion_summary"],

@@ -173,7 +173,8 @@ def test_facts_kept_deduped_and_rendered():
     from LLM import mom
     mom.write(d)
     md = (d / "mom.md").read_text(encoding="utf-8")
-    assert "**Constatări clinice:**" in md and "_Analize:_ Creatinina a crescut după contrast [00:00]" in md, md
+    assert "**Paraclinic:**" in md and "- Creatinina a crescut după contrast [00:00]" in md, md
+    assert md.index("**Diagnostic și istoric:**") < md.index("**Paraclinic:**"), md   # ordinea clinică
     assert "Creatinina a crescut după contrast" in (d / "mom.html").read_text(encoding="utf-8")
 
 
@@ -251,6 +252,24 @@ def test_same_patient():
     assert ex.same_patient("Apătul nou mei departi de box", "Bocse de meniație, pneumonie")
     assert not ex.same_patient("Pacientul din patul 9", "Bocse de meniație")
     assert ex.same_patient("Alți pacienți", "alți  pacienți") and not ex.same_patient("Primul pacient", "Alți pacienți")
+
+
+def test_complete_pass_adds_missed_facts():
+    # a doua trecere pe fragmentul pacientului: constatarea ratată se adaugă; unitatea nespusă dispare
+    seg = {"patients": [{"start": "00:03", "label": "Pacient patul 8", "cue": ""},
+                        {"start": "00:52", "label": "Pacient patul 9", "cue": ""}]}
+    p8 = {"summary": "", "cases": [case("Pacient patul 8", facts=[fact("Creatinina 240", "00:26")])]}
+    p9 = {"summary": "", "cases": [case("Pacient patul 9")]}
+    more8 = {"facts": [fact("Diureza 400 ml pe noapte", "00:26", "evoluție"), fact("Potasiu 6 mmol/l", "00:26")]}
+    final = {"meeting_summary": "Două cazuri [00:03] [00:52].", "case_order": [0, 1]}
+    m, report, client, d = go("llm_input.example.json",
+                              {"segment": [seg], "extract": [p8, p9], "complete": [more8, {"facts": []}],
+                               "final": [final]},
+                              **{"segment.enabled": True, "complete.enabled": True})
+    assert [c["stage"] for c in client.calls] == ["segment", "extract", "complete", "extract", "complete", "final"]
+    assert "Creatinina 240" in client.calls[2]["messages"][-1]["content"]      # vede ce s-a extras deja
+    facts = [f["fact"] for f in m["cases"][0]["facts"]]
+    assert "Diureza 400 ml pe noapte" in facts and "Potasiu 6" in facts, facts  # „mmol/l” nu s-a spus
 
 
 def test_canonical_key_from_fragment():

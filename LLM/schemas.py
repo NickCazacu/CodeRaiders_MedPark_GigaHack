@@ -88,6 +88,13 @@ SEGMENTS = {
     "required": ["patients"],
 }
 
+# a doua trecere pe fragmentul unui pacient: doar constatările care lipsesc
+COMPLETE = {
+    "type": "object",
+    "properties": {"facts": {"type": "array", "items": FACT, "maxItems": 15}},
+    "required": ["facts"],
+}
+
 TRANSLATE = {
     "type": "object",
     "properties": {"texts": {"type": "array", "items": _str}},

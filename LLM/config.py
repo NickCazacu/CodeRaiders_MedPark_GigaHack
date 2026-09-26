@@ -19,6 +19,7 @@ ENV = {
     "LLM_RETRIES": ("ollama", "retries", int),
     "LLM_NUM_CTX": ("ollama", "num_ctx", int),
     "LLM_TEMPERATURE": ("ollama", "temperature", float),
+    "LLM_SEED": ("ollama", "seed", int),
     "LLM_KEEP_ALIVE": ("ollama", "keep_alive", str),
     "LLM_TOKEN_FACTOR": ("context", "token_factor", float),
     "LLM_MAX_NUM_CTX": ("context", "max_num_ctx", int),

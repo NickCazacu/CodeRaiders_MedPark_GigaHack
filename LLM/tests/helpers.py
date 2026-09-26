@@ -21,7 +21,8 @@ def fixture(name):
 def cfg(**over):
     c = load_config(env={})
     # testele existente verifică fluxul pe ferestrele ASR; modul pe pacienți are testele lui (segment.enabled=True)
-    over = {"segment.enabled": False, **over}
+    # a doua trecere (complete.enabled) are și ea testul ei
+    over = {"segment.enabled": False, "complete.enabled": False, **over}
     for dotted, v in over.items():
         *path, key = dotted.split(".")   # „sec.key” sau „stages.extract.num_predict”
         d = c

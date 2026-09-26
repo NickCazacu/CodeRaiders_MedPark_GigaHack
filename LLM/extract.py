@@ -187,13 +187,19 @@ class Extractor:
         return " ".join(self.mt.turns[i].line for i in ids[k:k + 2])
 
     def fix_by_timestamps(self, text, fixes, where):
-        """Rezumatele pun [mm:ss] după fiecare afirmație: ziua săptămânii din afirmație trebuie să fie cea din
-        linia de la acel moment („on Friday” nu devine „joi”)."""
+        """Rezumatele pun [mm:ss] după fiecare afirmație: ziua săptămânii și unitățile de măsură din afirmație
+        trebuie să fie cele din linia de la acel moment („on Friday” nu devine „joi”, „0,22” nu devine „0,22 mg”)."""
         if not text:
             return text
         parts = re.split(r"(\[\d+:\d{2}(?::\d{2})?\])", text)
         for k in range(1, len(parts), 2):
-            parts[k - 1] = sanitize.fix_weekday(parts[k - 1], self.line_at(parts[k][1:-1]), fixes, where)
+            if re.match(r"\W*nu s-(a|au)\s+(discutat|menționat|vorbit|spus)\b", parts[k - 1], re.I):
+                fixes.append(f"{where}: afirmație despre ce nu s-a discutat eliminată: {parts[k - 1].strip()!r}")
+                parts[k - 1] = parts[k] = ""  # ce NU s-a spus nu intră în procesul-verbal
+                continue
+            line = self.line_at(parts[k][1:-1])
+            parts[k - 1] = sanitize.fix_weekday(parts[k - 1], line, fixes, where)
+            parts[k - 1] = sanitize.strip_unspoken_units(parts[k - 1], line, fixes, where)
         return "".join(parts)
 
     # ---------- împărțirea pe pacienți ----------
@@ -340,6 +346,16 @@ class Extractor:
             i = max((k for k, t in enumerate(turns) if t.start <= sec + 1), default=0)
             return " ".join(x.line for x in turns[i:i + 2])
 
+        # a doua trecere (modul pe pacienți): constatările ratate, mai ales din replicile lungi și dense
+        if patient and len(cases) == 1 and (self.cfg.get("complete") or {}).get("enabled"):
+            msgs = prompt.complete_messages(patient["label"], w.new_lines, cases[0].get("facts", []))
+            self.dbg.write(f"{label}.complete.prompt.txt", messages_text(msgs))
+            r2 = self.call("complete", msgs, schemas.COMPLETE, f"{label} complete")
+            if r2["error"]:
+                self.errors.pop()  # nu e fatal: rămân constatările din prima trecere
+            added = [x for x in (sanitize.fact(f, fixes, label) for f in (r2["data"] or {}).get("facts") or []) if x]
+            cases[0].setdefault("facts", []).extend(added)
+            self.dbg.write(f"{label}.complete.response.json", {"raw": r2["raw"], "added": added})
         for case in cases:
             for f in case.get("facts", []):
                 f["fact"] = sanitize.strip_unspoken_units(f["fact"], source_lines(f["timestamp"]), fixes, label)

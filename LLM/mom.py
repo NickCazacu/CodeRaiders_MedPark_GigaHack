@@ -2,11 +2,10 @@
 
     python -m LLM.mom AI/jobs/<job_id>         # sau cale spre minutes.json / llm_input.json
 
-Doar redă ce a extras modelul (nimic nou): rezumat, ordinea de zi, discuții și decizii pe
-puncte, sinteza deciziilor și termenelor, întrebări deschise și notele pentru revizuire
-(replici nesigure, citate negăsite, termene fără expresie exactă). Fiecare afirmație păstrează
-timpul [mm:ss] din înregistrare. Termenele sunt expresiile din transcriere; datele concrete le
-calculează validarea.
+Doar redă ce a extras modelul (nimic nou), în formatul unui raport de gardă: rezumat, apoi pe
+fiecare pacient diagnostic și istoric, stare clinică, paraclinic, tratament și proceduri, plan /
+decizii (cu replica sursă) și ce rămâne în așteptare; la final notele pentru verificare. Fiecare
+afirmație păstrează timpul [mm:ss] din înregistrare. Termenele apar doar când sunt concrete.
 """
 import argparse
 import html
@@ -22,17 +21,27 @@ ETA_LABEL = {"absolute": "dată fixă", "relative": "relativ", "duration": "dura
              "vague": "vag", "recurring": "periodic", "none": ""}
 STATUS_CLASS = {"aprobat": "ok", "respins": "no", "amânat": "wait", "necesită investigații suplimentare": "wait",
                 "în discuție": "open"}
-# ordinea și etichetele constatărilor clinice (schemas.FACT_CATEGORIES)
-FACT_LABEL = {"diagnostic": "Diagnostic", "istoric": "Istoric", "analize": "Analize", "imagistică": "Imagistică",
-              "microbiologie": "Microbiologie", "tratament": "Tratament", "procedură": "Proceduri",
-              "monitorizare": "Monitorizare", "evoluție": "Evoluție"}
+# secțiunile clinice ale fiecărui pacient (ordinea unui raport de gardă) -> categoriile din schemas.FACT_CATEGORIES
+SECTIONS = [("Diagnostic și istoric", ("diagnostic", "istoric")),
+            ("Stare clinică", ("evoluție", "monitorizare")),
+            ("Paraclinic", ("analize", "imagistică", "microbiologie")),
+            ("Tratament și proceduri", ("tratament", "procedură"))]
+# statusul deciziei, în limbajul unei vizite medicale
+STATUS_LABEL = {"aprobat": "decis", "respins": "respins", "amânat": "amânat",
+                "necesită investigații suplimentare": "după investigații", "în discuție": "propus"}
+# termenele care spun ceva concret; „vag” și „fără termen” nu se mai afișează
+ETA_SHOWN = {"absolute", "relative", "duration", "conditional", "recurring"}
 
 
-def facts_by_category(case):
-    """[(etichetă, [constatări])] în ordinea clinică; minutes.json mai vechi nu au `facts`."""
+def facts_by_section(case):
+    """[(secțiune, [constatări])] în ordinea clinică; minutes.json mai vechi nu au `facts`."""
     facts = case.get("facts") or []
-    return [(label, [f for f in facts if f["category"] == cat]) for cat, label in FACT_LABEL.items()
-            if any(f["category"] == cat for f in facts)]
+    out = []
+    for label, cats in SECTIONS:
+        items = [f for f in facts if f["category"] in cats]
+        if items:
+            out.append((label, items))
+    return out
 
 
 def read_json(path, default=None):
@@ -48,17 +57,14 @@ def fmt_duration(seconds):
 
 
 def eta_phrase(e):
-    """Termenul în română (tip + condiție). Expresia verbatim (poate fi în rusă/engleză) nu intră în
-    textul procesului-verbal, ci în adnotarea de revizuire (eta_source)."""
-    if e["type"] == "none":
+    """Termenul concret, cum a fost spus („mâine dimineață”, „după CT”); fără termen vag sau necitat."""
+    if e["type"] not in ETA_SHOWN or not e["raw"]:
         return ""
-    return ETA_LABEL[e["type"]] + (f", condiție: {e['condition']}" if e["condition"] else "")
+    return e["raw"] + (f" (condiție: {e['condition']})" if e["type"] == "conditional" and e["condition"] else "")
 
 
 def eta_source(e):
-    if e["type"] == "none":
-        return ""
-    return f"„{e['raw']}”" if e["raw"] else "(fără expresie exactă în transcriere)"
+    return ""
 
 
 def collect(job_dir):
@@ -85,9 +91,6 @@ def collect(job_dir):
             d["_eta_src"] = eta_source(c["eta"]) if last else ""
             for f in d["_flags"]:
                 notes.append(f"Punctul {i} ({c['case_key']}), decizia [{d['timestamp']}]: {f}.")
-        if c["eta"]["type"] != "none" and not c["eta"]["raw"]:
-            notes.append(f"Punctul {i} ({c['case_key']}): termenul ({ETA_LABEL[c['eta']['type']]}) nu are "
-                         "expresia exactă din transcriere.")
     moved = sum(e["event"] == "decision_moved" for e in checks)
     if moved:
         noun = "decizie a fost mutată" if moved == 1 else "decizii au fost mutate"
@@ -112,44 +115,30 @@ def render_md(m):
     out = [f"# {m['title']}", "",
            f"**Data ședinței:** {m['date']} · **Durata înregistrării:** {m['duration']} · "
            f"**Generat:** {m['generated']} ({m['model']}, automat, de verificat)", "",
-           "## 1. Rezumat", "", m["summary"] or "_—_", "", "## 2. Ordinea de zi", ""]
-    out += [f"{i}. {c['case_key']}: {c['topic']}" for i, c in enumerate(m["cases"], 1)] or ["_Niciun punct._"]
-    out += ["", "## 3. Discuții și decizii", ""]
+           "## Rezumat", "", m["summary"] or "_—_", "", "## Pacienți", ""]
     for i, c in enumerate(m["cases"], 1):
-        out += [f"### 3.{i}. {c['case_key']}", "", f"**Subiect:** {c['topic']}", "",
-                f"**Discuție:** {c['discussion_summary'] or '—'}", ""]
-        groups = facts_by_category(c)
-        if groups:
-            out.append("**Constatări clinice:**")
-            for label, facts in groups:
-                out.append(f"- _{label}:_ " + "; ".join(f"{f['fact']} [{f['timestamp']}]" for f in facts))
+        out += [f"### {i}. {c['case_key']}" + (f" — {c['topic']}" if c["topic"] else ""), ""]
+        if c["discussion_summary"]:
+            out += [f"_{c['discussion_summary']}_", ""]
+        for label, facts in facts_by_section(c):
+            out.append(f"**{label}:**")
+            out += [f"- {f['fact']} [{f['timestamp']}]" for f in facts]
             out.append("")
-        if c["decisions"]:
-            out.append("**Decizii:**")
-            for d in c["decisions"]:
-                text = f"~~{d['decision']}~~ (modificată ulterior)" if d["superseded"] else d["decision"]
-                eta = f" — termen: {d['_eta']}" if d["_eta"] else ""
-                flag = " ⚠" if d["_flags"] else ""
-                out.append(f"- **{d['status']}**: {text}{eta} [{d['timestamp']}]{flag}")
-                src = f" · termen spus: {d['_eta_src']}" if d["_eta_src"] else ""
-                out.append(f"  - _spus în înregistrare: „{d['quote']}”{src}_")
-        else:
-            out.append("**Decizii:** nicio decizie.")
+        out.append("**Plan / decizii:**")
+        for d in c["decisions"]:
+            text = f"~~{d['decision']}~~ (modificată ulterior)" if d["superseded"] else d["decision"]
+            eta = f" — termen: {d['_eta']}" if d["_eta"] else ""
+            flag = " ⚠" if d["_flags"] else ""
+            out.append(f"- **{STATUS_LABEL.get(d['status'], d['status'])}**: {text}{eta} [{d['timestamp']}]{flag}")
+            out.append(f"  - _sursa: „{d['quote']}”_")
+        if not c["decisions"]:
+            out.append("- fără decizii noi")
         if c["open_questions"]:
-            out += ["", "**Rămâne de clarificat:**", *[f"- {q}" for q in c["open_questions"]]]
+            out += ["", "**În așteptare / de clarificat:**", *[f"- {q}" for q in c["open_questions"]]]
         out.append("")
-    out += ["## 4. Sinteza deciziilor și termenelor", "",
-            "| Punct | Decizie | Status | Termen | Sursa |", "|---|---|---|---|---|"]
-    rows = [(i, c, d) for i, c in enumerate(m["cases"], 1) for d in c["decisions"] if not d["superseded"]]
-    out += [f"| {i}. {c['case_key']} | {d['decision']} | {d['status']} | {d['_eta'] or '—'} | [{d['timestamp']}] |"
-            for i, c, d in rows] or ["| — | _nicio decizie_ | | | |"]
-    questions = [(i, c, q) for i, c in enumerate(m["cases"], 1) for q in c["open_questions"]]
-    out += ["", "## 5. Întrebări deschise", ""]
-    out += [f"- {i}. {c['case_key']}: {q}" for i, c, q in questions] or ["_Niciuna._"]
-    out += ["", "## 6. Note pentru revizuire", "",
-            "- Termenele sunt expresiile din transcriere; datele concrete se calculează la validare.",
-            "- Timpii [mm:ss] trimit la momentul din înregistrare.",
-            "- Textele „spus în înregistrare” sunt citate exacte, în limba vorbită; restul e în română.",
+    out += ["## Note pentru verificare", "",
+            "- Generat automat din înregistrare: valorile și termenii medicali se verifică înainte de trimitere.",
+            "- [mm:ss] trimite la momentul din înregistrare; „sursa” e replica exactă, în limba vorbită.",
             *[f"- ⚠ {n}" for n in m["notes"]], ""]
     return "\n".join(out)
 
@@ -177,7 +166,9 @@ ul.dec{list-style:none;padding:0;margin:8px 0 0}ul.dec li{padding:8px 0;border-t
 table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;vertical-align:top;padding:8px;border-bottom:1px solid var(--line)}
 th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
 .table-wrap{overflow-x:auto}ol.agenda li{margin:4px 0}.notes li{margin:4px 0}
-table.facts{margin:4px 0 10px}table.facts th{width:130px;text-transform:none;font-size:13px;letter-spacing:0}
+table.facts{margin:4px 0 10px}table.facts th{width:170px;text-transform:none;font-size:13px;letter-spacing:0}
+.topic{font-weight:400;color:var(--muted)}.case-sum{margin:4px 0 10px}
+details.quote summary{cursor:pointer;font-style:normal}
 @media print{body{background:#fff;color:#000}.card{border-color:#ccc;break-inside:avoid}.draft{border:1px solid #c90}}
 """
 
@@ -186,9 +177,8 @@ def render_html(m):
     e = html.escape
 
     def status(s):
-        return f'<span class="status {STATUS_CLASS.get(s, "open")}">{e(s)}</span>'
+        return f'<span class="status {STATUS_CLASS.get(s, "open")}">{e(STATUS_LABEL.get(s, s))}</span>'
 
-    agenda = "".join(f"<li>{e(c['case_key'])}: {e(c['topic'])}</li>" for c in m["cases"]) or "<li>Niciun punct.</li>"
     cards = []
     for i, c in enumerate(m["cases"], 1):
         decs = []
@@ -197,28 +187,20 @@ def render_html(m):
                     if d["superseded"] else e(d["decision"]))
             eta = f'<div class="eta"><span class="label">Termen:</span> {e(d["_eta"])}</div>' if d["_eta"] else ""
             flags = "".join(f'<div class="flag">⚠ {e(f)}</div>' for f in d["_flags"])
-            src = f' · termen spus: {e(d["_eta_src"])}' if d["_eta_src"] else ""
             decs.append(f'<li>{status(d["status"])} {text} <span class="ts">[{e(d["timestamp"])}]</span>{eta}'
-                        f'<div class="quote">spus în înregistrare: „{e(d["quote"])}”{src}</div>{flags}</li>')
-        decisions = f'<ul class="dec">{"".join(decs)}</ul>' if decs else '<p class="label">Nicio decizie.</p>'
+                        f'<details class="quote"><summary>sursa</summary>„{e(d["quote"])}”</details>{flags}</li>')
+        decisions = (f'<ul class="dec">{"".join(decs)}</ul>' if decs
+                     else '<p class="label">Fără decizii noi.</p>')
         qs = "".join(f"<li>{e(q)}</li>" for q in c["open_questions"])
-        questions = f'<p class="label">Rămâne de clarificat:</p><ul>{qs}</ul>' if qs else ""
+        questions = f'<p class="label">În așteptare / de clarificat:</p><ul>{qs}</ul>' if qs else ""
         rows_f = "".join(f'<tr><th>{e(label)}</th><td>'
                          + "<br>".join(f'{e(f["fact"])} <span class="ts">[{e(f["timestamp"])}]</span>' for f in facts)
-                         + "</td></tr>" for label, facts in facts_by_category(c))
-        facts_html = (f'<p class="label">Constatări clinice:</p><table class="facts">{rows_f}</table>'
-                      if rows_f else "")
-        cards.append(f'<section class="card"><h3>{i}. {e(c["case_key"])}</h3>'
-                     f'<p><span class="label">Subiect:</span> {e(c["topic"])}</p>'
-                     f'<p><span class="label">Discuție:</span> {e(c["discussion_summary"] or "—")}</p>'
-                     f'{facts_html}{decisions}{questions}</section>')
-    rows = "".join(f'<tr><td>{i}. {e(c["case_key"])}</td><td>{e(d["decision"])}</td><td>{status(d["status"])}</td>'
-                   f'<td>{e(d["_eta"]) or "—"}</td><td class="ts">[{e(d["timestamp"])}]</td></tr>'
-                   for i, c in enumerate(m["cases"], 1) for d in c["decisions"] if not d["superseded"])
-    table = (f'<div class="table-wrap"><table><thead><tr><th>Punct</th><th>Decizie</th><th>Status</th><th>Termen</th>'
-             f'<th>Sursa</th></tr></thead><tbody>{rows}</tbody></table></div>') if rows else "<p>Nicio decizie.</p>"
-    qs = "".join(f"<li>{i}. {e(c['case_key'])}: {e(q)}</li>"
-                 for i, c in enumerate(m["cases"], 1) for q in c["open_questions"]) or "<li>Niciuna.</li>"
+                         + "</td></tr>" for label, facts in facts_by_section(c))
+        facts_html = f'<table class="facts">{rows_f}</table>' if rows_f else ""
+        summary = f'<p class="case-sum">{e(c["discussion_summary"])}</p>' if c["discussion_summary"] else ""
+        topic = f' <span class="topic">— {e(c["topic"])}</span>' if c["topic"] else ""
+        cards.append(f'<section class="card"><h3>{i}. {e(c["case_key"])}{topic}</h3>{summary}{facts_html}'
+                     f'<p class="label">Plan / decizii:</p>{decisions}{questions}</section>')
     notes = "".join(f"<li>⚠ {e(n)}</li>" for n in m["notes"])
     return f"""<!doctype html>
 <html lang="ro"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
@@ -228,15 +210,11 @@ def render_html(m):
 <div class="meta">Data ședinței: <b>{e(m['date'])}</b> · Durata înregistrării: {e(m['duration'])} ·
 Generat: {e(m['generated'])} · {e(m['model'])}</div>
 <div class="draft">Generat automat din înregistrare — de verificat înainte de trimitere</div>
-<h2>1. Rezumat</h2><p>{e(m['summary'] or '—')}</p>
-<h2>2. Ordinea de zi</h2><ol class="agenda">{agenda}</ol>
-<h2>3. Discuții și decizii</h2>{''.join(cards) or '<p>Niciun punct.</p>'}
-<h2>4. Sinteza deciziilor și termenelor</h2>{table}
-<h2>5. Întrebări deschise</h2><ul>{qs}</ul>
-<h2>6. Note pentru revizuire</h2><ul class="notes">
-<li>Termenele sunt expresiile din transcriere; datele concrete se calculează la validare.</li>
-<li>Timpii [mm:ss] trimit la momentul din înregistrare.</li>
-<li>Textele „spus în înregistrare” sunt citate exacte, în limba vorbită; restul e în română.</li>{notes}</ul>
+<h2>Rezumat</h2><p>{e(m['summary'] or '—')}</p>
+<h2>Pacienți</h2>{''.join(cards) or '<p>Niciun pacient identificat.</p>'}
+<h2>Note pentru verificare</h2><ul class="notes">
+<li>Generat automat din înregistrare: valorile și termenii medicali se verifică înainte de trimitere.</li>
+<li>[mm:ss] trimite la momentul din înregistrare; „sursa” e replica exactă, în limba vorbită.</li>{notes}</ul>
 <p class="meta">Job: {e(m['job_id'])}</p>
 </main></body></html>
 """
