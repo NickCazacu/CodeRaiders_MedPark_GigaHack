@@ -15,7 +15,7 @@ def eta(t, raw):
 
 def d(turn_id, t, window, text=None, quote=None, replaces=False, status="aprobat", order=[0]):
     order[0] += 1
-    return {"decision": text or f"{["ecografie", "dializa", "cateter", "operatie", "transfer", "externare", "analize"][(turn_id or 0) % 7]} {turn_id}", "status": status, "quote": quote or f"citat {turn_id}", "timestamp": "00:00",
+    return {"decision": text or f"{['ecografie', 'dializa', 'cateter', 'operatie', 'transfer', 'externare', 'analize'][(turn_id or 0) % 7]} {turn_id}", "status": status, "quote": quote or f"citat {turn_id}", "timestamp": "00:00",
             "replaces_previous": replaces, "turn_id": turn_id, "_t": t, "_window": window, "_order": order[0]}
 
 

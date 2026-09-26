@@ -28,7 +28,7 @@
       "typeVersion": 2,
       "position": [260, 0],
       "parameters": {
-        "jsCode": "const incoming = $input.first();\nconst audio = incoming.binary?.audio;\nif (!audio) throw new Error('Expected multipart field named audio');\nconst original = audio.fileName || 'meeting-audio';\nconst uploadName = original.replace(/[^A-Za-z0-9._-]/g, '_').replace(/^_+/, '') || 'meeting-audio';\nreturn [{ json: { uploadName }, binary: { audio } }];"
+        "jsCode": "const incoming = $input.first();\nconst audio = incoming.binary?.audio;\nif (!audio) throw new Error('Expected multipart field named audio');\nconst original = audio.fileName || 'meeting-audio';\nconst safe = original.replace(/[^A-Za-z0-9._-]/g, '_').replace(/^_+/, '') || 'meeting-audio';\nconst stamp = new Date().toISOString().replace(/[-:]/g, '').replace('T', '-').slice(0, 15);\nconst jobId = `mom-${stamp}-${Math.random().toString(36).slice(2, 6)}`;\n// a unique name, so two uploads with the same filename never overwrite each other in the inbox\nconst uploadName = `${jobId}_${safe}`;\nreturn [{ json: { uploadName, jobId }, binary: { audio } }];"
       }
     },
     {
@@ -76,6 +76,21 @@
         "dataPropertyName": "audio",
         "options": {}
       }
+    },
+    {
+      "id": "start-ai-processing",
+      "name": "Start ASR + LLM",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1300, 0],
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8765/jobs",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ file: $('Prepare safe filename').first().json.uploadName, job_id: $('Prepare safe filename').first().json.jobId }) }}",
+        "options": {}
+      }
     }
   ],
   "connections": {
@@ -90,6 +105,9 @@
     },
     "Restore upload for local save": {
       "main": [[{ "node": "Save audio locally", "type": "main", "index": 0 }]]
+    },
+    "Save audio locally": {
+      "main": [[{ "node": "Start ASR + LLM", "type": "main", "index": 0 }]]
     }
   },
   "pinData": {}

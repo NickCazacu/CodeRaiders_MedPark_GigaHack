@@ -4,9 +4,19 @@ Sistem on-premise: înregistrarea ședinței → transcriere (ro/ru/en) cu vorbi
 
 | Folder | Ce conține | Documentație |
 |---|---|---|
-| `AI/` | pipeline-ul audio: normalizare, diarizare, ASR (Whisper), pregătirea textului pentru LLM | [AI/SETUP.md](AI/SETUP.md), [AI/docs/LLM_INPUT.md](AI/docs/LLM_INPUT.md) |
+| `AI/` | pipeline-ul audio: normalizare, diarizare, ASR (Whisper), pregătirea textului pentru LLM; `service.py` = serviciul local apelat de n8n | [AI/SETUP.md](AI/SETUP.md), [AI/docs/LLM_INPUT.md](AI/docs/LLM_INPUT.md) |
+| `LLM/` | procesul-verbal din transcriere (Ollama `qwen3:8b`, local) | [LLM/README.md](LLM/README.md) |
 | `preprocessing/` | serviciu de preprocesare audio (Docker, CPU) | [preprocessing/SERVICE.md](preprocessing/SERVICE.md) |
 | `n8n-local/` | n8n + pagina de upload, rulează local în Docker | [n8n-local/README.md](n8n-local/README.md) |
+
+## Pornire (demo)
+
+```powershell
+powershell -ExecutionPolicy Bypass -File start_demo.ps1
+```
+Pornește Ollama, serviciul AI (în fereastra lui) și containerele, apoi deschideți **http://localhost:8080**, încărcați o
+înregistrare și așteptați procesul-verbal (~2:40 pentru o ședință de 12 min pe RTX 5070). Test automat cap-coadă:
+`powershell -File n8n-local\e2e_test.ps1 -Audio <fișier>`. Detalii despre flux: [n8n-local/README.md](n8n-local/README.md).
 
 ## Mutarea proiectului pe alt calculator
 
@@ -44,8 +54,10 @@ Git aduce **doar codul și documentația**. Restul se mută separat sau se recre
    .\.venv\Scripts\python.exe -m tests.test_segment_rules
    .\.venv\Scripts\python.exe run_pipeline.py tests\data\sample_meeting.mp3 --job-id test_nou_pc
    ```
-5. n8n (opțional): `cd ..\n8n-local`, copiați `.env.example` în `.env` și puneți o cheie nouă (sau pe cea veche, ca să
-   păstrați datele n8n), apoi urmați n8n-local/README.md. Contul n8n și workflow-ul se refac (import din `workflows/`).
+5. LLM: `winget install --id Ollama.Ollama -e`, apoi o singură dată `ollama pull qwen3:8b` (~5 GB).
+6. Sistemul complet: Docker Desktop instalat, apoi `start_demo.ps1` din rădăcina repo-ului. Scriptul creează
+   `n8n-local\.env` (cheie nouă) și importă workflow-urile n8n dacă lipsesc. Păstrați cheia veche doar dacă vreți
+   să mutați și datele n8n.
 
 **Fără placă NVIDIA:** în `AI/config.yaml` puneți `whisper.device: cpu`, `whisper.compute_type: int8`, `whisper.model: medium`
 și `diarization.device: cpu`. Merge, dar de multe ori mai lent. **Mac:** vezi AI/SETUP.md §3.

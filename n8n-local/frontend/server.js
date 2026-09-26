@@ -4,6 +4,8 @@ const path = require('node:path');
 
 const port = Number(process.env.PORT || 8080);
 const webhookUrl = new URL(process.env.N8N_WEBHOOK_URL || 'http://n8n:5678/webhook/audio-upload');
+const statusUrl = process.env.N8N_STATUS_URL || 'http://n8n:5678/webhook/job-status';
+const jobIdPattern = /^[A-Za-z0-9][A-Za-z0-9_.-]{0,79}$/;
 const publicDir = path.join(__dirname, 'public');
 const contentTypes = {
   '.css': 'text/css; charset=utf-8',
@@ -60,10 +62,55 @@ function proxyUpload(request, response) {
   request.pipe(upstream);
 }
 
+// Job status and the generated minutes both come from the n8n "job-status" workflow.
+async function fetchJob(jobId) {
+  const upstream = await fetch(`${statusUrl}?id=${encodeURIComponent(jobId)}`);
+  if (!upstream.ok) throw new Error(`n8n status workflow answered ${upstream.status}`);
+  return upstream.json();
+}
+
+async function serveJob(jobId, wantMinutes, response) {
+  try {
+    const job = await fetchJob(jobId);
+    if (wantMinutes) {
+      if (!job.mom_html) {
+        response.writeHead(404, headers('text/plain; charset=utf-8'));
+        response.end('Minutes are not ready');
+        return;
+      }
+      // The minutes are generated HTML with inline styles only: no scripts, no external requests.
+      response.writeHead(200, {
+        'Content-Type': 'text/html; charset=utf-8',
+        'Cache-Control': 'no-store',
+        'Content-Security-Policy': "default-src 'none'; style-src 'unsafe-inline'; frame-ancestors 'self'",
+        'X-Content-Type-Options': 'nosniff',
+      });
+      response.end(job.mom_html);
+      return;
+    }
+    const { mom_html: momHtml, ...rest } = job;
+    response.writeHead(200, headers('application/json; charset=utf-8'));
+    response.end(JSON.stringify({ ...rest, has_minutes: Boolean(momHtml) }));
+  } catch (error) {
+    response.writeHead(502, headers('application/json; charset=utf-8'));
+    response.end(JSON.stringify({ error: `status unavailable: ${error.message}` }));
+  }
+}
+
 http.createServer((request, response) => {
   const requestUrl = new URL(request.url, `http://${request.headers.host || 'localhost'}`);
   if (request.method === 'POST' && requestUrl.pathname === '/api/upload') {
     proxyUpload(request, response);
+    return;
+  }
+  const jobRoute = requestUrl.pathname.match(/^\/api\/jobs\/([^/]+)(\/minutes)?$/);
+  if (request.method === 'GET' && jobRoute) {
+    if (!jobIdPattern.test(jobRoute[1])) {
+      response.writeHead(400, headers('application/json; charset=utf-8'));
+      response.end(JSON.stringify({ error: 'invalid job id' }));
+      return;
+    }
+    serveJob(jobRoute[1], Boolean(jobRoute[2]), response);
     return;
   }
   if (request.method === 'GET' || request.method === 'HEAD') {

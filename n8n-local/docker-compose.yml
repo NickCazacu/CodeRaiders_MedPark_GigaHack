@@ -24,6 +24,12 @@ services:
       N8N_VERSION_NOTIFICATIONS_ENABLED: "false"
       # Allow the workflow to write uploads only into the mounted shared runtime.
       N8N_RESTRICT_FILE_ACCESS_TO: /workspace/runtime
+      # Meeting recordings are large (a 12 min m4a is ~56 MB); n8n's default request limit is 16 MB.
+      N8N_PAYLOAD_SIZE_MAX: "1024"
+      N8N_FORMDATA_FILE_SIZE_MAX: "1024"
+    # The ASR + LLM service (AI/service.py) runs on the host next to the GPU; see README.
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - n8n_data:/home/node/.n8n
       # MedPark repository (this repo's root; the ASR pipeline is in AI/), available for
@@ -46,6 +52,7 @@ services:
       - "127.0.0.1:8080:8080"
     environment:
       N8N_WEBHOOK_URL: http://n8n:5678/webhook/audio-upload
+      N8N_STATUS_URL: http://n8n:5678/webhook/job-status
     depends_on:
       - n8n
 

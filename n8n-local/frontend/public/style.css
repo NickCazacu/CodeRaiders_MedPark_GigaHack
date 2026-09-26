@@ -14,3 +14,9 @@ button:hover { background: #126260; }
 button:disabled { cursor: wait; opacity: .65; }
 .status { color: #14213d; font-weight: 700; margin: 22px 0 8px; }
 .privacy { border-top: 1px solid #e1e8ed; margin: 0; padding-top: 16px; }
+body.has-result main { width: min(100%, 1100px); }
+.result { margin: 8px 0 20px; }
+.result-head { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline; justify-content: space-between; }
+.result h2 { margin: 0 0 10px; font-size: 1.3rem; }
+.result a { color: #187a77; font-weight: 700; }
+.result iframe { width: 100%; height: 75vh; border: 1px solid #d5e0e7; border-radius: 8px; background: #fff; }

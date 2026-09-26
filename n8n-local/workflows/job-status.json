@@ -1,0 +1,49 @@
+{
+  "id": "medpark-job-status",
+  "name": "MedPark - job status",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "nodes": [
+    {
+      "id": "webhook-job-status",
+      "name": "Status request",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [0, 0],
+      "webhookId": "medpark-job-status",
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "job-status",
+        "responseMode": "lastNode",
+        "responseData": "firstEntryJson",
+        "options": {}
+      }
+    },
+    {
+      "id": "get-ai-job",
+      "name": "Get ASR + LLM job",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [260, 0],
+      "parameters": {
+        "method": "GET",
+        "url": "=http://host.docker.internal:8765/jobs/{{ encodeURIComponent($json.query.id || 'missing') }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Status request": {
+      "main": [[{ "node": "Get ASR + LLM job", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {}
+}
