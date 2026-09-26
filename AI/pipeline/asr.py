@@ -137,11 +137,24 @@ def setup(w, glossary):
     lang = w["language"] or "auto"
     if not w["language"] and w.get("compare_languages"):
         lang += "-cmp-" + "+".join(w["compare_languages"])
-        if w.get("language_bias"):
-            lang += "-bias-" + "+".join(f"{k}{v:+g}" for k, v in sorted(w["language_bias"].items()))
+        pref = w.get("language_preference") or {}
+        if pref:
+            lang += "-pref-" + "+".join(f"{a}>{b}{m:g}" for a, o in sorted(pref.items()) for b, m in sorted(o.items()))
     fp = hashlib.sha1(json.dumps(sorted(glossary.items()), ensure_ascii=False).encode("utf-8")).hexdigest()[:6]
     beam = f"/beam{w['beam_size']}" if w["beam_size"] != 5 else ""
     return f"{w['model']}/{w['compute_type']}/{lang}/p{fp}{beam}"
+
+
+def pick_language(scores, preference):
+    """Limba cu avg_logprob-ul cel mai bun. O preferință {a: {b: m}} schimbă DOAR duelul a–b: dacă b câștigă,
+    dar a e la cel mult m în urmă, câștigă a. Față de alte limbi (ex. engleza) decide scorul real.
+    (Un bonus aplicat față de orice limbă făcea engleza să fie „tradusă” în română.)"""
+    best = max(scores, key=scores.get)
+    for a, overs in (preference or {}).items():
+        m = overs.get(best)
+        if a in scores and m is not None and scores[a] + m >= scores[best]:
+            best = a
+    return best
 
 
 def prompt_leak(text, prompt, min_cover=0.5):
@@ -278,8 +291,7 @@ def asr(job_id, cfg=None):
                         continue
                     sc = {l: avg_logprob(plain[(k, l)][0]) for l, _ in cand}
                     sc = {l: v for l, v in sc.items() if v is not None}
-                    bias = w.get("language_bias") or {}
-                    chosen.append(max(sc, key=lambda l: sc[l] + bias.get(l, 0.0)) if sc else cand[0][0])
+                    chosen.append(pick_language(sc, w.get("language_preference")) if sc else cand[0][0])
                     lang_scores.append(sc)
 
                 # 2) transcrierea finală în limba aleasă, CU promptul de domeniu; dacă rezultatul

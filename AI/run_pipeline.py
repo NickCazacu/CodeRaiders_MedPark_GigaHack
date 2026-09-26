@@ -38,7 +38,7 @@ def main():
     ap.add_argument("--batch-size", type=int)
     ap.add_argument("--beam-size", type=int, help="implicit: din config (5)")
     ap.add_argument("--language", help="forțează limba (ro/ru/en); implicit: detecție per segment")
-    ap.add_argument("--language-bias", help="bonus la alegerea limbii, ex.: ro=0.2 sau ro=0.2,en=0.1")
+    ap.add_argument("--language-preference", help="preferință în duelul a–b, ex.: ro>ru=0.3 (sau ro>ru=0 = fără)")
     ap.add_argument("--no-prompt", action="store_true", help="fără initial_prompt și hotwords (pentru comparații)")
     ap.add_argument("--denoise", action=argparse.BooleanOptionalAction, default=None)
     ap.add_argument("--diarization", action=argparse.BooleanOptionalAction, default=None)
@@ -63,8 +63,13 @@ def main():
         w["beam_size"] = args.beam_size
     if args.language:
         w["language"] = args.language
-    if args.language_bias:
-        w["language_bias"] = {k.strip(): float(v) for k, v in (x.split("=") for x in args.language_bias.split(","))}
+    if args.language_preference:
+        pref = {}
+        for item in args.language_preference.split(","):
+            pair, m = item.split("=")
+            a, b = (x.strip() for x in pair.split(">"))
+            pref.setdefault(a, {})[b] = float(m)
+        w["language_preference"] = pref
     if args.no_prompt:
         w["use_prompt"] = False
     diar = cfg["diarization"]["enabled"] if args.diarization is None else args.diarization

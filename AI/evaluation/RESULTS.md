@@ -32,6 +32,24 @@ Descompunerea erorilor la setarea adoptată (fără hotwords): 44.8% cuvinte cor
 (mai ales intervenții scurte suprapuse peste alt vorbitor), 4.3% în plus. Cuvintele lipsă nu vin din VAD (pragul
 mai sensibil nu le-a recuperat), ci din vorbirea suprapusă.
 
+## Amestec de limbi (`python -m evaluation.lang_mix`)
+
+„Ședință” sintetică de 7.9 min din fragmente reale cu transcriere cunoscută: 24 în română moldovenească (Kaggle,
+doar videoclipurile păstrate pentru test), 12 în rusă și 6 în engleză (FLEURS dev), în blocuri de 1–4 fragmente.
+Pipeline complet, cu diarizare.
+
+| Configurație | ro: limbă ok / WER | ru: limbă ok / WER | en: limbă ok / WER |
+|---|---|---|---|
+| bonus ro 0.5 față de **orice** limbă | 100% / 59.3% | 92% / 25.6% | **50%** / 31.4% (engleza tradusă în română) |
+| **preferință ro peste ru 0.5 (doar duelul ro–ru)** | 100% / 59.3% | 92% / 25.6% | **100% / 1.3%** |
+
+Medpark cu regula nouă: identic (55.6% / 33.1%), deci fără regresie. Regula nouă e adoptată (`language_preference`).
+
+**WER-ul pe română e supraestimat:** fragmentele Kaggle conțin adesea mai multă vorbire decât transcrierea lor
+(ex. audio „…nu a fost posibil, cancerul deja avansase”, transcriere până la „posibil”). Transcrierea large-v3 pe
+aceste fragmente e în mare corectă. Consecințe: (1) accentul moldovenesc pe vorbire clară nu e problema principală;
+(2) etichetele Kaggle nu pot fi folosite la fine-tuning fără filtrare, altfel modelul ar învăța să omită vorbire.
+
 ## Nevalidat încă
 
 - Bonusul ro 0.5 pe **rusă reală**: dacă rusa vorbită iese transcrisă ca română, bonusul trebuie scăzut.
