@@ -1,0 +1,49 @@
+# Configurare extracție LLM (llm_input.json -> minutes.json). Rulează doar pe Ollama local.
+# Orice cheie poate fi suprascrisă din variabile de mediu, vezi LLM/README.md.
+
+ollama:
+  url: http://localhost:11434   # doar localhost / 127.0.0.1 / ::1 sunt acceptate
+  model: qwen3:8b
+  timeout_s: 300                # per apel
+  retries: 1                    # reîncercări după primul eșec
+  keep_alive: 5m                # cât rămâne modelul în VRAM după ultimul apel
+  num_ctx: 8192
+  temperature: 0.15
+  repeat_penalty: 1.1           # contra buclelor (același caz repetat până la num_predict)
+  seed: 42
+
+# setări per etapă; think: true doar de testat (mult mai lent)
+stages:
+  extract:   {think: false, num_predict: 2048}   # o fereastră / ședință scurtă
+  same_case: {think: false, num_predict: 32}     # „același caz?” pentru chei ambigue
+  supersede: {think: false, num_predict: 128}    # ce decizii au fost înlocuite (caz cu >= 2 decizii)
+  final:     {think: false, num_predict: 1024}   # meeting_summary + ordinea cazurilor
+
+context:
+  token_factor: 1.55            # tokeni Qwen ≈ tokens_est × factor; măsurat pe qwen3:8b: ~1.56 pe ferestrele
+                                # de transcriere (prefixele [mm:ss] UNK: și cifrele costă), ~1.4 pe prompt.
+                                # Verifică run.json: token_factor_observed
+  header_reserve_tokens: 600    # loc estimat pentru antet (cazuri cunoscute + rezumat) la verificarea inițială
+  on_overflow: expand           # expand: mărește num_ctx până la max_num_ctx; skip: sare fereastra (raportat)
+  max_num_ctx: 12288            # ~1.8 GB KV cache pentru qwen3:8b; încape în 8 GB VRAM cu modelul Q4
+  header_max_cases: 40          # câte cazuri cunoscute intră în antet (cele mai recente)
+  header_summaries: 1           # câte rezumate de ferestre anterioare intră în antet
+
+input:
+  uncertain_ratio: 0.5          # low_confidence_ratio peste prag => linie nesigură (pe lângă low_confidence / [?])
+
+quotes:
+  min_score: 80                 # rapidfuzz partial_ratio minim pentru potrivirea citat -> replică
+  min_score_same_ts: 65         # prag mai mic când și timestamp-ul se potrivește
+  short_quote_chars: 12         # citatele mai scurte cer timestamp identic și scor >= 90
+
+merge:
+  same_score: 90                # chei de caz cu scor >= => același caz
+  diff_score: 60                # scor <= => cazuri diferite; între praguri => întrebăm LLM-ul
+  supersede: llm                # llm: un apel scurt per caz cu >= 2 decizii (la eșec: ca flag)
+                                # flag: doar deciziile marcate de model ca „schimbă decizia anterioară”
+                                # all: orice decizie anterioară a cazului devine superseded
+
+extract:
+  max_cases: 12                 # limită în schema JSON (maxItems) per fereastră, contra buclelor
+  max_decisions: 8              # per caz

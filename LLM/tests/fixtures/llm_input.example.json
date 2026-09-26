@@ -1,0 +1,158 @@
+{
+ "job_id": "exemplu_sedinta",
+ "audio_duration_s": 61.0,
+ "speakers": [
+  "SPEAKER_00",
+  "SPEAKER_01",
+  "SPEAKER_02"
+ ],
+ "languages": {
+  "ro": 6,
+  "ru": 2
+ },
+ "format": "[mm:ss] SPEAKER: text  (\" [?]\" = încredere scăzută)",
+ "token_estimate": "utf8_bytes/4",
+ "n_turns": 7,
+ "n_windows": 2,
+ "turns": [
+  {
+   "id": 0,
+   "speaker": "SPEAKER_00",
+   "start": 0.8,
+   "end": 20.9,
+   "line": "[00:00] SPEAKER_00: Pacientul 48 din salonul 12, internat cu insuficiență renală acută după coronarografie cu contrast. S-a pornit parcă diureza ieri, dar azi creatinina a crescut din nou, potasiul 5,6.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    0,
+    1
+   ],
+   "tokens_est": 53
+  },
+  {
+   "id": 1,
+   "speaker": "SPEAKER_01",
+   "start": 21.5,
+   "end": 25.0,
+   "line": "[00:21] SPEAKER_01: Diureza cum este?",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    2
+   ],
+   "tokens_est": 11
+  },
+  {
+   "id": 2,
+   "speaker": "SPEAKER_00",
+   "start": 26.1,
+   "end": 31.4,
+   "line": "[00:26] SPEAKER_00: Diureza e scăzută, 400 ml pe noapte, creatinina 240.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    3
+   ],
+   "tokens_est": 20
+  },
+  {
+   "id": 3,
+   "speaker": "SPEAKER_02",
+   "start": 32.0,
+   "end": 40.2,
+   "line": "[00:32] SPEAKER_02: Давайте повторим креатинин вечером и решим по гемодиализу.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ru"
+   ],
+   "segment_ids": [
+    4
+   ],
+   "tokens_est": 33
+  },
+  {
+   "id": 4,
+   "speaker": "SPEAKER_01",
+   "start": 41.3,
+   "end": 44.0,
+   "line": "[00:41] SPEAKER_01: De acord. Și ecografia? [?]",
+   "low_confidence": true,
+   "low_confidence_ratio": 1.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    5
+   ],
+   "tokens_est": 13
+  },
+  {
+   "id": 5,
+   "speaker": "SPEAKER_02",
+   "start": 44.8,
+   "end": 51.0,
+   "line": "[00:44] SPEAKER_02: Эхо почек пока не знаю, посмотрим.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ru"
+   ],
+   "segment_ids": [
+    6
+   ],
+   "tokens_est": 22
+  },
+  {
+   "id": 6,
+   "speaker": "SPEAKER_00",
+   "start": 51.9,
+   "end": 58.1,
+   "line": "[00:51] SPEAKER_00: Bine, atunci trecem la următorul pacient.",
+   "low_confidence": false,
+   "low_confidence_ratio": 0.0,
+   "langs": [
+    "ro"
+   ],
+   "segment_ids": [
+    7
+   ],
+   "tokens_est": 17
+  }
+ ],
+ "windows": [
+  {
+   "index": 0,
+   "turn_ids": [
+    0,
+    2
+   ],
+   "overlap_turns": 0,
+   "start": 0.8,
+   "end": 31.4,
+   "tokens_est": 84,
+   "text": "[00:00] SPEAKER_00: Pacientul 48 din salonul 12, internat cu insuficiență renală acută după coronarografie cu contrast. S-a pornit parcă diureza ieri, dar azi creatinina a crescut din nou, potasiul 5,6.\n[00:21] SPEAKER_01: Diureza cum este?\n[00:26] SPEAKER_00: Diureza e scăzută, 400 ml pe noapte, creatinina 240."
+  },
+  {
+   "index": 1,
+   "turn_ids": [
+    1,
+    6
+   ],
+   "overlap_turns": 2,
+   "start": 21.5,
+   "end": 58.1,
+   "tokens_est": 116,
+   "text": "[00:21] SPEAKER_01: Diureza cum este?\n[00:26] SPEAKER_00: Diureza e scăzută, 400 ml pe noapte, creatinina 240.\n[00:32] SPEAKER_02: Давайте повторим креатинин вечером и решим по гемодиализу.\n[00:41] SPEAKER_01: De acord. Și ecografia? [?]\n[00:44] SPEAKER_02: Эхо почек пока не знаю, посмотрим.\n[00:51] SPEAKER_00: Bine, atunci trecem la următorul pacient."
+  }
+ ]
+}

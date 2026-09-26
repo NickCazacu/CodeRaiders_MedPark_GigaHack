@@ -1,0 +1,3 @@
+# Dependențele modulului LLM/ (restul e biblioteca standard). Versiuni ca în AI/requirements.txt.
+PyYAML==6.0.3
+RapidFuzz==3.14.6
