@@ -21,9 +21,9 @@ def ffmpeg_normalize(src, dst, cfg, duration=None):
         "-progress", "pipe:1",  # key=value pe stdout, pentru bara de progres
         "-i", str(src),
         "-vn", "-ac", "1",
-        # întâi la 16 kHz: loudnorm (single-pass) lucrează intern la 192 kHz și ar procesa tot fișierul
-        # la rata sursei; așa normalizarea e de ~2× mai rapidă (12 min: 13.6 s -> 6.5 s)
-        "-af", f"aresample={n['sample_rate']},highpass=f={n['highpass_hz']},loudnorm={n['loudnorm']}",
+        # NU reeșantionăm înainte de loudnorm: era de ~2× mai rapid, dar pe Medpark a schimbat audio-ul destul cât
+        # WER-ul să crească de la 55.6% la 58.5% (evaluation/RESULTS.md)
+        "-af", f"highpass=f={n['highpass_hz']},loudnorm={n['loudnorm']}",
         "-ar", str(n["sample_rate"]),
         "-c:a", "pcm_s16le",
         str(tmp),

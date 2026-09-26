@@ -80,8 +80,9 @@ amikacină, gazometrie, hemocultură, hidronefroză, nefrostomă, atelectazie, �
 Medpark 56.4% / 34.0% (față de 55.6% / 33.1%), en WER 3.9% (față de 1.3%), ru 26.9% (față de 25.6%). **Respins**;
 termenii rămân în terms.tsv fără hotword. Hotword-ul se poate activa acum per limbă (coloana `hotword`: `ro,en`).
 
-Normalizarea audio (ffmpeg): `aresample=16000` înainte de `loudnorm` (care lucrează intern la 192 kHz): 12 min
-13.6 s -> 6.5 s.
+Normalizarea audio (ffmpeg): `aresample=16000` înainte de `loudnorm` era de 2× mai rapid (12 min: 13.6 s -> 6.5 s),
+dar schimbă audio-ul: Medpark cap-coadă WER 58.5% / CER 35.2%, 4.4% chirilic (față de 55.6% / 33.1%). **Revenit**;
+o rulare nouă de la zero (normalizare, diarizare, ASR) reproduce exact 55.6% / 33.1%.
 
 ## Cap-coadă (RTX 5070, 27.09)
 
