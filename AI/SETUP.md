@@ -153,7 +153,10 @@ Alte teste pe setarea finală: `--denoise` → 63.0% (mai rău, rămâne oprit),
 Descompunere la setarea finală: 44.8% cuvinte corecte, 37.9% înlocuite, 17.3% lipsă (mai ales intervenții scurte
 suprapuse peste alt vorbitor), 4.3% în plus.
 
-Glosar: vezi [glossary/README.md](glossary/README.md). Implicit fără prompt, pentru că măsurat înrăutățește rezultatul.
+Actualizare (referința corectată: „patul 8”, 349 de cuvinte): setarea de mai sus → 59.9%; **cu hotwords → 55.6% WER,
+33.1% CER**, activat implicit; cu prompt de domeniu → 71.1%.
+
+Glosar: vezi [glossary/README.md](glossary/README.md). Implicit hotwords da, prompt nu, conform măsurătorilor.
 Promptul și hotwords fac parte din amprenta `setup`: dacă le schimbi, rulează ASR-ul într-un job nou sau șterge `asr.jsonl`.
 
 Etapele pe rând:

@@ -34,12 +34,13 @@ whisper:
   beam_size: 5
   batch_size: 8              # BatchedInferencePipeline; 1 = transcriere secvențială
   low_confidence_logprob: -0.7
-  use_hotwords: false        # glossary/hotwords.<lang>.txt (generat din glossary/terms.tsv:
-                             # python -m pipeline.glossary hotwords); doar dacă scade WER-ul măsurat
+  use_hotwords: true         # glossary/hotwords.<lang>.txt (generat din glossary/terms.tsv:
+                             # python -m pipeline.glossary hotwords). Măsurat pe referința Medpark (corectată,
+                             # „patul 8”): WER 59.9% → 55.6%, CER 40.4% → 33.1%. Cost: ~+40% timp de ASR.
   # prompt per limbă; glossary/prompt.<lang>.txt și glossary/prompt.txt au prioritate dacă există
   # (la fel hotwords.<lang>.txt / hotwords.txt)
-  # Implicit FĂRĂ prompt: pe referința Medpark, promptul de domeniu a crescut WER-ul de la 59.5% la 63.0%
-  # (ex. a transformat „pacientul 48” în „pacientul din patul 8”). Rusa: promptul era copiat în text.
+  # Implicit FĂRĂ prompt: pe referința Medpark (corectată), un prompt de domeniu a crescut WER-ul
+  # de la 59.9% la 71.1% (cu hotwords: 71.9%). Rusa: promptul era copiat în text.
   initial_prompt:
     ro: null
     ru: null

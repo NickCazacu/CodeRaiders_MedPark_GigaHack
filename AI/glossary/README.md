@@ -12,9 +12,19 @@ Liniile care încep cu `#` sunt ignorate. **Fără date reale de pacienți.**
 - `pipeline/correct.py` face post-corecția (`postprocess.glossary_correction.enabled`);
 - `evaluation/evaluate.py` măsoară acuratețea termenilor. Detalii: [evaluation/README.md](../evaluation/README.md).
 
-**Implicit nu folosim prompt.** Pe referința Medpark (`tests/reference/medpark.txt`), un prompt de domeniu a crescut WER-ul
-de la 59.5% la 63.0%. De exemplu, a transformat „pacientul 48” în „pacientul din patul 8”. Orice prompt sau listă de termeni
-se adaugă doar dacă scade WER-ul măsurat:
+**Implicit: hotwords DA, prompt NU.** Măsurat pe referința Medpark (`tests/reference/medpark.txt`, corectată: se spune
+„patul 8”, nu „pacientul 48”):
+
+| Variantă | WER | CER |
+|---|---|---|
+| fără nimic | 59.9% | 40.4% |
+| **hotwords** (`hotwords.<lang>.txt`) | **55.6%** | **33.1%** |
+| prompt de domeniu | 71.1% | 51.2% |
+| prompt + hotwords | 71.9% | 55.0% |
+
+Nici hotwords, nici promptul nu repară „patul 8” → „Pacientul 48”: e o confuzie acustică de cifre. Termenii de terapie
+intensivă din ședință (meropenem, dobutamină, ecocardiografie) nu sunt încă printre cei ~25 marcați `hotword=1`. Orice
+schimbare de prompt sau de listă se păstrează doar dacă scade WER-ul măsurat:
 
 ```
 python -m tests.evaluate tests/reference/medpark.txt JOB_FARA JOB_CU

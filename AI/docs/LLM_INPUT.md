@@ -99,7 +99,7 @@ Pentru cod și teste automate folosiți `docs/llm_input.example.json` (sintetic)
 
 - **Diarizarea e activă** (pyannote 3.1, local): vorbitorii sunt `SPEAKER_00..02`, fără nume. Același om poate avea altă
   etichetă în altă ședință.
-- **Calitatea măsurată** pe 2 fragmente transcrise manual (346 de cuvinte): WER 59.5%, adică **~45% din cuvinte exact
+- **Calitatea măsurată** pe 2 fragmente transcrise manual (349 de cuvinte): WER 55.6% cu hotwords (59.9% fără), adică **~45–50% din cuvinte exact
   corecte**. Încă ~38% sunt apropiate (formă, terminație) sau greșite, iar ~17% lipsesc, mai ales intervențiile scurte suprapuse.
   Textul e suficient pentru **subiect, pacient, diagnostic, tratament și decizii**, dar **nu e sigur la cifre, doze și date**.
 - În ședința de test, 32 din 68 de replici sunt `[?]`. E normal pentru acest audio.
