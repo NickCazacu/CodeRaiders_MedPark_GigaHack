@@ -27,6 +27,10 @@ HALLUCINATIONS = re.compile("|".join([
     r"thanks? (you )?for watching", r"please subscribe", r"like and subscribe",
     r"mul[țţt]umesc pentru vizionare", r"abona[țţt]i-v[ăa]", r"v[ăa] mul[țţt]umim pentru vizionare",
     r"v[ăa] abona[țţt]i", r"abona[țţt]i-v[ăa] la canal",
+    # finaluri de clipuri YouTube, frecvente în datele de antrenare Whisper
+    r"da[țţt]i (un )?like", r"l[ăa]sa[țţt]i un comentariu", r"distribui[țţt]i acest (material|video|clip)",
+    r"material(ul)? video", r"re[țţt]ele(le)? sociale", r"ставьте лайк", r"подписывайтесь",
+    r"don'?t forget to (like|subscribe)",
 ]), re.IGNORECASE)
 
 
@@ -118,7 +122,9 @@ def process(r, p, corrector=None):
     elif (r["no_speech_prob"] or 0) > p["max_no_speech_prob"] and (r["avg_logprob"] or 0) < -1.0:
         dropped = "no_speech"
     elif HALLUCINATIONS.search(r["text"]):
-        if len(r["text"].split()) <= 12:
+        # scurtă, sau cu >= 2 tipare diferite (ex. „dați like... lăsați un comentariu... distribuiți”): halucinație sigură
+        n_patterns = len({m.group(0).lower() for m in HALLUCINATIONS.finditer(r["text"])})
+        if len(r["text"].split()) <= 12 or n_patterns >= 2:
             dropped = "hallucination_phrase"
         else:
             flags.append("hallucination_phrase")
