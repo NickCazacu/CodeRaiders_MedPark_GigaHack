@@ -36,6 +36,7 @@ def main():
     ap.add_argument("--device", choices=["cuda", "cpu"])
     ap.add_argument("--compute-type", help="implicit: din config (cpu => int8)")
     ap.add_argument("--batch-size", type=int)
+    ap.add_argument("--beam-size", type=int, help="implicit: din config (5)")
     ap.add_argument("--language", help="forțează limba (ro/ru/en); implicit: detecție per segment")
     ap.add_argument("--language-bias", help="bonus la alegerea limbii, ex.: ro=0.2 sau ro=0.2,en=0.1")
     ap.add_argument("--no-prompt", action="store_true", help="fără initial_prompt și hotwords (pentru comparații)")
@@ -58,6 +59,8 @@ def main():
         w["compute_type"] = args.compute_type
     if args.batch_size:
         w["batch_size"] = args.batch_size
+    if args.beam_size:
+        w["beam_size"] = args.beam_size
     if args.language:
         w["language"] = args.language
     if args.language_bias:

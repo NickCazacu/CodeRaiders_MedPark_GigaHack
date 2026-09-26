@@ -148,6 +148,10 @@ limbă și e mai rapid, dar nu mai recunoaște rusa. `--language-bias ro=0.3` sc
 ```
 Pe Medpark (2 fragmente, 346 de cuvinte), cu large-v3 și diarizare: fără bonus WER 65.9%, bonus 0.3 → 60.1%,
 **bonus 0.5 → 59.5%** (egal cu româna forțată), cu prompt de domeniu → 63.0%.
+Alte teste pe setarea finală: `--denoise` → 63.0% (mai rău, rămâne oprit), `--beam-size 10` → 57.8% WER dar CER mai slab
+(diferență de ~6 cuvinte, neconcludentă), VAD mai sensibil (prag 0.35) → 59.8% WER / 38.0% CER (neconcludent).
+Descompunere la setarea finală: 44.8% cuvinte corecte, 37.9% înlocuite, 17.3% lipsă (mai ales intervenții scurte
+suprapuse peste alt vorbitor), 4.3% în plus.
 
 Glosar: vezi [glossary/README.md](glossary/README.md). Implicit fără prompt, pentru că măsurat înrăutățește rezultatul.
 Promptul și hotwords fac parte din amprenta `setup`: dacă le schimbi, rulează ASR-ul într-un job nou sau șterge `asr.jsonl`.

@@ -139,7 +139,8 @@ def setup(w, glossary):
         if w.get("language_bias"):
             lang += "-bias-" + "+".join(f"{k}{v:+g}" for k, v in sorted(w["language_bias"].items()))
     fp = hashlib.sha1(json.dumps(sorted(glossary.items()), ensure_ascii=False).encode("utf-8")).hexdigest()[:6]
-    return f"{w['model']}/{w['compute_type']}/{lang}/p{fp}"
+    beam = f"/beam{w['beam_size']}" if w["beam_size"] != 5 else ""
+    return f"{w['model']}/{w['compute_type']}/{lang}/p{fp}{beam}"
 
 
 def prompt_leak(text, prompt, min_cover=0.5):

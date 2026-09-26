@@ -77,8 +77,14 @@ O replică foarte lungă (monolog) se împarte în mai multe replici ale aceluia
 2. **Citări.** Cereți modelului să citeze timpul `[mm:ss]` pentru fiecare decizie sau afirmație, ca să poată fi verificată în audio.
 3. **Replicile `[?]`.** Pot conține cuvinte greșite, mai ales termeni medicali, cifre și nume. LLM-ul nu trebuie să
    „repare” inventând, iar informațiile care vin doar din replici `[?]` trebuie marcate ca nesigure în rezumat.
-4. **Erori ASR previzibile** chiar și fără `[?]`: termeni medicali deformați („trombospirație” în loc de „tromboaspirație”),
-   cifre confundate („48” în loc de „patul 8”), uneori română scrisă cu litere chirilice.
+4. **Erori ASR previzibile** chiar și fără `[?]` (exemple reale din ședința de test):
+   - abrevieri colocviale nerecunoscute sau deformate: „Nor” / „nori” = noradrenalină, „Dobu” = dobutamină, „EKS/ECS”;
+   - date și cifre: „pe data de 11” → „spidat de uzgrăci”, „fracție de 38-40” → „3.6-3.4.10”;
+   - terminații și forme dialectale: „dozile” în loc de „dozele”, „tromboaspirație” în loc de „tromboaspirația”;
+   - intervenții scurte ale altui vorbitor („Da.”, „Cardiac și trivascular, nu?”) lipite de replica vorbitorului principal
+     sau lipsă.
+   LLM-ul poate interpreta abrevierile din context, dar **cifrele, dozele și datele din replici `[?]` nu trebuie prezentate
+   ca sigure** în procesul-verbal.
 5. **Datele sunt medicale.** Pipeline-ul rulează local. Dacă LLM-ul rulează în alt loc, trebuie discutat înainte de a trimite ceva.
 6. **Estimarea de tokeni** e aproximativă (octeți UTF-8 / 4), fără tokenizer-ul modelului vostru. Pentru engleză e aproape exactă,
    pentru română și rusă supraestimează ușor, deci ferestrele încap. Dacă modelul are alt buget, schimbați
@@ -87,11 +93,19 @@ O replică foarte lungă (monolog) se împarte în mai multe replici ale aceluia
 
 ## Stadiul actual (26.09.2026)
 
-- **Diarizarea e activă** (pyannote 3.1, local). Pe înregistrarea de test sunt 3 vorbitori: `SPEAKER_00..02`.
-  Fără diarizare (`--no-diarization`), vorbitorul e `UNK` și fiecare segment e o replică separată.
-- Calitatea ASR pe română moldovenească încă se evaluează. Unele replici în română apar încă scrise cu litere chirilice
-  sau traduse în rusă. Structura JSON-ului e stabilă și puteți lucra pe ea.
-  Pentru teste folosiți `docs/llm_input.example.json` sau un job real din `jobs/` (de exemplu `jobs/Medpark_diar/`).
+**Fișierul real de lucru:** `AI/jobs/Medpark_final/llm_input.json` (ședința de test de 11:42, 3 vorbitori,
+68 de replici, o fereastră de ~2.5k tokeni). Nu e în git (date medicale): cereți-l local sau rulați pipeline-ul.
+Pentru cod și teste automate folosiți `docs/llm_input.example.json` (sintetic).
+
+- **Diarizarea e activă** (pyannote 3.1, local): vorbitorii sunt `SPEAKER_00..02`, fără nume. Același om poate avea altă
+  etichetă în altă ședință.
+- **Calitatea măsurată** pe 2 fragmente transcrise manual (346 de cuvinte): WER 59.5%, adică **~45% din cuvinte exact
+  corecte**. Încă ~38% sunt apropiate (formă, terminație) sau greșite, iar ~17% lipsesc, mai ales intervențiile scurte suprapuse.
+  Textul e suficient pentru **subiect, pacient, diagnostic, tratament și decizii**, dar **nu e sigur la cifre, doze și date**.
+- În ședința de test, 32 din 68 de replici sunt `[?]`. E normal pentru acest audio.
+- **Limbi:** româna e aproape exclusivă în test. Rusa și engleza sunt suportate, dar recunoașterea rusei nu e încă validată
+  pe o înregistrare reală. Formatul nu se schimbă.
+- Structura JSON-ului e **stabilă**. Îmbunătățirile viitoare ale ASR-ului schimbă doar textul, nu câmpurile.
 
 ## Dacă aveți nevoie de mai mult detaliu
 
