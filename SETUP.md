@@ -131,6 +131,9 @@ Ieșirea finală e `jobs/<job_id>/llm_input.json`: replici `[mm:ss] SPEAKER: tex
 ferestre de ~3500 tokeni cu suprapunere de 3 replici. Fișiere intermediare: `asr.jsonl` (scris incremental,
 reluat de la ultimul segment) și `transcript.json` (după postprocesare; segmentele eliminate rămân cu `dropped`).
 
+Pentru a compara modele sau setări pe același fișier, dă fiecărei variante propriul job, de exemplu
+`--job-id Medpark_large-v3_ro`. Același `asr.jsonl` nu poate conține rezultate de la modele diferite: pipeline-ul se oprește cu un mesaj.
+
 Glossary (opțional): `glossary/prompt.txt` înlocuiește `whisper.initial_prompt` din config, iar `glossary/hotwords.txt`
 se trimite ca `hotwords`, câte un termen pe linie. Liniile care încep cu `#` sunt ignorate.
 
@@ -153,6 +156,7 @@ Teste și unelte:
 ```powershell
 .\.venv\Scripts\python.exe -m tests.test_segment_rules                     # regulile de segmentare
 .\.venv\Scripts\python.exe -m tests.test_asr_mapping                       # rezultate batched -> segmentul corect
+.\.venv\Scripts\python.exe -m tests.compare_jobs JOB_A JOB_B [--all]       # compară 2 modele/setări segment cu segment
 powershell -File tests\make_long_sample.ps1 -Minutes 120                   # ședință sintetică de 2 h (3 vorbitori TTS)
 powershell -File tests\measure.ps1 -m pipeline.segment <job_id>            # timp + RAM maxim
 ```

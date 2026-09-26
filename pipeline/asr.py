@@ -109,6 +109,11 @@ def transcribe_one(model, clip, lang, prompt, hotwords, w):
     return list(segments), 0.0
 
 
+def setup(w):
+    """Ce determină rezultatul ASR: model/compute_type/limbă."""
+    return f"{w['model']}/{w['compute_type']}/{w['language'] or 'auto'}"
+
+
 def compression_ratio(text):
     from faster_whisper.transcribe import get_compression_ratio
     return round(get_compression_ratio(text), 3) if text else 0.0
@@ -128,7 +133,8 @@ def record(seg, lang, lang_prob, subsegs, offset, w):
     else:
         avg_logprob = no_speech = None
     return {
-        "id": seg["id"], "speaker": seg["speaker"], "start": seg["start"], "end": seg["end"],
+        "id": seg["id"], "setup": setup(w),
+        "speaker": seg["speaker"], "start": seg["start"], "end": seg["end"],
         "lang": lang, "lang_prob": lang_prob, "text": text,
         "avg_logprob": avg_logprob, "no_speech_prob": no_speech,
         "compression_ratio": compression_ratio(text),
@@ -145,6 +151,12 @@ def asr(job_id, cfg=None):
     segs = json.loads((job_dir / "segments.json").read_text(encoding="utf-8"))
     wav = job_dir / status["audio"]
     out = job_dir / "asr.jsonl"
+
+    # nu amestecăm modele/setări în același asr.jsonl (și nu sărim etapa cu rezultatele altui model)
+    used = {r.get("setup") for r in read_done(out).values()} - {None}
+    if used and used != {setup(w)}:
+        raise SystemExit(f"{out} e făcut cu {sorted(used)}, nu cu {setup(w)}. "
+                         f"Folosește alt --job-id (ex.: {job_id}_{w['model']}) sau șterge asr.jsonl.")
 
     def work():
         done = read_done(out)
