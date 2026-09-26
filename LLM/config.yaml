@@ -69,5 +69,5 @@ extract:
   max_facts: 20                 # constatări clinice per caz (analize, tratament, proceduri, evoluție)
 
 complete:
-  enabled: true                 # modul pe pacienți: încă un apel per fragment, doar pentru constatările ratate
-                                # (replicile lungi și dense); vezi AI/evaluation/RESULTS.md
+  enabled: false                # modul pe pacienți: încă un apel per fragment, doar pentru constatările ratate.
+                                # Măsurat pe Medpark (3 rulări): 68% vs 67% din faptele confirmate, +20% timp => oprit
