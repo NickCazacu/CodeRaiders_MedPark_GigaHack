@@ -1,5 +1,0 @@
-# initial_prompt pentru segmentele decodate în română. Liniile cu # sunt ignorate.
-# Scop: stilul și vocabularul unei ședințe de secție (fără date reale de pacienți).
-# Max ~220 de tokeni; Whisper păstrează doar finalul unui prompt mai lung.
-Ședință de dimineață în secția de reanimare. Raportul pe pacienți: pacienta din patul 3, pacientul din patul 12,
-saturația, tensiunea arterială, infarct miocardic, hemoleucogramă, tomografie, antibioterapie.
