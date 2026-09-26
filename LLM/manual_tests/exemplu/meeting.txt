@@ -1,0 +1,20 @@
+# Ședință de test: exemplu
+# date: 2026-09-26
+# window_tokens: 3500
+# overlap: 3
+#
+# O replică pe linie, ca în ferestrele ASR:  [mm:ss] SPEAKER_01: text [?]
+#   [mm:ss] opțional (altfel se calculează din lungimea textului)
+#   SPEAKER_NN: / UNK: opțional (implicit UNK)
+#   [?] la sfârșit = transcriere nesigură (low_confidence)
+#   linie goală = pauză de 15 s (schimbare de subiect)
+#   window_tokens mic (ex. 300) => mai multe ferestre, ca la o ședință lungă
+#
+# Înlocuiește exemplul de mai jos cu ședința ta.
+
+Începem. Pacientul 12 din cardiologie, fibrilație atrială, frecvența 140.
+Давайте начнём амиодарон сегодня и ЭКГ завтра утром.
+De acord, amiodaronă azi, ECG mâine dimineață.
+
+Pacienta din salonul 4, după colecistectomie, febrilă.
+Facem ecografie abdominală azi și, dacă e colecție, drenaj. [?]

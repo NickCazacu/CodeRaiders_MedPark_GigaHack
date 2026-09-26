@@ -1,0 +1,3 @@
+# Căile sunt relative la LLM/. Rulările manuale (llm_input.json copiat, minutes.json, llm_debug/, review.md,
+# mom.html) pot conține transcrieri reale: nu intră în git. MoM-urile de revizuit sunt în test_moms/.
+runs/

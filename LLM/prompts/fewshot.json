@@ -1,0 +1,63 @@
+{
+ "_comment": "Exemplu fictiv (RO/RU/EN amestecat), randat prin același șablon ca apelul real (window.md sau single.md). 'output' e răspunsul corect.",
+ "date": "2026-03-10",
+ "window_number": 3,
+ "n_windows": 8,
+ "known_cases": ["Pacientă salon 7, chirurgie — aprobat: Ceftriaxonă 2 g/zi"],
+ "previous_summary": "Pacienta din salonul 7 a fost operată ieri de colecistectomie; s-a început ceftriaxonă [09:52].",
+ "context_lines": [
+  "[12:04] UNK: Deci pacienta din salonul 7, a doua zi după colecistectomie, febră 38,5.",
+  "[12:11] UNK: Leucocitele 14, CRP в динамике растёт."
+ ],
+ "window_lines": [
+  "[12:18] UNK: Давайте сделаем УЗИ брюшной полости сегодня, și dacă e colecție, drenaj.",
+  "[12:26] UNK: Ok, agreed. Antibioticul îl schimbăm pe meropenem.",
+  "[12:33] UNK: Și pentru pacientul 12 poate... nu, stai. [?]",
+  "[12:39] UNK: Pacientul 12 din cardiologie, externarea o amânăm până vin rezultatele la troponină.",
+  "[12:47] UNK: Troponina когда будет? Лаборатория говорит к вечеру."
+ ],
+ "output": {
+  "cases": [
+   {
+    "case_key": "Pacientă salon 7, chirurgie",
+    "topic": "Febră după colecistectomie, suspiciune de colecție abdominală",
+    "discussion_summary": "Se face ecografie abdominală azi, cu drenaj dacă se găsește o colecție [12:18]. Antibioticul se schimbă pe meropenem [12:26].",
+    "decisions": [
+     {
+      "quote": "Давайте сделаем УЗИ брюшной полости сегодня, și dacă e colecție, drenaj.",
+      "timestamp": "12:18",
+      "decision": "Ecografie abdominală azi; drenaj dacă se confirmă o colecție",
+      "status": "aprobat",
+      "replaces_previous": false
+     },
+     {
+      "quote": "Antibioticul îl schimbăm pe meropenem.",
+      "timestamp": "12:26",
+      "decision": "Schimbarea antibioticului de la ceftriaxonă pe meropenem",
+      "status": "aprobat",
+      "replaces_previous": true
+     }
+    ],
+    "eta": {"type": "relative", "raw": "сегодня", "condition": ""},
+    "open_questions": []
+   },
+   {
+    "case_key": "Pacient 12, cardiologie",
+    "topic": "Externare în așteptarea troponinei",
+    "discussion_summary": "Externarea se amână până la rezultatele troponinei [12:39], așteptate spre seară [12:47].",
+    "decisions": [
+     {
+      "quote": "Pacientul 12 din cardiologie, externarea o amânăm până vin rezultatele la troponină.",
+      "timestamp": "12:39",
+      "decision": "Amânarea externării până la rezultatele troponinei",
+      "status": "amânat",
+      "replaces_previous": false
+     }
+    ],
+    "eta": {"type": "conditional", "raw": "până vin rezultatele la troponină", "condition": "rezultatele troponinei"},
+    "open_questions": ["Rezultatul troponinei, așteptat spre seară [12:47]"]
+   }
+  ],
+  "summary": "Pentru pacienta din salonul 7 se face ecografie abdominală azi și se trece pe meropenem [12:18] [12:26]. Externarea pacientului 12 din cardiologie se amână până la rezultatele troponinei [12:39]."
+ }
+}
