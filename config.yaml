@@ -1,0 +1,65 @@
+# Configurare pipeline meeting-mom. Inferența rulează 100% local (fără rețea).
+
+paths:
+  jobs_dir: jobs
+  models_dir: models
+
+normalize:
+  sample_rate: 16000
+  highpass_hz: 80
+  loudnorm: "I=-16:TP=-1.5:LRA=11"   # parametri ffmpeg loudnorm (EBU R128)
+  denoise: false                      # noisereduce după normalizare
+  denoise_prop_decrease: 0.8          # 0..1, cât de agresiv reduce zgomotul
+
+whisper:
+  model: large-v3            # Windows RTX 5070: large-v3; Mac/CPU: medium sau small
+                             # caută întâi models/faster-whisper-<model>, apoi cache-ul HF (offline)
+  device: cuda               # cuda | cpu
+  compute_type: float16      # cuda: float16 / int8_float16; cpu: int8
+  language: null             # null = detecție per segment, restrânsă la `languages`
+  languages: [ro, ru, en]    # limbile permise la detecție (null = toate limbile Whisper)
+  short_segment_s: 2.0       # segmentele mai scurte, cu detecție nesigură (<0.5),
+                             # moștenesc limba segmentului anterior
+  beam_size: 5
+  batch_size: 8              # BatchedInferencePipeline; 1 = transcriere secvențială
+  low_confidence_logprob: -0.7
+  # glossary/prompt.txt (initial_prompt) și glossary/hotwords.txt au prioritate dacă există
+  initial_prompt: "Ședință spital. Termeni medicali: diagnostic, anamneză, tomografie, hemoleucogramă."
+
+postprocess:
+  max_compression_ratio: 2.4 # peste: text repetitiv/halucinat
+  max_no_speech_prob: 0.6    # peste, combinat cu avg_logprob < -1.0: liniște transcrisă
+  repeat_word_min: 4         # același cuvânt de >= N ori la rând => păstrăm unul
+  repeat_phrase_min: 3       # aceeași frază (2-8 cuvinte) de >= N ori la rând => păstrăm una
+  min_lang_prob: 0.5         # sub: flag "uncertain_language" (tratat ca încredere scăzută la pack)
+
+pack:
+  window_tokens: 3500        # estimare: octeți UTF-8 / 4 (conservator pentru chirilic)
+  overlap_turns: 3           # replici repetate la începutul ferestrei următoare
+  max_turn_tokens: 800       # replicile mai lungi se împart la granițe de segment
+  mark_low_confidence: true  # adaugă " [?]" la replicile cu încredere scăzută
+
+vad:                         # Silero-VAD, rulat în interiorul turelor de vorbitor
+  threshold: 0.5             # probabilitatea minimă de vorbire
+  min_speech_duration_ms: 250
+  min_silence_duration_ms: 100   # fin, ca pauzele interne scurte să fie folosite la tăiere
+  window_s: 600              # --no-diarization: VAD pe ferestre de 10 min (RAM constant)
+
+segment:
+  merge_gap_s: 0.3           # unește pauze mai scurte între segmentele aceluiași vorbitor
+  min_segment_s: 1.0         # segmentele mai scurte se alipesc de un vecin...
+  attach_max_gap_s: 1.0      # ...doar dacă vecinul e la cel mult atâtea secunde
+  split_above_s: 15          # segmentele mai lungi se taie la cea mai lungă pauză internă
+  max_segment_s: 25          # limită fermă
+  pad_s: 0.2                 # padding la final (fără suprapunere cu vecinii)
+
+diarization:
+  enabled: true              # --no-diarization: doar VAD, speaker "UNK"
+  device: cuda
+  # copii locale (descărcare unică, vezi SETUP.md); structura oglindește ID-urile HF
+  pipeline_dir: models/pyannote/speaker-diarization-3.1
+  segmentation_dir: models/pyannote/segmentation-3.0
+  embedding_dir: models/pyannote/wespeaker-voxceleb-resnet34-LM
+  plda_dir: models/pyannote/speaker-diarization-community-1   # doar plda/, cerut de pyannote 4.x
+  min_speakers: null
+  max_speakers: null

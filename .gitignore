@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+jobs/*
+!jobs/.gitkeep
+models/*
+!models/.gitkeep
+*.part
+tests/data/long_*.mp3
+.claude/settings.local.json
+*.part.wav

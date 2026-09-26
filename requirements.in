@@ -1,0 +1,12 @@
+# Dependențe directe (fără versiuni). Versiunile exacte: requirements.txt
+faster-whisper
+silero-vad
+pyannote.audio
+torch
+torchaudio
+noisereduce
+soundfile
+numpy
+jiwer
+tqdm
+pyyaml
