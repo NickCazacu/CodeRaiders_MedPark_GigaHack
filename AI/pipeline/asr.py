@@ -34,7 +34,8 @@ def load_model(w, cfg):
 def load_glossary(w, lang):
     """(initial_prompt, hotwords) pentru limba `lang`. Ordinea de căutare:
     glossary/prompt.<lang>.txt, glossary/prompt.txt, whisper.initial_prompt[lang] din config.
-    La fel pentru hotwords.<lang>.txt / hotwords.txt (câte un termen pe linie)."""
+    La fel pentru hotwords.<lang>.txt / hotwords.txt (câte un termen pe linie), doar cu whisper.use_hotwords
+    (fișierele generate din glossary/terms.tsv stau aici, dar nu schimbă baseline-ul)."""
     if w.get("use_prompt") is False:
         return None, None
     g = ROOT / "glossary"
@@ -50,7 +51,7 @@ def load_glossary(w, lang):
         cfg_prompt = cfg_prompt.get(lang)
     prompt = " ".join(lines(f"prompt.{lang}.txt") or lines("prompt.txt")) or cfg_prompt or None
     hotwords = ", ".join(lines(f"hotwords.{lang}.txt") or lines("hotwords.txt")) or None
-    return prompt, hotwords
+    return prompt, (hotwords if w.get("use_hotwords") else None)
 
 
 def read_done(path):
@@ -293,7 +294,8 @@ def asr(job_id, cfg=None):
                 for k, (s, cand) in enumerate(zip(chunk, cands)):
                     lang = chosen[k]
                     res = final[(k, lang)]
-                    leak = prompt_leak("".join(x.text for x in res[0]), glossary[lang][0])
+                    # hotwords intră și ele în prompt, deci pot fi copiate la fel
+                    leak = prompt_leak("".join(x.text for x in res[0]), " ".join(filter(None, glossary[lang])))
                     if leak and (k, lang) in plain:
                         res, leak = plain[(k, lang)], False
                     method = "forced" if forced else ("logprob" if len(cand) > 1 else "detect")

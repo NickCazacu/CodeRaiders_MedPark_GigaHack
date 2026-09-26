@@ -1,0 +1,26 @@
+# generat din terms.tsv (python -m pipeline.glossary hotwords); nu editați manual
+C-reactive protein
+angioplasty
+antibiotic therapy
+atrial fibrillation
+complete blood count
+computed tomography
+coronary angiography
+creatinine
+diuresis
+echocardiography
+ejection fraction
+electrocardiogram
+furosemide
+heart failure
+hemodialysis
+heparin
+intensive care unit
+intubation
+magnetic resonance imaging
+mechanical ventilation
+myocardial infarction
+norepinephrine
+pulmonary embolism
+thrombus aspiration
+troponin

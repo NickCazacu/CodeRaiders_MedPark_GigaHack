@@ -77,6 +77,7 @@ pyannote-database==6.1.1
 pyannote-metrics==4.1
 pyannote-pipeline==4.0.0
 pyannoteai-sdk==0.4.0
+pyarrow==25.0.1
 pycparser==3.0
 Pygments==2.21.0
 pyparsing==3.3.3

@@ -180,7 +180,11 @@ Teste și unelte:
 .\.venv\Scripts\python.exe -m tests.make_llm_example                       # regenerează docs/llm_input.example.json
 powershell -File tests\make_long_sample.ps1 -Minutes 120                   # ședință sintetică de 2 h (3 vorbitori TTS)
 powershell -File tests\measure.ps1 -m pipeline.segment <job_id>            # timp + RAM maxim
+.\.venv\Scripts\python.exe -m tests.test_evaluate                          # evaluarea detaliată + post-corecția
 ```
+
+Evaluarea detaliată (suprapuneri, termeni medicali, limbă, decizii/ETA, tabelul `evaluation/RESULTS.md`), glosarul
+medical și eșantionul de română moldovenească: [evaluation/README.md](evaluation/README.md). Nu are nevoie de GPU.
 
 ## 8. Adăugarea unui pachet nou
 

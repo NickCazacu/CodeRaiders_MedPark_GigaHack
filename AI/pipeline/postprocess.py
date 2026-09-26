@@ -1,6 +1,7 @@
 """Postprocesare: NFC, ş/ţ (sedilă) -> ș/ț (virgulă), scriptul fiecărui cuvânt
 (chirilic/latin/mixt), filtrarea halucinațiilor (repetiții, compression_ratio mare,
-fraze tipice Whisper, liniște transcrisă).
+fraze tipice Whisper, liniște transcrisă), post-corecție opțională după glosar
+(pipeline.correct, postprocess.glossary_correction.enabled).
 
     python -m pipeline.postprocess JOB_ID
 
@@ -15,6 +16,7 @@ import zlib
 from collections import Counter
 
 from pipeline.common import jobs_dir, load_config, run_stage
+from pipeline.glossary import glossary_hash
 
 CEDILLA = str.maketrans({"ş": "ș", "Ş": "Ș", "ţ": "ț", "Ţ": "Ț"})
 
@@ -73,7 +75,7 @@ def collapse_repeats(words, word_min, phrase_min):
     return removed
 
 
-def process(r, p):
+def process(r, p, corrector=None):
     r = dict(r)
     flags = []
     raw = r["text"]
@@ -85,6 +87,9 @@ def process(r, p):
     if collapse_repeats(r["words"], p["repeat_word_min"], p["repeat_phrase_min"]):
         flags.append("repetition")
         r["text"] = "".join(w["w"] for w in r["words"]).strip()
+
+    if corrector and corrector.apply(r):
+        flags.append("glossary_corrected")
 
     if r["text"] != raw:
         r["text_raw"] = raw
@@ -130,9 +135,14 @@ def postprocess(job_id, cfg=None):
 
     def work():
         p = cfg["postprocess"]
+        gc = p.get("glossary_correction") or {}
+        corrector = None
+        if gc.get("enabled"):
+            from pipeline.correct import Corrector
+            corrector = Corrector(gc)
         with open(job_dir / "asr.jsonl", encoding="utf-8") as f:
             recs = sorted((json.loads(l) for l in f if l.strip()), key=lambda r: r["id"])
-        res = [process(r, p) for r in recs]
+        res = [process(r, p, corrector) for r in recs]
         tmp = out.with_name(out.name + ".part")
         tmp.write_text(json.dumps(res, ensure_ascii=False, indent=1), encoding="utf-8")
         tmp.replace(out)
@@ -141,6 +151,9 @@ def postprocess(job_id, cfg=None):
             "dropped": dict(Counter(r["dropped"] for r in res if r["dropped"])),
             "flags": dict(Counter(f for r in res for f in r["flags"])),
             "low_confidence": sum(r["low_confidence"] for r in res if not r["dropped"]),
+            "glossary_correction": bool(corrector),
+            "glossary_hash": glossary_hash() if corrector else None,
+            "corrections": sum(len(r.get("corrections", [])) for r in res),
         }
 
     run_stage(job_dir, "postprocess", out, work)

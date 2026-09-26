@@ -14,3 +14,8 @@ tests/data/long_*.mp3
 tests/reference/*
 !tests/reference/README.md
 *.part.wav
+# audio-ul ședinței și datele externe (corpus cu drepturi rezervate)
+inventory/
+data/
+# gold-ul evaluării = transcriere manuală pe înregistrarea reală (date medicale)
+evaluation/gold/
