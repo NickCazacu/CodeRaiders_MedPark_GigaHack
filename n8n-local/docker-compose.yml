@@ -26,8 +26,9 @@ services:
       N8N_RESTRICT_FILE_ACCESS_TO: /workspace/runtime
     volumes:
       - n8n_data:/home/node/.n8n
-      # MedPark pipeline source, available for future workflow command/service nodes.
-      - ../CodeRaiders_MedPark_GigaHack:/workspace/medpark:rw
+      # MedPark repository (this repo's root; the ASR pipeline is in AI/), available for
+      # future workflow command/service nodes. n8n-local/ lives inside the repo, so ".." is the root.
+      - ..:/workspace/medpark:rw
       # Audio inbox and preprocessing artefacts. Do not place patient data in n8n's
       # execution data; pass paths from this volume to the preprocessing API instead.
       - ./runtime:/workspace/runtime:rw

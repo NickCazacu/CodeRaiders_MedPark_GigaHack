@@ -65,13 +65,21 @@ Poll `GET http://preprocess:8000/jobs/meeting-20260926` until `state` is
 regions and a `wav_path` relative to that file. The relative path makes the
 result usable both inside Docker and by the MedPark process on the host.
 
-Use the result in the existing MedPark pipeline, for example on the host:
+The ASR pipeline lives in `../AI` and currently does its own normalization and VAD from the original
+recording; it does **not** read `result.json` yet (there is no `--preprocess-result` option). On the host:
 
-```bash
-cd ../CodeRaiders_MedPark_GigaHack
-python run_pipeline.py /absolute/path/to/meeting.m4a \
-  --preprocess-result ../n8n-local/runtime/preprocess/meeting-20260926/result.json
+```powershell
+cd ..\AI
+.\.venv\Scripts\python.exe run_pipeline.py ..\n8n-local\runtime\inbox\meeting.m4a --job-id meeting-20260926
 ```
+
+The output for the LLM is `AI/jobs/meeting-20260926/llm_input.json` (format: `AI/docs/LLM_INPUT.md`).
+Whether the pipeline should instead consume this service's WAV/VAD is an open team decision: both
+components currently implement normalization and VAD.
+
+Note on `denoise`: in `AI/`, denoising with `noisereduce` raised the word error rate on the reference
+recording (59.5% → 63.0%). The `light` ffmpeg `afftdn` filter used here was not measured; compare it with
+`AI/tests/evaluate.py` before relying on it for transcription input.
 
 n8n currently owns submission and job polling. The ASR/diarization process
 remains the existing host-side MedPark runtime; connecting its invocation to a
