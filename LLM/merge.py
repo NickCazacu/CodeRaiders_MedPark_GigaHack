@@ -67,7 +67,7 @@ class Merger:
                 continue
             acc = self._find(case, window_index)
             if acc is None:
-                acc = {"case_key": case["case_key"], "topics": [], "summaries": [], "decisions": [],
+                acc = {"case_key": case["case_key"], "topics": [], "summaries": [], "facts": [], "decisions": [],
                        "etas": [], "open_questions": [], "windows": []}
                 self.cases.append(acc)
                 self.events.append({"event": "new_case", "window": window_index, "case_key": case["case_key"]})
@@ -141,7 +141,9 @@ class Merger:
                                     "turn_id": d["turn_id"]})
                 continue
             if d["turn_id"] is None:
-                twin = next((x for x in acc["decisions"] if x["turn_id"] is not None and
+                # duplicat al unei decizii ancorate (reformulată), sau aceeași decizie neancorată repetată
+                twin = next((x for x in acc["decisions"] if
+                             (x["turn_id"] is not None or x["timestamp"] == d["timestamp"]) and
                              fuzz.token_set_ratio(norm(d["decision"]), norm(x["decision"])) >= 85), None)
                 if twin:
                     self.events.append({"event": "drop_unresolved_duplicate", "window": w,
@@ -150,6 +152,10 @@ class Merger:
                     continue
             have.add(d["turn_id"])
             acc["decisions"].append(d)
+        # constatările: fereastra suprapusă le poate repeta => fără duplicate (același text, aproape)
+        for f in case.get("facts", []):
+            if not any(fuzz.ratio(norm(f["fact"]), norm(x["fact"])) >= 90 for x in acc["facts"]):
+                acc["facts"].append(f)
         acc["etas"].append((w, case["eta"]))
         for q in case["open_questions"]:
             if not any(fuzz.ratio(norm(q), norm(x)) >= 90 for x in acc["open_questions"]):
@@ -220,6 +226,7 @@ class Merger:
                 "case_key": acc["case_key"],
                 "topic": next((t for t in reversed(acc["topics"]) if t), ""),
                 "discussion_summary": " ".join(acc["summaries"]),
+                "facts": sorted(acc["facts"], key=lambda f: ts_seconds(f["timestamp"]) or 0),
                 "decisions": [{"decision": d["decision"], "status": d["status"], "quote": d["quote"],
                                "timestamp": d["timestamp"], "turn_id": d["turn_id"],
                                "superseded": s, "needs_review": False} for d, s in zip(decs, sup)],

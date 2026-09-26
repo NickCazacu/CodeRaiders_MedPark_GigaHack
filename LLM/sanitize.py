@@ -9,7 +9,7 @@ import re
 from rapidfuzz import fuzz, process
 
 from LLM.loader import LABEL_RE, MARK_RE, TS_RE, fmt_ts, ts_seconds
-from LLM.schemas import ETA_TYPES, STATUSES
+from LLM.schemas import ETA_TYPES, FACT_CATEGORIES, STATUSES
 
 QUOTE_CHARS = "\"'„“”«»‘’ "
 
@@ -83,6 +83,30 @@ def decision(d, fixes, where):
             "replaces_previous": bool(d.get("replaces_previous"))}
 
 
+# „patul nou” fără număr = „patul nouă” (9): transcrierea pierde „ă” final; un pat nu e „nou”
+BED_NINE = re.compile(r"\b(pat(?:ul)?|patului)\s+nou\b(?!ă)", re.IGNORECASE)
+
+
+def fix_bed_numbers(text, fixes, where):
+    new = BED_NINE.sub(lambda m: f"{m.group(1)} 9", text)
+    if new != text:
+        fixes.append(f"{where}: {text!r} -> {new!r} („patul nou” = patul nouă)")
+    return new
+
+
+def fact(f, fixes, where):
+    if not isinstance(f, dict):
+        return None
+    text = fix_ranges(s(f.get("fact")))
+    if not text:
+        fixes.append(f"{where}: constatare goală eliminată")
+        return None
+    cat = fix_enum(f.get("category"), FACT_CATEGORIES, "evoluție")
+    if cat != s(f.get("category")):
+        fixes.append(f"{where}: categorie {f.get('category')!r} -> {cat!r}")
+    return {"category": cat, "fact": text, "timestamp": norm_ts(f.get("timestamp"))}
+
+
 CYRILLIC = re.compile(r"[Ѐ-ӿ]+(?:[\s-]+[Ѐ-ӿ]+)*")
 # câmpurile scrise de model, care trebuie să fie doar în română (quote și eta.raw sunt verbatim)
 RO_FIELDS = ("case_key", "topic", "discussion_summary")
@@ -100,6 +124,8 @@ def non_romanian_fields(minutes):
     for c in minutes.get("cases", []):
         for f in RO_FIELDS:
             add(c, f)
+        for x in c.get("facts", []):
+            add(x, "fact")
         for d in c.get("decisions", []):
             add(d, "decision")
         for i in range(len(c.get("open_questions", []))):
@@ -123,6 +149,8 @@ def romanian_problems(minutes):
     for i, c in enumerate(minutes.get("cases", []), 1):
         for f in RO_FIELDS:
             check(f"C{i}.{f}", c.get(f))
+        for j, x in enumerate(c.get("facts", []), 1):
+            check(f"C{i}.facts[{j}]", x.get("fact"))
         for j, d in enumerate(c.get("decisions", []), 1):
             check(f"C{i}.decisions[{j}].decision", d.get("decision"))
         for j, q in enumerate(c.get("open_questions", []), 1):
@@ -140,16 +168,19 @@ def extract(data):
         if not isinstance(c, dict):
             continue
         where = f"case[{i}]"
-        key = s(c.get("case_key")) or s(c.get("topic"))
+        key = fix_bed_numbers(s(c.get("case_key")) or s(c.get("topic")), fixes, f"{where}.case_key")
         if not key:
             fixes.append(f"{where}: caz fără case_key și topic, eliminat")
             continue
         decs = [x for j, d in enumerate(c.get("decisions") or [])
                 if (x := decision(d, fixes, f"{where}.decisions[{j}]"))]
+        facts = [x for j, f in enumerate(c.get("facts") or [])
+                 if (x := fact(f, fixes, f"{where}.facts[{j}]"))]
         cases.append({
             "case_key": key,
             "topic": s(c.get("topic")),
             "discussion_summary": fix_ranges(s(c.get("discussion_summary"))),
+            "facts": facts,
             "decisions": decs,
             "eta": eta(c.get("eta"), fixes, where),
             "open_questions": [fix_ranges(q) for q in (s(x) for x in c.get("open_questions") or []) if q],

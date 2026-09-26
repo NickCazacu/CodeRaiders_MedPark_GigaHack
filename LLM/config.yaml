@@ -16,7 +16,9 @@ ollama:
 stages:
   # o fereastră / ședință scurtă. Dacă răspunsul e tăiat, reîncercarea folosește până la max_predict,
   # cât încape în num_ctx lângă promptul real (fără să mărească num_ctx => modelul rămâne tot în VRAM)
-  extract:   {think: false, num_predict: 2048, max_predict: 3072}
+  # 4096: cu `facts` (analize, doze, proceduri) răspunsul pentru 6–8 pacienți trece de 2048 de tokeni
+  extract:   {think: false, num_predict: 4096, max_predict: 6144}
+  segment:   {think: false, num_predict: 1024}   # împărțirea ședinței pe pacienți (vezi `segment`)
   same_case: {think: false, num_predict: 32}     # „același caz?” pentru chei ambigue
   supersede: {think: false, num_predict: 128}    # ce decizii au fost înlocuite (caz cu >= 2 decizii)
   translate: {think: false, num_predict: 1024}   # rusa rămasă în câmpurile care trebuie să fie în română
@@ -28,7 +30,8 @@ context:
                                 # Verifică run.json: token_factor_observed
   header_reserve_tokens: 600    # loc estimat pentru antet (cazuri cunoscute + rezumat) la verificarea inițială
   on_overflow: expand           # expand: mărește num_ctx până la max_num_ctx; skip: sare fereastra (raportat)
-  max_num_ctx: 12288            # ~1.8 GB KV cache pentru qwen3:8b; încape în 8 GB VRAM cu modelul Q4
+  max_num_ctx: 16384            # ~2.3 GB KV cache pentru qwen3:8b; cu modelul Q4 ~7.5 GB VRAM (încape în 12 GB;
+                                # pe o placă de 8 GB coborâți la 12288 și num_predict la 3072)
   header_max_cases: 40          # câte cazuri cunoscute intră în antet (cele mai recente)
   header_summaries: 1           # câte rezumate de ferestre anterioare intră în antet
 
@@ -47,6 +50,17 @@ merge:
                                 # flag: doar deciziile marcate de model ca „schimbă decizia anterioară”
                                 # all: orice decizie anterioară a cazului devine superseded
 
+# Modul pe pacienți: un apel scurt împarte ședința pe pacienți, apoi fiecare pacient e extras separat.
+# Motiv: extras dintr-o fereastră mare, qwen3:8b amesteca pacienții și îi omitea pe cei de la final
+# (Medpark: 2 pacienți în loc de 4+). Dacă transcrierea nu încape într-un apel sau apelul eșuează,
+# se folosesc ferestrele ASR (llm_input.json), ca înainte.
+segment:
+  enabled: true
+  max_segment_tokens: 1200      # un pacient mai lung se împarte în bucăți cu aceeași etichetă
+  context_turns: 2              # replici dinaintea fragmentului, doar pentru context
+  min_patient_s: 15             # începuturi mai apropiate de atât = același pacient (nu un fragment nou)
+
 extract:
-  max_cases: 12                 # limită în schema JSON (maxItems) per fereastră, contra buclelor
+  max_cases: 12                # limită în schema JSON (maxItems) per fereastră, contra buclelor
   max_decisions: 8              # per caz
+  max_facts: 20                 # constatări clinice per caz (analize, tratament, proceduri, evoluție)

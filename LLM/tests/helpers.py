@@ -7,7 +7,7 @@ import traceback
 from pathlib import Path
 
 from LLM.config import load_config
-from LLM.schemas import ETA_TYPES, STATUSES
+from LLM.schemas import ETA_TYPES, FACT_CATEGORIES, STATUSES
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 PREFIX = re.compile(r"^\[\d+:\d{2}(?::\d{2})?\]|\b(UNK|SPEAKER_\d+)\b|\[\?\]")
@@ -19,9 +19,14 @@ def fixture(name):
 
 def cfg(**over):
     c = load_config(env={})
+    # testele existente verifică fluxul pe ferestrele ASR; modul pe pacienți are testele lui (segment.enabled=True)
+    over = {"segment.enabled": False, **over}
     for dotted, v in over.items():
-        sec, key = dotted.split(".")
-        c[sec][key] = v
+        *path, key = dotted.split(".")   # „sec.key” sau „stages.extract.num_predict”
+        d = c
+        for p in path:
+            d = d[p]
+        d[key] = v
     return c
 
 
@@ -47,9 +52,14 @@ class FakeClient:
                 "meta": {"prompt_eval_count": None}}
 
 
-def case(key, decisions=(), eta=None, topic="t", summary="", questions=()):
-    return {"case_key": key, "topic": topic, "discussion_summary": summary, "decisions": list(decisions),
-            "eta": eta or {"type": "none", "raw": "", "condition": ""}, "open_questions": list(questions)}
+def case(key, decisions=(), eta=None, topic="t", summary="", questions=(), facts=()):
+    return {"case_key": key, "topic": topic, "discussion_summary": summary, "facts": list(facts),
+            "decisions": list(decisions), "eta": eta or {"type": "none", "raw": "", "condition": ""},
+            "open_questions": list(questions)}
+
+
+def fact(text, ts, category="analize"):
+    return {"category": category, "fact": text, "timestamp": ts}
 
 
 def dec(quote, ts, text="d", status="aprobat", replaces=False):
@@ -69,8 +79,13 @@ def check_minutes(m):
         errs.append("meeting_summary nu e string")
     for c in m.get("cases", []):
         k = c.get("case_key")
-        if list(c) != ["case_key", "topic", "discussion_summary", "decisions", "eta", "open_questions"]:
+        if list(c) != ["case_key", "topic", "discussion_summary", "facts", "decisions", "eta", "open_questions"]:
             errs.append(f"{k}: chei {list(c)}")
+        for f in c.get("facts", []):
+            if list(f) != ["category", "fact", "timestamp"]:
+                errs.append(f"{k}: chei constatare {list(f)}")
+            elif f["category"] not in FACT_CATEGORIES or not f["fact"] or not re.fullmatch(r"\d{2,}:\d{2}|", f["timestamp"]):
+                errs.append(f"{k}: constatare invalidă {f}")
         for d in c["decisions"]:
             if list(d) != ["decision", "status", "quote", "timestamp", "turn_id", "superseded", "needs_review"]:
                 errs.append(f"{k}: chei decizie {list(d)}")

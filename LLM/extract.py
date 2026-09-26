@@ -20,12 +20,13 @@ from pathlib import Path
 
 from LLM import attribution, prompt, quotes, sanitize, schemas
 from LLM.config import ROOT, load_config
-from LLM.loader import est_tokens, fmt_ts, load, ts_seconds
+from LLM.loader import Window, est_tokens, fmt_ts, load, ts_seconds
 from LLM.merge import Merger
 from LLM.ollama import OllamaClient
 
 DEBUG_PATTERNS = ["window_*.prompt.txt", "window_*.response.json", "final.*", "same_case.json", "translate.json",
-                  "supersede.json", "checks.json", "quotes.json", "merge.json", "context_check.json", "run.json"]
+                  "supersede.json", "checks.json", "quotes.json", "merge.json", "context_check.json", "run.json",
+                  "segment.*"]
 
 
 @contextmanager
@@ -73,6 +74,7 @@ class Extractor:
         self.quotes, self.same_case_log, self.supersede_log, self.checks = [], [], [], []
         self._order = 0
         self.observed_factor = None  # tokeni Qwen reali / estimare, măsurat pe apelurile acestei ședințe
+        self.mode = "single" if meeting.n_windows == 1 else "map-reduce"  # „patients” dacă segmentarea reușește
 
     # ---------- context ----------
     def factor(self):
@@ -135,9 +137,82 @@ class Extractor:
             self.errors.append(f"{label}: {res['error']}")
         return res
 
+    # ---------- împărțirea pe pacienți ----------
+    def patient_windows(self):
+        """Modul „segment”: un apel scurt împarte ședința pe pacienți (ordine + momentul de început), apoi
+        fiecare pacient devine o fereastră separată. Un model mic amestecă pacienții când extrage totul
+        dintr-o fereastră mare; o sarcină simplă de delimitare o face mult mai bine.
+        -> [(Window, {"label", "start", "cue"})] sau None (dezactivat / eșuat / nu încape: ferestrele ASR)."""
+        sc = self.cfg.get("segment") or {}
+        ids = sorted(self.mt.turns)
+        if not sc.get("enabled") or len(ids) < 2:
+            return None
+        T = self.mt.turns
+        msgs = prompt.segment_messages([T[i].line for i in ids])
+        self.dbg.write("segment.prompt.txt", messages_text(msgs))
+        if self.budget(msgs, "segment")[0] is None:
+            self.warn("împărțirea pe pacienți sărită: transcrierea nu încape într-un apel; folosesc ferestrele ASR")
+            return None
+        res = self.call("segment", msgs, schemas.SEGMENTS, "segment")
+        if res["error"]:  # nu e fatal: continuăm pe ferestrele ASR
+            self.errors.pop()
+            self.warn(f"împărțirea pe pacienți a eșuat ({res['error']}); folosesc ferestrele ASR")
+            return None
+
+        found = []
+        for p in (res["data"] or {}).get("patients") or []:
+            sec = ts_seconds(sanitize.s(p.get("start")))
+            label = sanitize.fix_bed_numbers(sanitize.s(p.get("label")), [], "segment")
+            if sec is not None and label:
+                found.append((sec, label, sanitize.s(p.get("cue"))))
+        starts = []  # (poziția primei replici în ids, label, cue)
+        merge_s = sc.get("min_patient_s", 15)
+        for sec, label, cue in sorted(found, key=lambda x: x[0]):
+            k = next((j for j, i in enumerate(ids) if T[i].start >= sec - 1), None)
+            if k is None:
+                continue
+            if starts and T[ids[k]].start - T[ids[starts[-1][0]]].start < merge_s:
+                continue  # două începuturi la câteva secunde (ex. 02:58 și 03:00): același pacient
+            starts.append((k, label, cue))
+        self.dbg.write("segment.response.json", {"raw": res["raw"], "parsed": res["data"],
+                                                 "starts": [{"turn_id": ids[k], "ts": T[ids[k]].ts, "label": lb,
+                                                             "cue": cue} for k, lb, cue in starts]})
+        if starts and starts[0][0] > 0:
+            if T[ids[starts[0][0]]].start - T[ids[0]].start < merge_s:
+                starts[0] = (0, *starts[0][1:])  # câteva replici de deschidere („S-a pornit”): ale primului pacient
+            else:  # discuție substanțială înaintea primului pacient găsit: e un pacient separat, nenumit
+                starts.insert(0, (0, "pacientul discutat la începutul ședinței (identifică-l din fragment)", ""))
+        if len(starts) < 2:
+            self.warn("împărțirea pe pacienți a găsit un singur pacient; folosesc ferestrele ASR")
+            return None
+
+        max_tok, ctx_n = sc.get("max_segment_tokens", 1200), sc.get("context_turns", 2)
+        out = []
+        for n, (k, label, cue) in enumerate(starts):
+            seg = ids[k:starts[n + 1][0] if n + 1 < len(starts) else len(ids)]
+            chunks, cur, tok = [], [], 0  # un pacient lung se împarte în bucăți, cu aceeași etichetă
+            for i in seg:
+                if cur and tok + T[i].tokens > max_tok:
+                    chunks.append(cur)
+                    cur, tok = [], 0
+                cur.append(i)
+                tok += T[i].tokens
+            chunks.append(cur)
+            for ch in chunks:
+                pos0 = ids.index(ch[0])
+                tids = ids[max(0, pos0 - ctx_n):pos0] + ch
+                out.append((Window(index=len(out), turn_ids=tids, overlap_turns=len(tids) - len(ch),
+                                   start=T[ch[0]].start, end=T[ch[-1]].end, tokens=sum(T[i].tokens for i in tids),
+                                   text="\n".join(T[i].line for i in tids), lines=[T[i].line for i in tids]),
+                            {"label": label, "start": T[ch[0]].ts, "cue": cue}))
+        self.mode = "patients"
+        print(f"[llm] împărțire pe pacienți: {len(starts)} pacienți, {len(out)} fragmente")
+        return out
+
     # ---------- map ----------
-    def window(self, pos, w, merger, summaries):
-        single = self.mt.n_windows == 1
+    def window(self, pos, w, merger, summaries, n_windows=None, patient=None):
+        n_windows = n_windows or self.mt.n_windows
+        single = n_windows == 1 and not patient
         label = f"window_{w.index:03d}"
         if single:
             msgs = prompt.extract_messages(True, self.date, w.lines)
@@ -145,13 +220,14 @@ class Extractor:
             prev = [s for _, s in summaries if s][-self.ctx["header_summaries"]:]
             msgs = prompt.extract_messages(
                 False, self.date, w.new_lines, context_lines=w.context_lines, window_number=pos + 1,
-                n_windows=self.mt.n_windows, known_cases=merger.known_cases(self.ctx["header_max_cases"]),
-                previous_summary=" ".join(prev))
+                n_windows=n_windows, known_cases=merger.known_cases(self.ctx["header_max_cases"]),
+                previous_summary=" ".join(prev), patient=patient)
         self.dbg.write(f"{label}.prompt.txt", messages_text(msgs))
 
         t0 = time.perf_counter()
         ec = self.cfg.get("extract", {})
-        res = self.call("extract", msgs, schemas.extract_schema(ec.get("max_cases"), ec.get("max_decisions")), label)
+        res = self.call("extract", msgs, schemas.extract_schema(ec.get("max_cases"), ec.get("max_decisions"),
+                                                                ec.get("max_facts")), label)
         cases, summary, fixes = sanitize.extract(res["data"]) if res["data"] is not None else ([], "", [])
 
         keys = Counter(c["case_key"] for c in cases)
@@ -177,7 +253,9 @@ class Extractor:
                 d["_window"], d["_order"] = w.index, self._order
                 self._order += 1
 
-        events = attribution.fix_attribution(cases, self.mt.turns, [c["case_key"] for c in merger.cases])
+        # în modul pe pacienți fragmentul stabilește deja pacientul; mutarea după „ultimul număr pomenit”
+        # greșește când pacientul curent e numit fără număr (ex. „patul nou”) și îl ia pe cel anterior
+        events = [] if patient else attribution.fix_attribution(cases, self.mt.turns, [c["case_key"] for c in merger.cases])
         events += attribution.check_eta_raw(cases, turns)
         self.checks += [{"window": w.index, **e} for e in events]
 
@@ -192,7 +270,7 @@ class Extractor:
         merger.add_window(w.index, w.context_ids, ctx_end, cases)
         summaries.append((w, summary))
         n_dec = sum(len(c["decisions"]) for c in cases)
-        print(f"[llm] fereastra {pos + 1}/{self.mt.n_windows}: {len(cases)} cazuri, {n_dec} decizii "
+        print(f"[llm] fereastra {pos + 1}/{n_windows}: {len(cases)} cazuri, {n_dec} decizii "
               f"({time.perf_counter() - t0:.1f} s){' EROARE' if res['error'] else ''}")
 
     def same_case(self, a, b):
@@ -266,10 +344,13 @@ class Extractor:
         self.context_check()
         merger = Merger(self.cfg, same_case=self.same_case)
         summaries = []
-        for pos, w in enumerate(self.mt.windows):
-            self.window(pos, w, merger, summaries)
+        pw = self.patient_windows()
+        wins = [w for w, _ in pw] if pw else self.mt.windows
+        pats = [p for _, p in pw] if pw else [None] * len(wins)
+        for pos, (w, p) in enumerate(zip(wins, pats)):
+            self.window(pos, w, merger, summaries, len(wins), p)
         cases = merger.result(self.supersede)
-        if self.mt.n_windows <= 1:
+        if len(wins) <= 1:
             meeting_summary = summaries[0][1] if summaries else ""
         elif not cases and not any(s for _, s in summaries):
             meeting_summary = ""  # nimic extras (ferestre eșuate sau goale): nu are ce rezuma
@@ -305,6 +386,7 @@ def extract(input_path, date, out=None, debug_dir=None, cfg=None, client=None):
     ex = Extractor(meeting, date, cfg, client or OllamaClient(cfg), dbg)
     with keep_awake():
         minutes = ex.run()
+    path = ex.mode  # „patients” dacă împărțirea pe pacienți a reușit
 
     out.parent.mkdir(parents=True, exist_ok=True)
     tmp = out.with_name(out.name + ".part")

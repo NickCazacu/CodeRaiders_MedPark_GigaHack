@@ -4,12 +4,15 @@
  "window_number": 3,
  "n_windows": 8,
  "known_cases": ["Pacientă salon 7, chirurgie — aprobat: Ceftriaxonă 2 g/zi"],
- "previous_summary": "Pacienta din salonul 7 a fost operată ieri de colecistectomie; s-a început ceftriaxonă [09:52].",
+ "patient": {"label": "Pacientă salon 7, febră după colecistectomie", "start": "12:04"},
+ "previous_summary":"Pacienta din salonul 7 a fost operată ieri de colecistectomie; s-a început ceftriaxonă [09:52].",
  "context_lines": [
-  "[12:04] UNK: Deci pacienta din salonul 7, a doua zi după colecistectomie, febră 38,5.",
-  "[12:11] UNK: Leucocitele 14, CRP в динамике растёт."
+  "[11:52] UNK: Pacientul din salonul 3 rămâne pe același tratament, fără modificări.",
+  "[11:58] UNK: Bun, trecem mai departe."
  ],
  "window_lines": [
+  "[12:04] UNK: Deci pacienta din salonul 7, a doua zi după colecistectomie, febră 38,5.",
+  "[12:11] UNK: Leucocitele 14, CRP в динамике растёт.",
   "[12:18] UNK: Давайте сделаем УЗИ брюшной полости сегодня, și dacă e colecție, drenaj.",
   "[12:26] UNK: Ok, agreed. Antibioticul îl schimbăm pe meropenem.",
   "[12:33] UNK: Și pentru pacientul 12 poate... nu, stai. [?]",
@@ -22,6 +25,11 @@
     "case_key": "Pacientă salon 7, chirurgie",
     "topic": "Febră după colecistectomie, suspiciune de colecție abdominală",
     "discussion_summary": "Se face ecografie abdominală azi, cu drenaj dacă se găsește o colecție [12:18]. Antibioticul se schimbă pe meropenem [12:26].",
+    "facts": [
+     {"category": "istoric", "fact": "A doua zi după colecistectomie", "timestamp": "12:04"},
+     {"category": "evoluție", "fact": "Febră 38,5 °C", "timestamp": "12:04"},
+     {"category": "analize", "fact": "Leucocite 14; CRP în creștere", "timestamp": "12:11"}
+    ],
     "decisions": [
      {
       "quote": "Давайте сделаем УЗИ брюшной полости сегодня, și dacă e colecție, drenaj.",
@@ -45,6 +53,9 @@
     "case_key": "Pacient 12, cardiologie",
     "topic": "Externare în așteptarea troponinei",
     "discussion_summary": "Externarea se amână până la rezultatele troponinei [12:39], așteptate spre seară [12:47].",
+    "facts": [
+     {"category": "analize", "fact": "Rezultatul troponinei e așteptat de laborator spre seară", "timestamp": "12:47"}
+    ],
     "decisions": [
      {
       "quote": "Pacientul 12 din cardiologie, externarea o amânăm până vin rezultatele la troponină.",

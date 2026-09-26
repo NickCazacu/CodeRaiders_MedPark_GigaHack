@@ -41,6 +41,30 @@ extract_job(job_id, "2026-09-21")          # AI/jobs/<id>/minutes.json + etapa �
 report = extract(path, "2026-09-21")       # direct pe un fișier; întoarce raportul rulării
 ```
 
+## Modificări 26.09 (după review-ul pe Medpark)
+
+Review-ul procesului-verbal Medpark a arătat pacienți amestecați (boxa pusă la patul 9), pacienți de la final
+lipsă și toate valorile clinice omise (creatinină, antibiotice cu doze, proceduri). Cauze și schimbări:
+
+- **`facts`** pe fiecare caz (`schemas.FACT_CATEGORIES`: diagnostic, istoric, analize, imagistică,
+  microbiologie, tratament, procedură, monitorizare, evoluție). Regula 6 spunea că „constatările nu sunt decizii”,
+  dar schema nu avea unde să le pună, deci erau aruncate. Acum trec prin `sanitize` (categorie validă,
+  doar română), `merge` (fără duplicate între ferestre, ordonate în timp) și `mom.py` („Constatări clinice”).
+- **Modul pe pacienți** (`segment.enabled`, implicit activ): un apel scurt (`prompts/segment.md`) împarte
+  ședința pe pacienți (ordine + moment de început), apoi fiecare pacient e extras separat
+  (`prompts/patient.md`), cu 2 replici de context. Pe Medpark, extracția dintr-o singură fereastră dădea
+  2 pacienți; cu împărțirea: patul 8, patul 9, boxa și pacienții de la final. Dacă transcrierea nu încape
+  într-un apel sau apelul eșuează, se folosesc ferestrele ASR, ca înainte (`run.json`: `path`).
+  În acest mod, `attribution.fix_attribution` nu mai mută decizii între pacienți: fragmentul stabilește
+  pacientul, iar mutarea după „ultimul număr pomenit” lua pacientul anterior când cel curent e numit fără număr.
+- `sanitize.fix_bed_numbers`: „patul nou” (fără număr) → „patul 9” (transcrierea pierde „ă” din „nouă”).
+- Prompt: regulile 11, 13, 15, 16 (indicii de schimbare a pacientului, întrebări deschise, `facts`, toți
+  pacienții). Exemplele din reguli sunt fictive, nu din ședința de test.
+- Config: `stages.extract.num_predict` 4096 (răspunsul cu `facts` e mai lung), `max_num_ctx` 16384 (~7.5 GB VRAM
+  cu qwen3:8b), `extract.max_facts` 20.
+- Testate și respinse pe Medpark: `qwen3:14b` (tot 2 pacienți, de 3× mai lent), `think: true` la extracție
+  (fără câștig clar), ferestre ASR mai mici sau replici de 300 de tokeni (împărțire prea fină).
+
 ## Cum lucrează
 
 1. **Încărcare** (`loader.py`): adaptorul transformă `llm_input.json` în `Meeting` / `Window` / `Turn`.

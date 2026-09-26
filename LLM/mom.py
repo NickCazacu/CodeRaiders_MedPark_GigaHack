@@ -22,6 +22,17 @@ ETA_LABEL = {"absolute": "dată fixă", "relative": "relativ", "duration": "dura
              "vague": "vag", "recurring": "periodic", "none": ""}
 STATUS_CLASS = {"aprobat": "ok", "respins": "no", "amânat": "wait", "necesită investigații suplimentare": "wait",
                 "în discuție": "open"}
+# ordinea și etichetele constatărilor clinice (schemas.FACT_CATEGORIES)
+FACT_LABEL = {"diagnostic": "Diagnostic", "istoric": "Istoric", "analize": "Analize", "imagistică": "Imagistică",
+              "microbiologie": "Microbiologie", "tratament": "Tratament", "procedură": "Proceduri",
+              "monitorizare": "Monitorizare", "evoluție": "Evoluție"}
+
+
+def facts_by_category(case):
+    """[(etichetă, [constatări])] în ordinea clinică; minutes.json mai vechi nu au `facts`."""
+    facts = case.get("facts") or []
+    return [(label, [f for f in facts if f["category"] == cat]) for cat, label in FACT_LABEL.items()
+            if any(f["category"] == cat for f in facts)]
 
 
 def read_json(path, default=None):
@@ -107,6 +118,12 @@ def render_md(m):
     for i, c in enumerate(m["cases"], 1):
         out += [f"### 3.{i}. {c['case_key']}", "", f"**Subiect:** {c['topic']}", "",
                 f"**Discuție:** {c['discussion_summary'] or '—'}", ""]
+        groups = facts_by_category(c)
+        if groups:
+            out.append("**Constatări clinice:**")
+            for label, facts in groups:
+                out.append(f"- _{label}:_ " + "; ".join(f"{f['fact']} [{f['timestamp']}]" for f in facts))
+            out.append("")
         if c["decisions"]:
             out.append("**Decizii:**")
             for d in c["decisions"]:
@@ -160,6 +177,7 @@ ul.dec{list-style:none;padding:0;margin:8px 0 0}ul.dec li{padding:8px 0;border-t
 table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;vertical-align:top;padding:8px;border-bottom:1px solid var(--line)}
 th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.03em}
 .table-wrap{overflow-x:auto}ol.agenda li{margin:4px 0}.notes li{margin:4px 0}
+table.facts{margin:4px 0 10px}table.facts th{width:130px;text-transform:none;font-size:13px;letter-spacing:0}
 @media print{body{background:#fff;color:#000}.card{border-color:#ccc;break-inside:avoid}.draft{border:1px solid #c90}}
 """
 
@@ -185,10 +203,15 @@ def render_html(m):
         decisions = f'<ul class="dec">{"".join(decs)}</ul>' if decs else '<p class="label">Nicio decizie.</p>'
         qs = "".join(f"<li>{e(q)}</li>" for q in c["open_questions"])
         questions = f'<p class="label">Rămâne de clarificat:</p><ul>{qs}</ul>' if qs else ""
+        rows_f = "".join(f'<tr><th>{e(label)}</th><td>'
+                         + "<br>".join(f'{e(f["fact"])} <span class="ts">[{e(f["timestamp"])}]</span>' for f in facts)
+                         + "</td></tr>" for label, facts in facts_by_category(c))
+        facts_html = (f'<p class="label">Constatări clinice:</p><table class="facts">{rows_f}</table>'
+                      if rows_f else "")
         cards.append(f'<section class="card"><h3>{i}. {e(c["case_key"])}</h3>'
                      f'<p><span class="label">Subiect:</span> {e(c["topic"])}</p>'
                      f'<p><span class="label">Discuție:</span> {e(c["discussion_summary"] or "—")}</p>'
-                     f'{decisions}{questions}</section>')
+                     f'{facts_html}{decisions}{questions}</section>')
     rows = "".join(f'<tr><td>{i}. {e(c["case_key"])}</td><td>{e(d["decision"])}</td><td>{status(d["status"])}</td>'
                    f'<td>{e(d["_eta"]) or "—"}</td><td class="ts">[{e(d["timestamp"])}]</td></tr>'
                    for i, c in enumerate(m["cases"], 1) for d in c["decisions"] if not d["superseded"])

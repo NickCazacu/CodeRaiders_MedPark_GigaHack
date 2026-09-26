@@ -5,7 +5,7 @@ import json
 import sys
 
 from LLM import extract as ex
-from LLM.tests.helpers import FakeClient, case, cfg, check_minutes, dec, fixture, run, tmpdir
+from LLM.tests.helpers import FakeClient, case, cfg, check_minutes, dec, fact, fixture, run, tmpdir
 
 
 def go(name, script, **cfg_over):
@@ -156,9 +156,67 @@ def test_window_too_large_is_reported_not_truncated():
     assert not any(r["ok"] for r in check), check
 
 
+def test_facts_kept_deduped_and_rendered():
+    # aceeași constatare în ambele ferestre (suprapunere) -> o singură dată; categorie invalidă -> corectată
+    w0 = {"summary": "", "cases": [case("Pacient 48, salon 12", summary="Creatinina crește [00:00].",
+                                        facts=[fact("Creatinina a crescut după contrast", "00:00"),
+                                               fact("Insuficiență renală acută", "00:00", "diagnostic")])]}
+    w1 = {"summary": "", "cases": [case("Pacient 48, salon 12", summary="Se repetă creatinina seara [00:32].",
+                                        facts=[fact("Creatinina a crescut dupa contrast.", "00:00"),
+                                               fact("Hemodializa se discută", "00:32", "altceva")])]}
+    final = {"meeting_summary": "Pacientul 48 [00:32].", "case_order": [0]}
+    m, _, _, d = go("llm_input.example.json", {"extract": [w0, w1], "final": [final]})
+    facts = m["cases"][0]["facts"]
+    assert [f["fact"] for f in facts] == ["Creatinina a crescut după contrast", "Insuficiență renală acută",
+                                           "Hemodializa se discută"], facts
+    assert facts[2]["category"] == "evoluție" and not check_minutes(m), (facts, check_minutes(m))
+    from LLM import mom
+    mom.write(d)
+    md = (d / "mom.md").read_text(encoding="utf-8")
+    assert "**Constatări clinice:**" in md and "_Analize:_ Creatinina a crescut după contrast [00:00]" in md, md
+    assert "Creatinina a crescut după contrast" in (d / "mom.html").read_text(encoding="utf-8")
+
+
+def test_patient_mode_one_window_per_patient():
+    # segmentarea: pacientul din patul 8 de la început, „patul nou” (= 9) de la [00:52]
+    seg = {"patients": [{"start": "00:03", "label": "Pacient patul 8, reanimare", "cue": "patul 8"},
+                        {"start": "00:52", "label": "Pacient patul nou", "cue": "седьмая палата"}]}
+    p8 = {"summary": "Pacientul din patul 8 [00:03].", "cases": [case(
+        "Pacient patul 8", [dec("Давайте повторим креатинин вечером и решим по гемодиализу.", "00:32",
+                                "Repetarea creatininei seara")],
+        facts=[fact("Creatinina 240", "00:26"), fact("Diureza 400 ml pe noapte", "00:26", "evoluție")])]}
+    p9 = {"summary": "Următorul pacient [00:52].", "cases": [case("Pacient patul 9", summary="Salonul 7 [00:52].")]}
+    final = {"meeting_summary": "Două cazuri [00:03] [00:52].", "case_order": [0, 1]}
+    m, report, client, d = go("llm_input.example.json", {"segment": [seg], "extract": [p8, p9], "final": [final]},
+                              **{"segment.enabled": True})
+    assert [c["stage"] for c in client.calls] == ["segment", "extract", "extract", "final"], client.calls
+    assert report["path"] == "patients", report["path"]
+    second = client.calls[2]["messages"][-1]["content"]
+    ctx, frag = second.split("=== FRAGMENT")
+    assert "„Pacient patul 9”" in second and "Pacient patul 8" in second, second   # eticheta corectată + cunoscuții
+    assert "[00:44]" in ctx and "[00:52]" in frag and "[00:26]" not in frag, second  # context = 2 replici
+    first = client.calls[1]["messages"][-1]["content"]
+    assert "[00:44]" in first.split("=== FRAGMENT")[1] and "[00:52]" not in first, first
+    keys = [c["case_key"] for c in m["cases"]]
+    assert keys == ["Pacient patul 8", "Pacient patul 9"] and not check_minutes(m), (keys, check_minutes(m))
+    assert m["cases"][0]["decisions"][0]["turn_id"] == 3 and len(m["cases"][0]["facts"]) == 2, m
+    assert (d / "llm_debug" / "segment.response.json").exists()
+
+
+def test_patient_mode_falls_back_to_asr_windows():
+    # segmentare eșuată, apoi o segmentare cu un singur pacient: ambele -> ferestrele ASR, fără eroare
+    for seg in (None, {"patients": [{"start": "00:03", "label": "Pacient patul 8", "cue": ""}]}):
+        w = {"summary": "", "cases": []}
+        _, report, client, _ = go("llm_input.example.json", {"segment": [seg], "extract": [w, w]},
+                                  **{"segment.enabled": True})
+        assert [c["stage"] for c in client.calls] == ["segment", "extract", "extract"], client.calls
+        assert report["path"] == "map-reduce" and not report["errors"] and report["warnings"], report
+
+
 def test_window_too_large_expands_ctx():
     _, report, client, _ = go("llm_input.example.json", {"extract": [{"summary": "", "cases": []}] * 2},
-                              **{"ollama.num_ctx": 2048, "context.max_num_ctx": 8192})
+                              **{"ollama.num_ctx": 2048, "context.max_num_ctx": 8192,
+                                 "stages.extract.num_predict": 2048})
     assert all(c["num_ctx"] > 2048 for c in client.calls if c["stage"] == "extract"), client.calls
     assert any("num_ctx mărit" in w for w in report["warnings"])
 
@@ -174,9 +232,10 @@ def test_budget_uses_observed_token_ratio():
 
     client = Measured({"extract": [{"summary": "", "cases": []}] * 2})
     ex.extract(fixture("llm_input.example.json"), "2026-09-21", tmpdir() / "m.json", tmpdir(),
-               cfg(**{"ollama.num_ctx": 6144, "context.token_factor": 1.9}), client)
+               cfg(**{"ollama.num_ctx": 8192, "context.token_factor": 1.9, "stages.extract.num_predict": 2048}),
+               client)
     first, second = [c["num_ctx"] for c in client.calls if c["stage"] == "extract"]
-    assert first > 6144 and second == 6144, (first, second)
+    assert first > 8192 and second == 8192, (first, second)
 
 
 if __name__ == "__main__":

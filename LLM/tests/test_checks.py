@@ -224,7 +224,9 @@ def test_retry_uses_new_seed_and_penalty():
 
 
 def test_truncated_retry_gets_more_room_without_bigger_ctx():
-    client = OllamaClient(load_config(env={}))
+    conf = load_config(env={})
+    conf["stages"]["extract"]["num_predict"] = 2048   # valoarea de care depinde testul, independent de config.yaml
+    client = OllamaClient(conf)
     sent = []
 
     def post(body):

@@ -28,7 +28,13 @@ def render(template, **values):
 
 
 def extract_user(single, date, window_lines, context_lines=(), window_number=1, n_windows=1,
-                 known_cases=(), previous_summary=""):
+                 known_cases=(), previous_summary="", patient=None):
+    if patient:  # modul pe pacienți: fragmentul unui singur pacient, delimitat de apelul de segmentare
+        return render(read("patient.md"), date=date, number=window_number, n=n_windows,
+                      label=patient["label"], start=patient["start"],
+                      known_cases="\n".join(f"- {c}" for c in known_cases) or NONE,
+                      context_lines="\n".join(context_lines) or "(niciuna, începutul ședinței)",
+                      window_lines="\n".join(window_lines))
     if single:
         return render(read("single.md"), date=date, window_lines="\n".join([*context_lines, *window_lines]))
     return render(read("window.md"), date=date, window_number=window_number, n_windows=n_windows,
@@ -41,13 +47,18 @@ def extract_user(single, date, window_lines, context_lines=(), window_number=1, 
 def extract_messages(single, date, window_lines, **kw):
     fs = fewshot()
     example = extract_user(single, fs["date"], fs["window_lines"], fs["context_lines"], fs["window_number"],
-                           fs["n_windows"], fs["known_cases"], fs["previous_summary"])
+                           fs["n_windows"], fs["known_cases"], fs["previous_summary"],
+                           patient=fs["patient"] if kw.get("patient") else None)  # exemplul, prin același șablon
     return [
         {"role": "system", "content": read("system.md")},
         {"role": "user", "content": example},
         {"role": "assistant", "content": json.dumps(fs["output"], ensure_ascii=False)},
         {"role": "user", "content": extract_user(single, date, window_lines, **kw)},
     ]
+
+
+def segment_messages(lines):
+    return [{"role": "user", "content": render(read("segment.md"), lines="\n".join(lines))}]
 
 
 def same_case_messages(a, b):
