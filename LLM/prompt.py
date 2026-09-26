@@ -57,8 +57,14 @@ def extract_messages(single, date, window_lines, **kw):
     ]
 
 
-def segment_messages(lines):
-    return [{"role": "user", "content": render(read("segment.md"), lines="\n".join(lines))}]
+def segment_messages(lines, previous=None):
+    """previous: eticheta pacientului discutat la finalul fragmentului anterior (ședințe lungi, pe bucăți)."""
+    cont = "" if not previous else (
+        "\nATENȚIE: transcrierea de mai jos e o CONTINUARE din mijlocul ședinței. Prima linie continuă discuția "
+        f"despre: „{previous}”. Regula despre primul element nu se aplică: NU pune acest pacient la începutul "
+        "listei; listează doar pacienții care ÎNCEP în acest fragment (sau sunt reluați explicit mai târziu). "
+        "Dacă nu începe niciun pacient nou, returnează lista goală.\n")
+    return [{"role": "user", "content": render(read("segment.md"), lines="\n".join(lines), continuation=cont)}]
 
 
 def same_case_messages(a, b):

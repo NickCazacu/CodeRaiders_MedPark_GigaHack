@@ -203,6 +203,37 @@ def test_patient_mode_one_window_per_patient():
     assert (d / "llm_debug" / "segment.response.json").exists()
 
 
+def test_patient_mode_long_meeting_in_parts():
+    # transcriere prea lungă pentru un apel: 3 bucăți (replicile 0-1, 2-3, 4-6), fiecare cu pacientul care continuă
+    segs = [{"patients": [{"start": "00:03", "label": "Pacient patul 8, reanimare", "cue": "patul 8"}]},
+            # modelul repetă pacientul care continuă, cu alt diagnostic în etichetă: același pat => unit
+            {"patients": [{"start": "00:26", "label": "Patul 8 – insuficiență renală", "cue": ""}]},
+            # un început dinaintea bucății (inventat) se ignoră
+            {"patients": [{"start": "00:03", "label": "Pacient 48", "cue": ""},
+                          {"start": "00:52", "label": "Pacient patul nou", "cue": "седьмая палата"}]}]
+    p8 = {"summary": "", "cases": [case("Pacient patul 8", [dec("Давайте повторим креатинин вечером", "00:32",
+                                                                 "Repetarea creatininei seara")])]}
+    p9 = {"summary": "", "cases": [case("Pacient patul 9")]}
+    final = {"meeting_summary": "Două cazuri [00:03] [00:52].", "case_order": [0, 1]}
+    m, report, client, d = go("llm_input.example.json",
+                              {"segment": segs, "extract": [p8, p9], "final": [final]},
+                              **{"segment.enabled": True, "segment.window_tokens": 70})
+    assert [c["stage"] for c in client.calls] == ["segment"] * 3 + ["extract", "extract", "final"], client.calls
+    assert "Pacient patul 8, reanimare" in client.calls[1]["messages"][-1]["content"]   # știe ce continuă
+    assert "CONTINUARE" not in client.calls[0]["messages"][-1]["content"]
+    assert report["path"] == "patients" and [c["case_key"] for c in m["cases"]] == ["Pacient patul 8", "Pacient patul 9"]
+    starts = json.loads((d / "llm_debug" / "segment.response.json").read_text(encoding="utf-8"))["starts"]
+    assert [s["ts"] for s in starts] == ["00:03", "00:52"], starts
+
+
+def test_same_patient():
+    assert ex.same_patient("Pacient patul 9, pneumonie", "Patul 9 – insuficiență respiratorie")
+    assert ex.same_patient("Pacientul 48", "Pacient 48, cardiologie")
+    assert not ex.same_patient("Pacient patul 8", "Pacient 48")
+    assert not ex.same_patient("Boxa 3", "Patul 3")
+    assert ex.same_patient("Alți pacienți", "alți  pacienți") and not ex.same_patient("Primul pacient", "Alți pacienți")
+
+
 def test_patient_mode_falls_back_to_asr_windows():
     # segmentare eșuată, apoi o segmentare cu un singur pacient: ambele -> ferestrele ASR, fără eroare
     for seg in (None, {"patients": [{"start": "00:03", "label": "Pacient patul 8", "cue": ""}]}):
@@ -215,7 +246,7 @@ def test_patient_mode_falls_back_to_asr_windows():
 
 def test_window_too_large_expands_ctx():
     _, report, client, _ = go("llm_input.example.json", {"extract": [{"summary": "", "cases": []}] * 2},
-                              **{"ollama.num_ctx": 2048, "context.max_num_ctx": 8192,
+                              **{"ollama.num_ctx": 2048, "context.max_num_ctx": 12288,
                                  "stages.extract.num_predict": 2048})
     assert all(c["num_ctx"] > 2048 for c in client.calls if c["stage"] == "extract"), client.calls
     assert any("num_ctx mărit" in w for w in report["warnings"])

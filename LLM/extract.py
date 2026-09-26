@@ -10,6 +10,7 @@ Rulează doar pe Ollama local. Tot ce s-a trimis și primit: <job>/llm_debug/.
 import argparse
 import ctypes
 import json
+import re
 import statistics
 import sys
 import time
@@ -26,7 +27,18 @@ from LLM.ollama import OllamaClient
 
 DEBUG_PATTERNS = ["window_*.prompt.txt", "window_*.response.json", "final.*", "same_case.json", "translate.json",
                   "supersede.json", "checks.json", "quotes.json", "merge.json", "context_check.json", "run.json",
-                  "segment.*"]
+                  "segment.*", "segment_*"]
+
+PATIENT_ID = re.compile(r"\b(pat(?:ul)?|box[aă]|salon(?:ul)?|rezerva|pacient(?:ul|a)?)\s+(?:nr\.?\s*)?(\d+)", re.I)
+
+
+def same_patient(a, b):
+    """Aceeași identificare (pat/boxă/salon/pacient + număr), altfel aceeași etichetă. „Pacient patul 9, pneumonie”
+    și „Patul 9 – insuficiență respiratorie” sunt același pacient: diagnosticul din etichetă variază între apeluri."""
+    ia, ib = ({(m[1].lower()[:3], m[2]) for m in PATIENT_ID.finditer(x)} for x in (a, b))
+    if ia or ib:
+        return bool(ia & ib)
+    return " ".join(a.lower().split()) == " ".join(b.lower().split())
 
 
 @contextmanager
@@ -148,23 +160,41 @@ class Extractor:
         if not sc.get("enabled") or len(ids) < 2:
             return None
         T = self.mt.turns
-        msgs = prompt.segment_messages([T[i].line for i in ids])
-        self.dbg.write("segment.prompt.txt", messages_text(msgs))
-        if self.budget(msgs, "segment")[0] is None:
-            self.warn("împărțirea pe pacienți sărită: transcrierea nu încape într-un apel; folosesc ferestrele ASR")
-            return None
-        res = self.call("segment", msgs, schemas.SEGMENTS, "segment")
-        if res["error"]:  # nu e fatal: continuăm pe ferestrele ASR
-            self.errors.pop()
-            self.warn(f"împărțirea pe pacienți a eșuat ({res['error']}); folosesc ferestrele ASR")
-            return None
-
-        found = []
-        for p in (res["data"] or {}).get("patients") or []:
-            sec = ts_seconds(sanitize.s(p.get("start")))
-            label = sanitize.fix_bed_numbers(sanitize.s(p.get("label")), [], "segment")
-            if sec is not None and label:
-                found.append((sec, label, sanitize.s(p.get("cue"))))
+        # ședințele lungi nu încap într-un singur apel: bucăți consecutive, fiecare știind ce pacient continuă
+        parts, cur, tok = [], [], 0
+        for i in ids:
+            if cur and tok + T[i].tokens > sc.get("window_tokens", 6000):
+                parts.append(cur)
+                cur, tok = [], 0
+            cur.append(i)
+            tok += T[i].tokens
+        parts.append(cur)
+        found, raws, parsed, previous = [], [], [], None
+        for n, part in enumerate(parts):
+            label_n = "segment" if len(parts) == 1 else f"segment_{n:02d}"
+            msgs = prompt.segment_messages([T[i].line for i in part], previous)
+            self.dbg.write(f"{label_n}.prompt.txt", messages_text(msgs))
+            if self.budget(msgs, "segment")[0] is None:
+                self.warn(f"împărțirea pe pacienți sărită: {label_n} nu încape într-un apel; folosesc ferestrele ASR")
+                return None
+            res = self.call("segment", msgs, schemas.SEGMENTS, label_n)
+            raws.append(res["raw"])
+            parsed.append(res["data"])
+            if res["error"]:  # nu e fatal
+                self.errors.pop()
+                if len(parts) == 1:
+                    self.warn(f"împărțirea pe pacienți a eșuat ({res['error']}); folosesc ferestrele ASR")
+                    return None
+                self.warn(f"{label_n}: împărțirea pe pacienți a eșuat ({res['error']}); "
+                          "fragmentul rămâne la pacientul anterior")
+                continue
+            lo = T[part[0]].start - 1
+            for p in (res["data"] or {}).get("patients") or []:
+                sec = ts_seconds(sanitize.s(p.get("start")))
+                label = sanitize.fix_bed_numbers(sanitize.s(p.get("label")), [], "segment")
+                if sec is not None and label and (n == 0 or sec >= lo):
+                    found.append((max(sec, lo) if n else sec, label, sanitize.s(p.get("cue"))))
+                    previous = label
         starts = []  # (poziția primei replici în ids, label, cue)
         merge_s = sc.get("min_patient_s", 15)
         for sec, label, cue in sorted(found, key=lambda x: x[0]):
@@ -173,7 +203,10 @@ class Extractor:
                 continue
             if starts and T[ids[k]].start - T[ids[starts[-1][0]]].start < merge_s:
                 continue  # două începuturi la câteva secunde (ex. 02:58 și 03:00): același pacient
+            if starts and same_patient(starts[-1][1], label):
+                continue  # la granița dintre bucăți modelul repetă uneori pacientul care continuă
             starts.append((k, label, cue))
+        res = {"raw": raws[0] if len(raws) == 1 else raws, "data": parsed[0] if len(parsed) == 1 else parsed}
         self.dbg.write("segment.response.json", {"raw": res["raw"], "parsed": res["data"],
                                                  "starts": [{"turn_id": ids[k], "ts": T[ids[k]].ts, "label": lb,
                                                              "cue": cue} for k, lb, cue in starts]})

@@ -13,6 +13,7 @@ Nu inventa pacienți. Marchează un pacient nou DOAR când există un indiciu ex
 Primul element începe la prima linie a transcrierii: și discuția de la început e despre un pacient (dacă nu e numit clar, `label` = „Primul pacient” + diagnosticul).
 
 Fiecare element: `start` = `mm:ss` al primei linii despre acel pacient, exact ca în transcriere; `label` = cum e identificat (pat/boxă/salon/număr) + diagnosticul pe scurt, în română; `cue` = cuvintele din transcriere care arată schimbarea.
+{{continuation}}
 
 === TRANSCRIERE ===
 {{lines}}

@@ -59,6 +59,8 @@ segment:
   max_segment_tokens: 1200      # un pacient mai lung se împarte în bucăți cu aceeași etichetă
   context_turns: 2              # replici dinaintea fragmentului, doar pentru context
   min_patient_s: 15             # începuturi mai apropiate de atât = același pacient (nu un fragment nou)
+  window_tokens: 6000           # transcriere mai lungă (ședințe de ~25+ min): împărțirea se face pe bucăți consecutive,
+                                # fiecare știind ce pacient continuă; începuturile vecine cu același pat/număr se unesc
 
 extract:
   max_cases: 12                # limită în schema JSON (maxItems) per fereastră, contra buclelor
