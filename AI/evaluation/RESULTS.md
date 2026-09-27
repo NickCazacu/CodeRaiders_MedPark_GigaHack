@@ -133,6 +133,29 @@ Pe transcrierea S1, LLM-ul găsea sub-părți ale unui pacient ca „subiecte”
 la începutul replicii („...a pacientului” din mijlocul frazei nu e un anunț). Rezultat: Medpark 3 pacienți în 3/3
 rulări, consiliu_30min 12/12 puncte și 54/57 fapte esențiale (95%), ședința administrativă doar subiecte.
 
+## LLM pe ședințe lungi: repetiții și viteză (27.09)
+
+Pe 2 h (fișierul sintetic: o ședință de 5 min repetată de 24 de ori), procesul-verbal avea 165 de constatări pentru
+~7 puncte reale (aceleași fapte, reformulate la fiecare reluare), iar LLM-ul scria ~994 de tokeni per fragment.
+
+| Variantă (2 h, doar LLM) | Fragmente | Tokeni/apel | Timp LLM | Puncte | Constatări |
+|---|---|---|---|---|---|
+| înainte | 97 | 994 | 26 min | 11 | 165 |
+| + răspunsuri scurte, constatări reformulate unite, subiecte duplicate unite | 164 | 691 | 31 min | 13 | 65 |
+| + fragment nou la fiecare anunț de punct („First item…”) | 142 | 897 | 33 min | 12 | 122 |
+| **+ anunțul doar mută începutul pus de model (adoptat)** | 97 | 1015 | 26 min | 13 | 117 |
+
+Concluzii: (1) viteza pe 2 h depinde de numărul de fragmente, nu de instrucțiunile de răspuns scurt: cu 97 de
+fragmente modelul scrie tot ~1 000 de tokeni per apel (scăderea la 691 venea din fragmentele mai mici); (2) unirea
+constatărilor reformulate scade repetițiile (165 -> 117); (3) fragmentele adăugate la anunțuri făceau LLM-ul mai lent
+și dublau punctele, iar un punct ratat la împărțire e separat oricum la extracție, deci anunțul doar mută începutul
+pus de model (71 de începuturi aliniate pe 2 h). Pe consiliu_30min: 12/12 puncte în toate rulările (89–93% din faptele
+esențiale), ~6% mai rapid; Medpark: 3/3 pacienți în 3/3 rulări.
+
+Următorul câștig real de viteză ar fi 2 fragmente procesate în paralel de Ollama (`OLLAMA_NUM_PARALLEL=2`), dar
+cere memorie video în plus (două contexte de până la 16k tokeni); netestat, pentru că placa de pe calculatorul de
+demo nu e cunoscută.
+
 ## Corecția după glosar (`postprocess.glossary_correction`, 27.09): respinsă
 
 Glosarul extins cu vocabular de terapie intensivă (germeni, antibiotice, antifungice, specialități; `hotword` 0,
