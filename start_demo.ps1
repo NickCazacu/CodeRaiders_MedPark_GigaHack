@@ -37,13 +37,15 @@ if (-not (Up "http://127.0.0.1:8765/healthz")) {
 Write-Output "[ok] serviciul AI: http://127.0.0.1:8765"
 
 # 3. Docker + containerele
-if (-not (docker info 2>$null)) {
+# „docker info” afișează partea de client și când motorul e oprit: contează codul de ieșire, nu textul
+function DockerUp { docker info *> $null; $LASTEXITCODE -eq 0 }
+if (-not (DockerUp)) {
   $dd = "C:\Program Files\Docker\Docker\Docker Desktop.exe"
   if (-not (Test-Path $dd)) { throw "Docker Desktop nu e instalat" }
   Start-Process $dd
   Write-Output "aștept Docker Desktop..."
   $deadline = (Get-Date).AddMinutes(3)
-  while (-not (docker info 2>$null)) { if ((Get-Date) -gt $deadline) { throw "Docker nu a pornit" }; Start-Sleep 5 }
+  while (-not (DockerUp)) { if ((Get-Date) -gt $deadline) { throw "Docker nu a pornit" }; Start-Sleep 5 }
 }
 Set-Location (Join-Path $root "n8n-local")
 if (-not (Test-Path .env)) {
