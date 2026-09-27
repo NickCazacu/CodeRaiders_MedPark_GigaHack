@@ -66,7 +66,7 @@ segment:
 extract:
   max_cases: 12                # limită în schema JSON (maxItems) per fereastră, contra buclelor
   max_decisions: 8              # per caz
-  max_facts: 8                # constatări clinice per caz (analize, tratament, proceduri, evoluție)
+  max_facts: 6                # constatări clinice per caz (analize, tratament, proceduri, evoluție)
 
 complete:
   enabled: false                # modul pe pacienți: încă un apel per fragment, doar pentru constatările ratate.

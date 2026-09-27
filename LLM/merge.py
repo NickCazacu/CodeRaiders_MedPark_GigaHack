@@ -33,6 +33,17 @@ def numbers(text):
     return [_WORDS.get(x, x.replace(",", ".")) for x in _NUM.findall((text or "").lower())]
 
 
+NEG = re.compile(r"\b(nu|n-|fără|fara|без|не|нет|no|not|without)\b", re.I)
+
+
+def same_fact(a, b):
+    """Aceeași constatare, reformulată (pacient reluat, recapitulare): aceleași numere, aceeași negație și rădăcini
+    aproape identice. „Fără febră” și „Febră” rămân diferite; la fel „creatinina 180” și „creatinina 240”."""
+    if sorted(numbers(a)) != sorted(numbers(b)) or bool(NEG.search(a or "")) != bool(NEG.search(b or "")):
+        return False
+    return fuzz.token_set_ratio(stems(a), stems(b)) >= 85
+
+
 def norm_key(key):
     t = unicodedata.normalize("NFKD", key or "")
     t = "".join(c for c in t if not unicodedata.combining(c)).casefold()
@@ -51,6 +62,11 @@ def key_score(a, b):
     lb = {(m[1][:3], m[2]) for m in LOCATION.finditer(nb)}
     if la and lb:
         return 100.0 if la & lb else 0.0
+    # subiecte: „Organizare: program MRI” și „Echipamente: programul MRI” = aceeași temă, altă categorie
+    if ":" in a and ":" in b and not la and not lb:
+        s = fuzz.token_set_ratio(stems(a.split(":", 1)[1]), stems(b.split(":", 1)[1]))
+        if s >= 90:
+            return float(s)
     # „Pacient 48” vs „Pacient 84”: text aproape identic, pacienți diferiți
     da, db = set(re.findall(r"\d+", na)), set(re.findall(r"\d+", nb))
     if da and db and da != db:
@@ -175,10 +191,15 @@ class Merger:
                     continue
             have.add(d["turn_id"])
             acc["decisions"].append(d)
-        # constatările: fereastra suprapusă le poate repeta => fără duplicate (același text, aproape)
+        # constatările: fereastra suprapusă, pacientul reluat sau recapitularea le repetă, adesea reformulate =>
+        # o singură dată; dintre două formulări ale aceleiași constatări rămâne cea mai bogată
         for f in case.get("facts", []):
-            if not any(fuzz.ratio(norm(f["fact"]), norm(x["fact"])) >= 90 for x in acc["facts"]):
+            twin = next((x for x in acc["facts"] if same_fact(f["fact"], x["fact"])
+                         or fuzz.ratio(norm(f["fact"]), norm(x["fact"])) >= 90), None)
+            if twin is None:
                 acc["facts"].append(f)
+            elif len(norm(f["fact"]).split()) > len(norm(twin["fact"]).split()):
+                twin.update(f)  # mai multe cuvinte = mai multă informație (nu punctuație sau diacritice)
         acc["etas"].append((w, case["eta"]))
         for q in case["open_questions"]:
             if not any(fuzz.ratio(norm(q), norm(x)) >= 90 for x in acc["open_questions"]):
@@ -263,7 +284,9 @@ class Merger:
                 "case_key": acc["case_key"],
                 "topic": next((t for t in reversed(acc["topics"]) if t), ""),
                 "discussion_summary": " ".join(acc["summaries"]),
-                "facts": sorted(acc["facts"], key=lambda f: ts_seconds(f["timestamp"]) or 0),
+                # o constatare care doar repetă o decizie („se continuă ceftriaxona 3 zile”) apare o singură dată
+                "facts": sorted((f for f in acc["facts"] if not any(same_fact(f["fact"], d["decision"]) for d in decs)),
+                                key=lambda f: ts_seconds(f["timestamp"]) or 0),
                 "decisions": [{"decision": d["decision"], "status": d["status"], "quote": d["quote"],
                                "timestamp": d["timestamp"], "turn_id": d["turn_id"],
                                "superseded": s, "needs_review": False} for d, s in zip(decs, sup)],

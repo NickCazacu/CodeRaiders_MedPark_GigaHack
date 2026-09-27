@@ -114,6 +114,37 @@ def test_restated_decision_kept_once():
     assert any(e["event"] == "drop_restated_decision" for e in m.events)
 
 
+def test_same_fact_guards():
+    from LLM.merge import same_fact
+    assert same_fact("Pneumonie comunitară", "Pneumonie comunitară în lobul inferior drept")
+    assert same_fact("CRP a scăzut de la 140 la 60", "CRP a scăzut de la 140 la 60, afebril")
+    # prudent: formulări mai depărtate rămân amândouă (mai bine o repetiție decât o informație pierdută)
+    assert not same_fact("CRP a scăzut de la 140 la 60", "Temperatura scade, CRP de la 140 la 60")
+    assert not same_fact("Creatinina 180", "Creatinina 240")                # alte numere
+    assert not same_fact("Fără febră", "Febră 38,5")                         # negație
+    assert not same_fact("Febră", "Nu are febră")
+    assert not same_fact("Insuficiență respiratorie", "Insuficiență renală")
+
+
+def test_repeated_facts_merged_richer_kept():
+    m = Merger(cfg())
+    fact = lambda text, ts="00:10": {"category": "evoluție", "fact": text, "timestamp": ts}
+    m.add_window(0, [], -1, [dict(c("Patul 12"), facts=[fact("Pneumonie comunitară"), fact("Febră 38,5")])])
+    m.add_window(3, [], -1, [dict(c("Patul 12", [d(40, 300, 3, "Se continuă ceftriaxona încă 3 zile")]),
+                                  facts=[fact("Pneumonie comunitară în lobul inferior drept", "05:00"),
+                                         fact("Fără febră de 2 zile", "05:10"),
+                                         fact("Ceftriaxona se continuă încă trei zile", "05:20")])])
+    facts = [f["fact"] for f in m.result()[0]["facts"]]
+    # reformularea mai bogată o înlocuiește pe cea scurtă; negația rămâne separată; faptul = decizia dispare
+    assert facts == ["Febră 38,5", "Pneumonie comunitară în lobul inferior drept", "Fără febră de 2 zile"], facts
+
+
+def test_topic_same_subject_other_category():
+    assert key_score("Organizare: program MRI", "Echipamente: programul MRI") >= 90
+    assert key_score("Echipamente: ventilatoare", "Echipamente: dozatoare") < 90
+    assert key_score("Organizare: graficul de gărzi", "Organizare: audit de igienă") < 90
+
+
 def test_ambiguous_asks_llm():
     asked = []
 

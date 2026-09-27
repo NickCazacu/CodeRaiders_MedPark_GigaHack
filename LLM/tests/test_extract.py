@@ -304,7 +304,8 @@ def test_topic_after_patient_needs_cue():
     assert [x["ts"] for x in s["starts"]] == ["00:03", "00:52"] and [x["ts"] for x in s["dropped_no_cue"]] == ["00:41"]
     assert ex.NEW_TOPIC_CUE.search("Punctul patru, puțin administrativ") and \
         ex.NEW_TOPIC_CUE.search("Farmacia clinică, protocolul de antibiotice") and \
-        not ex.NEW_TOPIC_CUE.search("De intervenire de stentat sau de pus neprostoma")
+        not ex.NEW_TOPIC_CUE.search("De intervenire de stentat sau de pus neprostoma") and \
+        ex.NEW_TOPIC_CUE.search("The pharmacy reported that we are running low on ceftriaxone")
 
 
 def test_opening_first_patient_merged_with_named_one():
@@ -331,6 +332,28 @@ def test_missed_patient_added_by_location():
     # ce recunoaște la începutul unei replici (Medpark: „Так, боксы, да” după patul 9)
     assert ex.patient_ids("Так, боксы, да") == {("box", "")}
     assert ex.patient_ids("Patul 12, după operație") == {("pat", "12")}
+
+
+def test_topic_inside_patient_fragment_folded():
+    # fragmentul patului 8: modelul scoate și un „subiect” din discuția despre pacient => rămâne la pacient
+    seg = {"patients": [{"start": "00:03", "label": "Pacient patul 8", "cue": ""},
+                        {"start": "00:52", "label": "Pacient patul 9", "cue": ""}]}
+    p8 = {"summary": "", "cases": [case("Pacient patul 8", facts=[fact("Creatinina 240", "00:26")]),
+                                   case("Echipamente: monitorizare", facts=[fact("Diureza 400 ml", "00:26", "informație")])]}
+    p9 = {"summary": "", "cases": [case("Pacient patul 9")]}
+    final = {"meeting_summary": "Două cazuri [00:03] [00:52].", "case_order": [0, 1]}
+    m, report, client, d = go("llm_input.example.json", {"segment": [seg], "extract": [p8, p9], "final": [final]},
+                              **{"segment.enabled": True})
+    assert [c["case_key"] for c in m["cases"]] == ["Pacient patul 8", "Pacient patul 9"], m["cases"]
+    assert "Diureza 400 ml" in [f["fact"] for f in m["cases"][0]["facts"]], m["cases"][0]["facts"]
+
+
+def test_topic_announcement_regex():
+    assert ex.TOPIC_ANNOUNCE.match("Punctul patru, puțin administrativ. Ecograful din secția de urgență")
+    assert ex.TOPIC_ANNOUNCE.match("Mai am un punct care nu era pe agendă. Incidentul de joi")
+    assert ex.TOPIC_ANNOUNCE.match("Second item. The MRI schedule")
+    assert not ex.TOPIC_ANNOUNCE.match("Și acum trecem la tratament")
+    assert not ex.TOPIC_ANNOUNCE.match("Clinic, de momentul când noi am schimbat frecvența")
 
 
 def test_canonical_key_from_fragment():

@@ -41,7 +41,12 @@ NEW_PATIENT_CUE = re.compile(
 NEW_TOPIC_CUE = re.compile(
     r"\b(punct\w*|trecem|organizatoric\w*|administrativ\w*|protocol\w*|echipament\w*|"
     r"buget\w*|gărzi|gard\w*|grafic\w*|incident\w*|audit\w*|instruir\w*|farmaci\w*|agend\w*|subiect\w*|anunț\w*|"
-    r"пункт\w*|вопрос\w*|оборудован\w*|дежурств\w*|item|agenda|schedule|equipment)\b", re.I)
+    r"пункт\w*|вопрос\w*|оборудован\w*|дежурств\w*|аптек\w*|"
+    r"item|agenda|schedule|equipment|pharmacy|budget|staff|roster|training|supply|supplies)\b", re.I)
+# anunțul unui punct nou chiar la începutul replicii (primele 4 cuvinte): „Punctul patru...”, „Mai am un punct...”
+TOPIC_ANNOUNCE = re.compile(
+    r"^\W*(?:\w+\W+){0,3}?(punct\w*|organizatoric\w*|administrativ\w*|item|agenda|пункт\w*|вопрос\w*)\b",
+    re.I)
 PATIENT_WORDS = re.compile(r"\b(pacient\w*|pat(?:ul)?|box\w*|bocs\w*|salon\w*|rezerv\w*|bolnav\w*)\b", re.I)
 
 
@@ -331,8 +336,24 @@ class Extractor:
                 starts.append((j, label, head))
                 starts.sort(key=lambda s: s[0])
                 added.append({"ts": T[i].ts, "label": label})
+        # la fel pentru subiectele ratate: o replică ce ÎNCEPE cu un anunț („Punctul patru, puțin administrativ”,
+        # „Ultimul punct, ...”, „Next item”) deschide un subiect, dacă modelul nu a pus acolo un început
+        if starts and sc.get("location_starts", True):
+            for j, i in enumerate(ids):
+                text = T[i].line.split(": ", 1)[-1]
+                if not TOPIC_ANNOUNCE.match(text):
+                    continue
+                cur = max((s for s in starts if s[0] <= j), key=lambda s: s[0], default=None)
+                if cur is None or T[i].start - T[ids[cur[0]]].start < merge_s:
+                    continue
+                if any(0 <= T[ids[s[0]]].start - T[i].start < merge_s for s in starts):
+                    continue  # modelul a pus un început imediat după: același punct
+                label = "Subiect: " + " ".join(text.split()[:8])
+                starts.append((j, label, text[:80]))
+                starts.sort(key=lambda s: s[0])
+                added.append({"ts": T[i].ts, "label": label})
         if added:
-            self.warn("împărțire: pacienți adăugați după locul numit la începutul replicii: "
+            self.warn("împărțire: puncte adăugate după locul sau anunțul de la începutul replicii: "
                       + "; ".join(f"[{a['ts']}] {a['label']}" for a in added))
         if dropped:
             self.warn(f"împărțire: {len(dropped)} „pacienți noi” fără semn în transcriere, unite cu punctul anterior: "
@@ -401,6 +422,17 @@ class Extractor:
                 short = c["case_key"].split(",")[0].strip()
                 fixes.append(f"{label}: case_key prea lung {c['case_key']!r} -> {short!r}")
                 c["case_key"] = short
+        announced = any(TOPIC_ANNOUNCE.match(l.split(": ", 1)[-1]) for l in w.new_lines)
+        if patient and len(cases) > 1 and is_patient_label(patient["label"]) and not announced:
+            # în fragmentul unui pacient, un „subiect” scos de model („Echipamente: monitorizare”) e o parte a
+            # discuției despre pacient: subiectele reale sunt separate deja la împărțire (au nevoie de un anunț)
+            main = next((c for c in cases if is_patient_label(c["case_key"])), None)
+            for c in [c for c in cases if main is not None and c is not main and not is_patient_label(c["case_key"])]:
+                main.setdefault("facts", []).extend(c.get("facts", []))
+                main["decisions"].extend(c["decisions"])
+                main["open_questions"].extend(c["open_questions"])
+                cases.remove(c)
+                fixes.append(f"{label}: subiectul {c['case_key']!r} unit cu pacientul fragmentului {main['case_key']!r}")
         if patient and len(cases) == 1:
             key = canonical_key(cases[0]["case_key"], f"{patient['label']} {patient.get('cue', '')}")
             if key != cases[0]["case_key"]:
