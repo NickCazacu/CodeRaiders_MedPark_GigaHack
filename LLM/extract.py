@@ -346,9 +346,14 @@ class Extractor:
                 cur = max((s for s in starts if s[0] <= j), key=lambda s: s[0], default=None)
                 if cur is None or T[i].start - T[ids[cur[0]]].start < merge_s:
                     continue
-                if any(0 <= T[ids[s[0]]].start - T[i].start < merge_s for s in starts):
-                    continue  # modelul a pus un început imediat după: același punct
-                label = "Subiect: " + " ".join(text.split()[:8])
+                nxt = min((s for s in starts if s[0] > j), key=lambda s: s[0], default=None)
+                if nxt is not None and T[ids[nxt[0]]].start - T[i].start < 90:
+                    # modelul a pus începutul punctului puțin după anunț: îl mutăm la anunț, nu adăugăm altul
+                    starts[starts.index(nxt)] = (j, nxt[1], nxt[2])
+                    added.append({"ts": T[i].ts, "label": nxt[1], "moved_from": T[ids[nxt[0]]].ts})
+                    continue
+                # punct ratat complet: eticheta neutră (modelul numește tema din fragment, nu copiază anunțul)
+                label = "punctul anunțat la începutul fragmentului (identifică tema din fragment)"
                 starts.append((j, label, text[:80]))
                 starts.sort(key=lambda s: s[0])
                 added.append({"ts": T[i].ts, "label": label})

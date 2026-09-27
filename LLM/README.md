@@ -100,7 +100,17 @@ lipsă și toate valorile clinice omise (creatinină, antibiotice cu doze, proce
   - o replică ce începe cu alt loc (patul N, boxa, salonul N) deschide pacientul pe care modelul l-a ratat;
   - „Primul pacient” (deschiderea) se unește cu pacientul numit imediat după; aceleași pat/boxă/salon = același
     pacient la unire (`merge.key_score`), orice alte numere (vârsta);
+  - o replică ce începe cu anunțul unui punct („Punctul patru, puțin administrativ”, „Mai am un punct...”, „Next
+    item”; `TOPIC_ANNOUNCE`, primele 4 cuvinte) deschide subiectul ratat de model;
+  - în fragmentul unui pacient, un „subiect” scos de model („Echipamente: monitorizare”) e unit cu pacientul, dacă
+    fragmentul nu conține un anunț de punct;
   - ce s-a unit sau adăugat apare în `llm_debug/segment.response.json` (`dropped_no_cue`, `added_by_location`).
+- **Fără repetiții în procesul-verbal** (`merge.py`): o constatare reformulată (pacient reluat, recapitulare) apare o
+  singură dată (`same_fact`: aceleași numere, aceeași negație — „fără febră” ≠ „febră” —, rădăcini aproape identice;
+  rămâne formularea cu mai multe cuvinte); constatările care doar repetă o decizie dispar; subiectele cu aceeași temă
+  și altă categorie („Organizare: program MRI” = „Echipamente: programul MRI”) sunt un singur punct.
+- **Răspunsuri mai scurte** în modul pe pacienți: cel mult 6 constatări, rezumatul cazului și al fragmentului câte o
+  propoziție (`consiliu_30min`: 628 -> ~565 de tokeni generați per fragment, 187 -> ~177 s).
   Rezultat: Medpark 3 pacienți în toate rulările, `consiliu_30min` 12/12 puncte, ședința administrativă doar subiecte.
 - **Măsurare**: `python -m evaluation.mom_checklist <listă> <job|minutes.json> -v` (din `AI/`): faptele esențiale
   găsite la pacientul corect și numărul de puncte față de cel așteptat. Liste: `AI/evaluation/checklists/`
