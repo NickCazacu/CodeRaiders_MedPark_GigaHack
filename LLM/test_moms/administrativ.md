@@ -1,6 +1,6 @@
 # Proces-verbal al ședinței
 
-**Data ședinței:** 2026-09-26 · **Durata înregistrării:** 4 min · **Generat:** 2026-09-27 02:46 (qwen3:8b, automat, de verificat)
+**Data ședinței:** 2026-09-26 · **Durata înregistrării:** 4 min · **Generat:** 2026-09-27 04:09 (qwen3:8b, automat, de verificat)
 
 ## Rezumat
 

@@ -111,6 +111,23 @@ qwen3:8b variază de la o rulare la alta cu ±3–4 fapte, deci fiecare variant�
 Din faptele lipsă, 3 nu există în transcriere (creatinină 240, linie arterială, Diacarb): le-a pierdut ASR-ul.
 Restul sunt în replici lungi și dense, pe care modelul de 8B le rezumă incomplet.
 
+## Lungimea segmentelor (27.09)
+
+Diarizarea refolosită, doar segmentarea și ASR-ul refăcute. Whisper e antrenat pe ferestre de 30 s.
+
+| Variantă | Medpark WER / CER | amestec: ro WER | ru: limbă corectă | Decizie |
+|---|---|---|---|---|
+| tăiere peste 15 s, max 25 s (vechi) | 55.6% / 33.1% | 59.3% | 92% | — |
+| **S1: tăiere peste 25 s, max 28 s** | **54.7% / 31.7%** | 59.3% | 92% | **adoptat** (aceeași viteză) |
+| S2: S1 + unește pauzele aceluiași vorbitor până la 1 s | 54.2% / 32.1% | 58.3% | **83%** | respins: unește replici în limbi diferite |
+| S3: S2 + segment minim 2 s | 55.9% / 34.4% | 58.3% | 83% | respins |
+
+Pe transcrierea S1, LLM-ul găsea sub-părți ale unui pacient ca „subiecte” („Intervenție: stentare”, „Drenul
+închis”). De aceea și un subiect venit imediat după un pacient cere un semn de trecere în primele cuvinte ale replicii
+(„punctul…”, „protocolul…”, „gărzi”, „incident”…); la fel un pacient nou („pacientul…”, pat/boxă/salon), căutat tot
+la începutul replicii („...a pacientului” din mijlocul frazei nu e un anunț). Rezultat: Medpark 3 pacienți în 3/3
+rulări, consiliu_30min 12/12 puncte și 54/57 fapte esențiale (95%), ședința administrativă doar subiecte.
+
 ## Corecția după glosar (`postprocess.glossary_correction`, 27.09): respinsă
 
 Glosarul extins cu vocabular de terapie intensivă (germeni, antibiotice, antifungice, specialități; `hotword` 0,

@@ -37,6 +37,11 @@ BOX = re.compile(r"\b(box|bocs|бокс)\w*", re.I)
 NEW_PATIENT_CUE = re.compile(
     r"\b(pat(?:ul|ului)?|salon\w*|box\w*|bocs\w*|rezerv\w*|izolator\w*|pacient\w*|caz(?:ul)?|următor\w*|trecem|"
     r"палат\w*|бокс\w*|пациент\w*|больн\w*|следующ\w*|дальше|bed|room|patient|next)\b", re.I)
+# semnele că ședința trece de la pacienți la un subiect de organizare
+NEW_TOPIC_CUE = re.compile(
+    r"\b(punct\w*|trecem|organizatoric\w*|administrativ\w*|protocol\w*|echipament\w*|"
+    r"buget\w*|gărzi|gard\w*|grafic\w*|incident\w*|audit\w*|instruir\w*|farmaci\w*|agend\w*|subiect\w*|anunț\w*|"
+    r"пункт\w*|вопрос\w*|оборудован\w*|дежурств\w*|item|agenda|schedule|equipment)\b", re.I)
 PATIENT_WORDS = re.compile(r"\b(pacient\w*|pat(?:ul)?|box\w*|bocs\w*|salon\w*|rezerv\w*|bolnav\w*)\b", re.I)
 
 
@@ -283,11 +288,26 @@ class Extractor:
                 continue  # două începuturi la câteva secunde (ex. 02:58 și 03:00): același pacient
             if starts and same_patient(starts[-1][1], label, starts[-1][2], cue):
                 continue  # la granița dintre bucăți modelul repetă uneori pacientul care continuă
-            if starts and sc.get("require_cue", True) and is_patient_label(label):
-                # un pacient nou doar cu un semn în TRANSCRIERE (pat, boxă, „pacientul”, „următorul”...);
-                # altfel e același pacient cu o problemă nouă (complicație, istoric, alt diagnostic)
-                near = " ".join(T[i].line for i in ids[k:k + 2])  # replica de început + următoarea
-                if not NEW_PATIENT_CUE.search(near):
+            if (len(starts) == 1 and starts[0][1].lower().startswith("primul pacient") and is_patient_label(label)
+                    and T[ids[k]].start - T[ids[starts[0][0]]].start < 90):
+                # „Primul pacient” = deschiderea („primul caz, cardiologia...”), numit imediat după: același pacient
+                starts[0] = (starts[0][0], label, cue)
+                continue
+            if starts and sc.get("require_cue", True):
+                # începutul replicii de start și al următoarei: un pacient/subiect nou e anunțat la început
+                # („Chirurgia. Patul 8.”, „Punctul patru...”); „...a pacientului” în mijlocul frazei nu e un anunț
+                near = " ".join(" ".join(T[i].line.split(": ", 1)[-1].split()[:10]) for i in ids[k:k + 2])
+                if is_patient_label(label):
+                    # un pacient nou doar cu un semn în TRANSCRIERE (pat, boxă, „pacientul”, „următorul”...);
+                    # altfel e același pacient cu o problemă nouă (complicație, istoric, alt diagnostic)
+                    needed = NEW_PATIENT_CUE
+                elif is_patient_label(starts[-1][1]):
+                    # un subiect imediat după un pacient („Intervenție: stentare”, „Drenul închis”) e de obicei tot
+                    # pacientul acela; un subiect real e anunțat („punctul patru, administrativ”, „protocolul...”)
+                    needed = NEW_TOPIC_CUE
+                else:
+                    needed = None  # subiect după subiect: ședințele de organizare
+                if needed is not None and not needed.search(near):
                     dropped.append({"ts": T[ids[k]].ts, "label": label, "cue": cue})
                     continue
             starts.append((k, label, cue))

@@ -292,6 +292,33 @@ def test_new_patient_needs_cue_in_transcript():
     assert ex.is_patient_label("Pacientul cu sepsis") and not ex.is_patient_label("Organizare: graficul de gărzi")
 
 
+def test_topic_after_patient_needs_cue():
+    # „Drenul închis” la [00:41] („De acord. Și ecografia?”): fără semn de subiect nou => rămâne la patul 8
+    seg = {"patients": [{"start": "00:03", "label": "Pacient patul 8", "cue": ""},
+                        {"start": "00:41", "label": "Intervenție: drenul închis", "cue": ""},
+                        {"start": "00:52", "label": "Pacient patul 9", "cue": ""}]}
+    w = {"summary": "", "cases": []}
+    _, report, client, d = go("llm_input.example.json", {"segment": [seg], "extract": [w, w], "final": [None]},
+                              **{"segment.enabled": True})
+    s = json.loads((d / "llm_debug" / "segment.response.json").read_text(encoding="utf-8"))
+    assert [x["ts"] for x in s["starts"]] == ["00:03", "00:52"] and [x["ts"] for x in s["dropped_no_cue"]] == ["00:41"]
+    assert ex.NEW_TOPIC_CUE.search("Punctul patru, puțin administrativ") and \
+        ex.NEW_TOPIC_CUE.search("Farmacia clinică, protocolul de antibiotice") and \
+        not ex.NEW_TOPIC_CUE.search("De intervenire de stentat sau de pus neprostoma")
+
+
+def test_opening_first_patient_merged_with_named_one():
+    # „Primul pacient” (deschiderea) și pacientul numit imediat după sunt același punct
+    seg = {"patients": [{"start": "00:03", "label": "Primul pacient: reanimare", "cue": ""},
+                        {"start": "00:21", "label": "Pacient patul 8", "cue": ""},
+                        {"start": "00:52", "label": "Pacient patul 9", "cue": ""}]}
+    w = {"summary": "", "cases": []}
+    _, report, client, d = go("llm_input.example.json", {"segment": [seg], "extract": [w, w], "final": [None]},
+                              **{"segment.enabled": True})
+    s = json.loads((d / "llm_debug" / "segment.response.json").read_text(encoding="utf-8"))
+    assert [(x["ts"], x["label"]) for x in s["starts"]] == [("00:03", "Pacient patul 8"), ("00:52", "Pacient patul 9")]
+
+
 def test_missed_patient_added_by_location():
     # modelul listează doar patul 8; replica [00:52] începe cu „Хорошо. Следующий пациент, седьмая палата” (fără cifră)
     # => nu se adaugă nimic; o replică ce începe cu „Boxa” ar deschide „Pacient boxă”
