@@ -214,6 +214,7 @@ class Extractor:
                 parts[k - 1] = parts[k] = ""  # ce NU s-a spus nu intră în procesul-verbal
                 continue
             line = self.line_at(parts[k][1:-1])
+            parts[k - 1] = sanitize.fix_bed_numbers(parts[k - 1], fixes, where)  # „patul nou” -> „patul 9”
             parts[k - 1] = sanitize.fix_weekday(parts[k - 1], line, fixes, where)
             parts[k - 1] = sanitize.strip_unspoken_units(parts[k - 1], line, fixes, where)
         return "".join(parts)

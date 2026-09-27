@@ -290,3 +290,10 @@ def test_bpm_unit_only_if_spoken():
     from LLM.sanitize import strip_unspoken_units as su
     fx = []
     assert su("Frecvența ajustată la 80 bpm", "[07:15] X: frecvența la EKS la 80", fx, "w") == "Frecvența ajustată la 80"
+
+
+def test_quote_timestamp_removed_anywhere():
+    from LLM.sanitize import clean_quote
+    assert clean_quote("Depinde ce... [07:13]") == "Depinde ce..."
+    assert clean_quote("[06:32] SPEAKER_01: Noi avem fluconazol [?]") == "Noi avem fluconazol"
+    assert clean_quote("„Facem ecografie [01:02] azi”") == "Facem ecografie azi"

@@ -23,6 +23,9 @@ def clean_quote(q):
     q = TS_RE.sub("", q, count=1)
     q = LABEL_RE.sub("", q, count=1)
     q = MARK_RE.sub("", q)
+    # modelul lipește uneori timpul și la final sau în mijloc („Depinde ce... [07:13]”)
+    q = re.sub(r"\s*\[\d+:\d{2}(?::\d{2})?\]\s*", " ", q).strip()
+    q = MARK_RE.sub("", q)
     return q.strip(QUOTE_CHARS)
 
 
