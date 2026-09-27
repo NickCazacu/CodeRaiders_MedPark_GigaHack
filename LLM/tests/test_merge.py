@@ -143,6 +143,8 @@ def test_topic_same_subject_other_category():
     assert key_score("Organizare: program MRI", "Echipamente: programul MRI") >= 90
     assert key_score("Echipamente: ventilatoare", "Echipamente: dozatoare") < 90
     assert key_score("Organizare: graficul de gărzi", "Organizare: audit de igienă") < 90
+    assert key_score("Programul MRI", "Echipamente: programul MRI") >= 90            # cu și fără categorie
+    assert key_score("Pacient cu sepsis", "Organizare: sepsis") < 90                  # pacient ≠ subiect
 
 
 def test_ambiguous_asks_llm():

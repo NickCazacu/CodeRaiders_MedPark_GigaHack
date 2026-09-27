@@ -50,6 +50,7 @@ def norm_key(key):
     return " ".join(re.sub(r"[^\w\s]", " ", t).split())
 
 
+PATIENT_KEY = re.compile(r"\b(pacient\w*|pat(?:ul)?|box\w*|bocs\w*|salon\w*|rezerv\w*|bolnav\w*)\b")
 LOCATION = re.compile(r"\b(pat(?:ul)?|box[aăe]?|salon(?:ul)?|rezerva)\s+(?:nr\s*)?(\d+)")
 
 
@@ -63,8 +64,9 @@ def key_score(a, b):
     if la and lb:
         return 100.0 if la & lb else 0.0
     # subiecte: „Organizare: program MRI” și „Echipamente: programul MRI” = aceeași temă, altă categorie
-    if ":" in a and ":" in b and not la and not lb:
-        s = fuzz.token_set_ratio(stems(a.split(":", 1)[1]), stems(b.split(":", 1)[1]))
+    # („Programul MRI” fără categorie = „Echipamente: programul MRI”); doar pentru subiecte, nu pentru pacienți
+    if (":" in a or ":" in b) and not la and not lb and not PATIENT_KEY.search(na) and not PATIENT_KEY.search(nb):
+        s = fuzz.token_set_ratio(stems(a.split(":", 1)[-1]), stems(b.split(":", 1)[-1]))
         if s >= 90:
             return float(s)
     # „Pacient 48” vs „Pacient 84”: text aproape identic, pacienți diferiți

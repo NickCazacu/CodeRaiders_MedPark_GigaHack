@@ -348,15 +348,12 @@ class Extractor:
                     continue
                 nxt = min((s for s in starts if s[0] > j), key=lambda s: s[0], default=None)
                 if nxt is not None and T[ids[nxt[0]]].start - T[i].start < 90:
-                    # modelul a pus începutul punctului puțin după anunț: îl mutăm la anunț, nu adăugăm altul
+                    # modelul a pus începutul punctului puțin după anunț: îl mutăm la anunț (fără punct dublat)
                     starts[starts.index(nxt)] = (j, nxt[1], nxt[2])
                     added.append({"ts": T[i].ts, "label": nxt[1], "moved_from": T[ids[nxt[0]]].ts})
-                    continue
-                # punct ratat complet: eticheta neutră (modelul numește tema din fragment, nu copiază anunțul)
-                label = "punctul anunțat la începutul fragmentului (identifică tema din fragment)"
-                starts.append((j, label, text[:80]))
-                starts.sort(key=lambda s: s[0])
-                added.append({"ts": T[i].ts, "label": label})
+                # un punct ratat complet NU primește fragment propriu: extracția îl separă ca un caz aparte, iar
+                # fragmentul care conține anunțul nu e „unit cu pacientul” (măsurat pe 2 h: fragmentele adăugate
+                # făceau LLM-ul cu ~25% mai lent și dublau punctele)
         if added:
             self.warn("împărțire: puncte adăugate după locul sau anunțul de la începutul replicii: "
                       + "; ".join(f"[{a['ts']}] {a['label']}" for a in added))
