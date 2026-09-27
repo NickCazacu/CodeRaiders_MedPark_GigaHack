@@ -105,7 +105,9 @@ def collect(job_dir):
         "duration": fmt_duration(mt.audio_duration_s if mt else None),
         "generated": datetime.now(timezone.utc).astimezone().strftime("%Y-%m-%d %H:%M"),
         "model": run.get("model", "—"),
-        "summary": minutes["meeting_summary"],
+        "summary": minutes["meeting_summary"] or (
+            "În înregistrare nu s-a detectat vorbire (liniște, zgomot sau muzică)." if mt is not None and not mt.turns
+            else ""),
         "cases": minutes["cases"],
         "notes": notes,
     }
@@ -137,6 +139,8 @@ def render_md(m):
         if c["open_questions"]:
             out += ["", "**În așteptare / de clarificat:**", *[f"- {q}" for q in c["open_questions"]]]
         out.append("")
+    if not m["cases"]:
+        out += ["_Niciun punct identificat._", ""]
     out += ["## Note pentru verificare", "",
             "- Generat automat din înregistrare: valorile și termenii medicali se verifică înainte de trimitere.",
             "- [mm:ss] trimite la momentul din înregistrare; „sursa” e replica exactă, în limba vorbită.",

@@ -373,6 +373,10 @@ def asr(job_id, cfg=None):
                 "initial_prompt": {l: bool(p) for l, (p, _) in glossary.items()},
                 "hotwords": {l: bool(h) for l, (_, h) in glossary.items()}}
 
+    if not segs:  # liniște sau fără vorbire: niciun segment, dar etapele următoare citesc asr.jsonl
+        out.touch()
+        print("[asr] niciun segment de vorbire în înregistrare")
+        return out
     run_stage(job_dir, "asr", out, work, done=lambda: len(read_done(out)) >= len(segs))
     return out
 

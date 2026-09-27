@@ -13,8 +13,11 @@
       <h1>Upload meeting audio</h1>
       <p class="intro">Choose a recording. It is transcribed and summarized into meeting minutes on this computer.</p>
       <form id="upload-form">
-        <label for="audio">Audio file</label>
-        <input id="audio" name="audio" type="file" accept="audio/*" required>
+        <label for="audio">Audio or video file</label>
+        <!-- orice format citit de ffmpeg: înregistrări de telefon (m4a, amr, 3gp, opus), video (mp4, mov, webm) -->
+        <input id="audio" name="audio" type="file"
+               accept="audio/*,video/*,.m4a,.mp3,.wav,.ogg,.oga,.opus,.flac,.aac,.wma,.amr,.3gp,.mp4,.mov,.mkv,.webm,.avi"
+               required>
         <p id="file-name" class="file-name" aria-live="polite">No file selected</p>
         <button id="submit" type="submit">Send to n8n</button>
       </form>

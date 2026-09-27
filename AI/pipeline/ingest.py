@@ -65,11 +65,15 @@ def ingest(src, job_id=None, cfg=None):
     probe_path = job_dir / "probe.json"
 
     def probe():
-        info = ffprobe(dst)
+        try:
+            info = ffprobe(dst)
+        except Exception as e:  # noqa: BLE001 - fișier care nu e audio/video (pdf, arhivă, fișier stricat)
+            raise RuntimeError("Fișierul nu poate fi citit ca audio sau video") from e
         if not any(s.get("codec_type") == "audio" for s in info.get("streams", [])):
             raise RuntimeError("Fișierul nu conține niciun stream audio")
         probe_path.write_text(json.dumps(info, indent=2), encoding="utf-8")
-        return {"duration_s": round(float(info["format"]["duration"]), 2)}
+        dur = info.get("format", {}).get("duration")  # unele formate (amr, stream-uri) nu au durata în antet
+        return {"duration_s": round(float(dur), 2) if dur not in (None, "N/A") else None}
 
     stage = run_stage(job_dir, "probe", probe_path, probe)
 

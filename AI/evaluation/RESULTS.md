@@ -111,6 +111,21 @@ qwen3:8b variază de la o rulare la alta cu ±3–4 fapte, deci fiecare variant�
 Din faptele lipsă, 3 nu există în transcriere (creatinină 240, linie arterială, Diacarb): le-a pierdut ASR-ul.
 Restul sunt în replici lungi și dense, pe care modelul de 8B le rezumă incomplet.
 
+## Formate și cazuri-limită (prin pagina web, 27.09)
+
+Primele 2 min din Medpark convertite în formatele pe care le poate aduce cineva:
+
+| Fișier | Rezultat | WER pe fragmentul 0:00–1:32 |
+|---|---|---|
+| m4a original | ok | 54.2% |
+| video mp4 / mov / webm, ogg-opus, flac, wav stereo 48 kHz | ok | 56.9% (mp4) |
+| telefon: AMR 8 kHz (.3gp), mp3 8 kHz | ok | **64.8%** (AMR): banda îngustă costă ~10 puncte |
+| liniște 60 s, muzică/zgomot 60 s | proces-verbal „nu s-a detectat vorbire”, nimic inventat | — |
+| video fără sunet | eroare clară: „Fișierul nu conține niciun stream audio” | — |
+| text redenumit .mp3 | eroare clară: „Fișierul nu poate fi citit ca audio sau video” | — |
+
+Înainte de corecție, liniștea și muzica opreau pipeline-ul (0 segmente => `asr.jsonl` nu era scris).
+
 ## Nevalidat încă
 
 - Bonusul ro 0.5 pe **rusă reală**: dacă rusa vorbită iese transcrisă ca română, bonusul trebuie scăzut.
