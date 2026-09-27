@@ -91,7 +91,12 @@ o rulare nouă de la zero (normalizare, diarizare, ASR) reproduce exact 55.6% / 
 | Medpark 12 min, prin pagina web (n8n) | | | | | 3:54 (înainte 5:20) |
 | 2 h sintetic (engleză TTS în buclă, alt pacient la ~50 s) | 63 s | 170 s | 917 s | 1465 s (125 de fragmente) | 43:37 |
 
+| 2 h sintetic, versiunea finală (27.09, prin pagina web, cu un joc deschis pe GPU) | 251 s | 218 s | 779 s | 1557 s (97 de fragmente) | **47:00** |
+
 LLM-ul pe 2 h: 9 apeluri de împărțire (128 s), 126 de extracții (~10 s fiecare, dominate de generarea răspunsului).
+În versiunea finală: 8 apeluri de împărțire (115 s), 97 de extracții de ~14,5 s: viteza de generare e normală
+(~66 tokeni/s), dar un răspuns are ~994 de tokeni (față de ~634): ~2,3 cazuri per fragment, constatări care repetă
+deciziile, două rezumate. ASR-ul: toate cele 1 729 de segmente în engleză (înainte, 94 traduse în ro/ru).
 Fișierul sintetic e cel mai rău caz pentru LLM; o ședință reală de 2 h cu 20–40 de pacienți ar avea de 3–4 ori mai
 puține extracții (estimat ~27–30 min total, nemăsurat).
 

@@ -90,7 +90,21 @@ lipsă și toate valorile clinice omise (creatinină, antibiotice cu doze, proce
   proceduri, informații (subiecte), plan / decizii cu replica sursă, în așteptare; fără ordine de zi și termene vagi.
 - Verificări în cod pe textul modelului: unități nespuse (inclusiv în rezumate), ziua săptămânii după replica
   citată, afirmații despre ce „nu s-a discutat”, chei prea lungi, chei deformate înlocuite cu identificatorul
-  fragmentului („Pacient boxă”).
+  fragmentului („Pacient boxă”), timpul lipit în citate.
+- **Împărțirea pe puncte verificată pe transcriere** (`extract.patient_windows`), pentru că modelul de 8B lua un
+  diagnostic nou, o complicație sau istoricul operațiilor drept pacient nou (Medpark: 5–6 „pacienți” în loc de 3):
+  - un pacient nou e păstrat doar dacă primele 10 cuvinte ale replicii lui au un semn: pat/boxă/salon/rezervă,
+    „pacientul/pacienta”, „cazul”, „următorul”, „trecem” (și în rusă/engleză) — `NEW_PATIENT_CUE`;
+  - un subiect venit imediat după un pacient cere un semn de trecere („punctul…”, „protocolul…”, „gărzi”,
+    „incident”, „audit”… — `NEW_TOPIC_CUE`); subiectele după subiecte (ședințe de organizare) nu sunt afectate;
+  - o replică ce începe cu alt loc (patul N, boxa, salonul N) deschide pacientul pe care modelul l-a ratat;
+  - „Primul pacient” (deschiderea) se unește cu pacientul numit imediat după; aceleași pat/boxă/salon = același
+    pacient la unire (`merge.key_score`), orice alte numere (vârsta);
+  - ce s-a unit sau adăugat apare în `llm_debug/segment.response.json` (`dropped_no_cue`, `added_by_location`).
+  Rezultat: Medpark 3 pacienți în toate rulările, `consiliu_30min` 12/12 puncte, ședința administrativă doar subiecte.
+- **Măsurare**: `python -m evaluation.mom_checklist <listă> <job|minutes.json> -v` (din `AI/`): faptele esențiale
+  găsite la pacientul corect și numărul de puncte față de cel așteptat. Liste: `AI/evaluation/checklists/`
+  (ședințe fictive) și `AI/tests/reference/` (Medpark, locală, date medicale).
 
 ## Cum lucrează
 

@@ -148,7 +148,15 @@ Formatul `llm_input.json` pentru echipa LLM e descris în [docs/LLM_INPUT.md](do
   (vezi [glossary/README.md](glossary/README.md)). Coloana `hotword` din `terms.tsv`: `1` = toate limbile sau `ro,en`;
 - **numerele rostite** în segmentele românești devin cifre (`postprocess.numbers_to_digits`, `pipeline/itn.py`):
   „treizeci și opt” → 38, „nouă spre zece” → 19; originalul rămâne în `text_raw`;
+- **segmente de până la 28 s** (`segment.split_above_s` 25, `max_segment_s` 28): Whisper are mai mult context;
+  unirea pauzelor aceluiași vorbitor e oprită, pentru că unea replici spuse în limbi diferite;
+- **corecția după glosar** (`postprocess.glossary_correction`) e **oprită**: pe text corect schimba sensul
+  („tromboliză” → „tromboză”);
 - fără `--denoise`.
+
+Formate de intrare: orice citește ffmpeg (m4a, mp3, wav, ogg/opus, flac, amr/3gp de telefon, video mp4/mov/webm).
+O înregistrare de telefon (8 kHz) iese cu ~10 puncte WER mai slab decât una de laptop/reportofon. Liniștea sau
+muzica dau un proces-verbal „nu s-a detectat vorbire”; un fișier fără sunet dă o eroare clară.
 
 Promptul și hotwords fac parte din amprenta `setup`: dacă le schimbi, rulează ASR-ul într-un job nou sau șterge `asr.jsonl`.
 

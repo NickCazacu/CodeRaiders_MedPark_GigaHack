@@ -55,17 +55,24 @@ $log = docker compose up -d --build 2>&1
 if ($LASTEXITCODE -ne 0) { $log | Select-Object -Last 15; throw "docker compose up a eșuat" }
 WaitFor "http://localhost:5678/healthz" "n8n" 120
 
-# 4. Workflow-urile (o singură dată pe un PC nou)
+# 4. Workflow-urile: importate pe un PC nou și reimportate când fișierele din repo s-au schimbat
+#    (altfel un PC care le-a importat mai demult rulează o versiune veche a fluxului)
+$names = @("audio-upload", "job-status")
+$hashFile = "runtime\.workflows.sha256"
+$hash = ($names | ForEach-Object { (Get-FileHash "workflows\$_.json" -Algorithm SHA256).Hash }) -join ""
+$stale = -not (Test-Path $hashFile) -or ((Get-Content $hashFile -Raw).Trim() -ne $hash)
 $have = docker compose exec -T n8n n8n list:workflow 2>$null
-$missing = @("audio-upload", "job-status") | Where-Object { -not ($have -match "medpark-$_\|") }
-if ($missing) {
-  foreach ($w in $missing) {
+$todo = if ($stale) { $names } else { $names | Where-Object { -not ($have -match "medpark-$_\|") } }
+if ($todo) {
+  foreach ($w in $todo) {
     docker compose exec -T n8n n8n import:workflow --input=/workflows/$w.json 2>&1 | Out-Null
     docker compose exec -T n8n n8n publish:workflow --id=medpark-$w 2>&1 | Out-Null
   }
   docker compose restart n8n 2>&1 | Out-Null
   WaitFor "http://localhost:5678/healthz" "n8n" 120
-  Write-Output "[ok] workflow-uri importate: $($missing -join ', ')"
+  New-Item -ItemType Directory -Force runtime | Out-Null
+  Set-Content -Path $hashFile -Value $hash -Encoding ascii
+  Write-Output "[ok] workflow-uri importate: $($todo -join ', ')"
 }
 WaitFor "http://localhost:8080" "Pagina de upload" 60
 Write-Output "[ok] totul pornit. Deschideți http://localhost:8080"

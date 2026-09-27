@@ -20,14 +20,35 @@ Pornește Ollama, serviciul AI (în fereastra lui) și containerele, apoi deschi
 
 | Înregistrare | Audio → transcriere | LLM | Total |
 |---|---|---|---|
-| Medpark, 12 min (prin pagina web) | ~2:40 | ~1:15 | **3:54** |
-| 2 h sintetic (cel mai rău caz: alt pacient la ~50 s, 125 de fragmente) | 19:12 | 24:25 | 43:37 |
+| Medpark, 12 min (prin pagina web) | ~2:50 | ~1:15 | **4:08** |
+| 2 h sintetic (cel mai rău caz: o ședință de 5 min repetată de 24 de ori, ~100 de fragmente) | 21:00 | 26:00 | **47:00** |
 
-O ședință reală de 2 h (~20–40 de pacienți) are de 3–4 ori mai puține fragmente pentru LLM: estimat ~27–30 min
-(nemăsurat, nu avem o astfel de înregistrare). Detalii: [AI/evaluation/RESULTS.md](AI/evaluation/RESULTS.md).
+Pe 2 h: normalizare 4:10, diarizare + VAD 3:40, ASR 13:00, LLM 97 de fragmente × ~14,5 s. O ședință reală de 2 h
+(~20–40 de puncte) are de 3–4 ori mai puține fragmente pentru LLM: estimat ~30 min (nemăsurat, nu avem o astfel de
+înregistrare). Măsurat cu alte aplicații deschise (inclusiv un joc pe GPU): pe calculatorul de demo, închideți
+aplicațiile grele. Detalii: [AI/evaluation/RESULTS.md](AI/evaluation/RESULTS.md).
 
 Test automat cap-coadă:
 `powershell -File n8n-local\e2e_test.ps1 -Audio <fișier>`. Detalii despre flux: [n8n-local/README.md](n8n-local/README.md).
+
+## Ce face și ce limite are (măsurat, detalii în [AI/evaluation/RESULTS.md](AI/evaluation/RESULTS.md))
+
+- **Orice ședință din spital**: raport de gardă, consiliu, ședință de organizare. Procesul-verbal e pe **puncte
+  discutate**: pacienți (diagnostic și istoric, stare clinică, paraclinic, tratament, plan/decizii, în așteptare) sau
+  subiecte (gărzi, echipamente, protocoale, incidente), doar cu informația de bază. Fiecare afirmație are momentul
+  `[mm:ss]` din înregistrare, iar fiecare decizie replica exactă, ca să poată fi verificată.
+- **Limbi**: română (inclusiv dialectul moldovenesc), rusă, engleză, amestecate în aceeași ședință; procesul-verbal e
+  în română.
+- **Formate**: orice citește ffmpeg: m4a, mp3, wav, ogg/opus, flac, amr/3gp de telefon, video mp4/mov/webm.
+- **Acuratețea transcrierii** (Medpark, referință manuală): WER 54.7%, CER 31.7%: textul e inteligibil, dar
+  termenii medicali și numerele ies adesea deformate, iar vorbirea suprapusă se pierde. O înregistrare de telefon
+  (8 kHz) e cu ~10 puncte WER mai slabă decât una de laptop/reportofon.
+- **Procesul-verbal**: pe Medpark, cei 3 pacienți corecți în toate rulările, fără fapte puse la alt pacient; pe o
+  ședință de test de 30 min (8 pacienți + 4 subiecte), 12/12 puncte și 95% din informația esențială. Valorile greșit
+  transcrise („Pacientul 48” în loc de „patul 8”) trec în procesul-verbal: se verifică după `[mm:ss]`.
+- **100% local la procesare**: modelele se încarcă de pe disc (`HF_HUB_OFFLINE=1`), LLM-ul refuză orice adresă în
+  afară de localhost, serviciul AI ascultă doar pe 127.0.0.1, n8n are telemetria oprită. Internetul e necesar doar la
+  instalare. **Verificare**: după instalare, opriți Wi-Fi-ul și rulați o înregistrare; procesul-verbal trebuie să apară.
 
 ## Mutarea proiectului pe alt calculator
 
@@ -67,8 +88,17 @@ Git aduce **doar codul și documentația**. Restul se mută separat sau se recre
    ```
 5. LLM: `winget install --id Ollama.Ollama -e`, apoi o singură dată `ollama pull qwen3:8b` (~5 GB).
 6. Sistemul complet: Docker Desktop instalat, apoi `start_demo.ps1` din rădăcina repo-ului. Scriptul creează
-   `n8n-local\.env` (cheie nouă) și importă workflow-urile n8n dacă lipsesc. Păstrați cheia veche doar dacă vreți
-   să mutați și datele n8n.
+   `n8n-local\.env` (cheie nouă), reconstruiește pagina de upload și importă workflow-urile n8n dacă lipsesc sau
+   s-au schimbat în repo. Păstrați cheia veche doar dacă vreți să mutați și datele n8n.
+7. Verificarea finală, cu sistemul pornit (din rădăcina repo-ului):
+   ```powershell
+   AI\.venv\Scripts\python.exe -m LLM.tests                                   # trebuie: TOTUL OK
+   powershell -File n8n-local\e2e_test.ps1 -Audio AI\tests\data\sample_meeting.mp3   # trebuie: GATA
+   ```
+   apoi aceeași înregistrare cu Wi-Fi-ul oprit (dovada că totul e local).
+8. **După un `git pull` pe un PC deja instalat**: rulați din nou `start_demo.ps1` (reconstruiește pagina și
+   reimportă workflow-urile schimbate). Dacă serviciul AI rula deja, închideți fereastra „MedPark AI service”
+   înainte, ca să pornească cu codul nou.
 
 **Fără placă NVIDIA:** în `AI/config.yaml` puneți `whisper.device: cpu`, `whisper.compute_type: int8`, `whisper.model: medium`
 și `diarization.device: cpu`. Merge, dar de multe ori mai lent. **Mac:** vezi AI/SETUP.md §3.
