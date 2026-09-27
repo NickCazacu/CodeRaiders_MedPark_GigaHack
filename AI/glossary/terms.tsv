@@ -125,3 +125,52 @@ hidronefroza	diagnostic	hidronefroză	гидронефроз	hydronephrosis				0
 nefrostoma	procedura	nefrostomă	нефростома	nephrostomy				0
 atelectazie	diagnostic	atelectazie	ателектаз	atelectasis				0
 soc_septic	diagnostic	șoc septic	септический шок	septic shock				0
+klebsiella	germen	Klebsiella	клебсиелла	Klebsiella				0
+pseudomonas	germen	Pseudomonas	синегнойная палочка	Pseudomonas				0
+acinetobacter	germen	Acinetobacter	ацинетобактер	Acinetobacter				0
+stafilococ	germen	stafilococ	стафилококк	Staphylococcus				0
+enterococ	germen	enterococ	энтерококк	Enterococcus				0
+candida	germen	Candida	кандида	Candida				0
+fluconazol	medicament	fluconazol	флуконазол	fluconazole				0
+metronidazol	medicament	metronidazol	метронидазол	metronidazole				0
+ciprofloxacina	medicament	ciprofloxacină	ципрофлоксацин	ciprofloxacin				0
+levofloxacina	medicament	levofloxacină	левофлоксацин	levofloxacin				0
+azitromicina	medicament	azitromicină	азитромицин	azithromycin				0
+amoxicilina	medicament	amoxicilină	амоксициллин	amoxicillin				0
+piperacilina	medicament	piperacilină	пиперациллин	piperacillin				0
+colistina	medicament	colistină	колистин	colistin				0
+linezolid	medicament	linezolid	линезолид	linezolid				0
+imipenem	medicament	imipenem	имипенем	imipenem				0
+ceftazidim	medicament	ceftazidim	цефтазидим	ceftazidime				0
+acetazolamida	medicament	acetazolamidă|Diacarb	ацетазоламид|диакарб	acetazolamide				0
+vasopresina	medicament	vasopresină	вазопрессин	vasopressin				0
+levosimendan	medicament	levosimendan	левосимендан	levosimendan				0
+propofol	medicament	propofol	пропофол	propofol				0
+midazolam	medicament	midazolam	мидазолам	midazolam				0
+fentanil	medicament	fentanil	фентанил	fentanyl				0
+dexametazona	medicament	dexametazonă	дексаметазон	dexamethasone				0
+hidrocortizon	medicament	hidrocortizon	гидрокортизон	hydrocortisone				0
+albumina	medicament	albumină	альбумин	albumin				0
+hipercapnie	diagnostic	hipercapnie	гиперкапния	hypercapnia				0
+hipoxemie	diagnostic	hipoxemie	гипоксемия	hypoxemia				0
+alcaloza	diagnostic	alcaloză	алкалоз	alkalosis				0
+acidoza	diagnostic	acidoză	ацидоз	acidosis				0
+pneumotorax	diagnostic	pneumotorax	пневмоторакс	pneumothorax				0
+pleurezie	diagnostic	pleurezie	плеврит	pleural effusion				0
+ascita	diagnostic	ascită	асцит	ascites				0
+traheostomie	procedura	traheostomie	трахеостомия	tracheostomy				0
+toracocenteza	procedura	toracocenteză	торакоцентез	thoracentesis				0
+laparotomie	procedura	laparotomie	лапаротомия	laparotomy				0
+hemotransfuzie	procedura	hemotransfuzie	гемотрансфузия	blood transfusion				0
+urologie	sectie	urologie|urolog	урология|уролог	urology				0
+nefrologie	sectie	nefrologie|nefrolog	нефрология|нефролог	nephrology				0
+oncologie	sectie	oncologie|oncolog	онкология|онколог	oncology				0
+pneumologie	sectie	pneumologie|pneumolog	пульмонология|пульмонолог	pulmonology				0
+gastroenterologie	sectie	gastroenterologie|gastroenterolog	гастроэнтерология	gastroenterology				0
+ortopedie	sectie	ortopedie|ortoped	ортопедия|ортопед	orthopedics				0
+traumatologie	sectie	traumatologie|traumatolog	травматология|травматолог	traumatology				0
+neurolog	sectie	neurolog|neurochirurg	невролог|нейрохирург	neurologist				0
+cardiolog	sectie	cardiolog|chirurg	кардиолог|хирург	cardiologist				0
+dren	procedura	dren|drenaj	дренаж	drain				0
+hemodinamic	parametru	hemodinamic|hemodinamică	гемодинамика	hemodynamic				0
+interventie	procedura	intervenție|intervenire	вмешательство	intervention				0

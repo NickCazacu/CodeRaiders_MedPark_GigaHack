@@ -111,6 +111,16 @@ qwen3:8b variază de la o rulare la alta cu ±3–4 fapte, deci fiecare variant�
 Din faptele lipsă, 3 nu există în transcriere (creatinină 240, linie arterială, Diacarb): le-a pierdut ASR-ul.
 Restul sunt în replici lungi și dense, pe care modelul de 8B le rezumă incomplet.
 
+## Corecția după glosar (`postprocess.glossary_correction`, 27.09): respinsă
+
+Glosarul extins cu vocabular de terapie intensivă (germeni, antibiotice, antifungice, specialități; `hotword` 0,
+deci ASR-ul nu se schimbă). Pe transcrierea Medpark corecțiile sunt bune (prag 80: picreatinină → creatinină,
+gluconazol → fluconazol, neprostoma → nefrostomă, hidroniferoză → hidronefroză, telectizie → atelectazie,
+acarbă → diacarbă), WER 55.6% -> 55.3%. Dar pe **text corect** (2 906 cuvinte din ședințele de test) corectorul
+schimbă sensul chiar la pragul cel mai strict (88): colecistului → colecistitului, dureze → diureze; la 84:
+tromboliză → tromboză, apendice → apendicite; la 80: Doamna → Dopamina. Într-un document medical o corecție greșită
+e mai periculoasă decât un cuvânt vizibil deformat => rămâne oprită.
+
 ## Formate și cazuri-limită (prin pagina web, 27.09)
 
 Primele 2 min din Medpark convertite în formatele pe care le poate aduce cineva:
