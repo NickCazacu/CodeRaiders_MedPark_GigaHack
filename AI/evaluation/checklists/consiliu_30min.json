@@ -1,0 +1,87 @@
+{
+  "expected_cases": 12,
+  "_sursa": "LLM/test_meetings/consiliu_30min.json (ședință fictivă, conținut cunoscut). Informația esențială pe fiecare punct: identificare, problema principală, deciziile. Regex pe textul cazului.",
+  "patients": [
+    {"id": "pacient 48, cardiologie", "key": "\\b48\\b", "items": {
+      "infarct / STEMI": "infarct|stemi",
+      "tromboaspirație + stent": "tromboaspira|trombospira|stent",
+      "insuficiență mitrală": "mitral",
+      "suspiciune ruptură de cordaj": "cordaj",
+      "ETE mâine dimineață": "transesofag|\\bete\\b|\\btee\\b",
+      "consult chirurgie cardiacă (plastie/protezare)": "chirurgi\\w* cardiac|plastie|protez",
+      "revascularizare în heart team după": "heart team|revasculariz"
+    }},
+    {"id": "salon 12, nefrologie", "key": "salon\\w*\\s*12|\\b57\\b|nefrolog", "items": {
+      "insuficiență renală acută / sepsis": "renal|sepsis",
+      "pielonefrită": "pielonefrit",
+      "creatinină 110 -> 240": "240",
+      "potasiu 5,6": "5[,.]6",
+      "vancomicină (doză redusă)": "vancomicin",
+      "Klebsiella sensibilă la meropenem": "klebsiell|meropenem",
+      "creatinina și potasiul repetate seara": "sear|diseară",
+      "dializă dacă creatinina > 300 sau K > 6": "dializ"
+    }},
+    {"id": "patul 8, chirurgie", "key": "pat\\w*\\s*8\\b|\\b45\\b", "items": {
+      "colecistită acută calculoasă": "colecistit",
+      "ceftriaxonă + metronidazol": "ceftriaxon|metronidazol",
+      "leucocite 16 -> 11": "leucocit|\\b11\\b",
+      "colecistectomie laparoscopică": "colecistectomi",
+      "INR 2,8 (warfarină acasă)": "inr|warfarin",
+      "operația amânată": "amân",
+      "vitamina K, operație după INR < 1,5": "vitamin\\w* k|1[,.]5"
+    }},
+    {"id": "echipamente: ecograful din urgență", "key": "ecograf", "items": {
+      "ecograful vechi se strică des": "strică|defect|nefuncțional|repar",
+      "problema e bugetul / ofertele": "buget|ofert",
+      "variantă portabilă": "portabil",
+      "nu se decide azi, se așteaptă a doua ofertă": "nu (se )?decide|amân|a doua ofert|așteapt"
+    }},
+    {"id": "protocolul de antibiotice", "key": "antibiotic|protocol|farmac|profilax", "items": {
+      "ceftriaxonă cu 40% peste recomandări": "40",
+      "profilaxie continuată peste 24 h": "24",
+      "stop automat la 24 h cu override justificat": "override|stop automat|justific",
+      "varianta finală în două săptămâni": "două săptămâni|2 săptămâni"
+    }},
+    {"id": "pacient 15, pneumologie", "key": "\\b15\\b", "items": {
+      "pneumonie comunitară": "pneumoni",
+      "CRP 180 -> 22 / afebril": "crp|\\b22\\b|afebril",
+      "amoxicilină-clavulanat per os": "amoxicilin|per os|oral",
+      "externare vineri": "extern"
+    }},
+    {"id": "pacient 5, ATI", "key": "(pacient\\w*|patul)\\s+5\\b|\\bati\\b", "items": {
+      "traumatism cranio-cerebral sever": "traum|cranio",
+      "ventilat de 12 zile": "ventila|\\b12\\b",
+      "traheostomie percutanată": "trah?eostomi|tracheostomi",
+      "poimâine dimineață, cu bronhoscop": "poimâine|bronhoscop"
+    }},
+    {"id": "pacient 40, gastroenterologie", "key": "\\b40\\b", "items": {
+      "ulcer duodenal sângerând (Forrest IIa)": "ulcer|forrest",
+      "hemoglobină 110 -> 78, 2 unități transfuzate": "hemoglobin|transfuz|\\b78\\b",
+      "endoscopie de control peste 48 h": "endoscopi",
+      "Helicobacter / biopsie în așteptare": "helicobacter|biopsi"
+    }},
+    {"id": "pacient 31, neurologie", "key": "\\b31\\b", "items": {
+      "AVC ischemic, tromboliză": "avc|ischemic|tromboliz",
+      "NIHSS 14 -> 6": "nihss|\\b14\\b",
+      "afazie / pareză dreaptă": "afazi|parez",
+      "transfer în recuperare neurologică": "recuperare|reabilitare|transfer"
+    }},
+    {"id": "pacient 22, oncologie", "key": "\\b22\\b", "items": {
+      "cancer gastric stadiul IV": "gastric|stomac|cancer",
+      "ECOG 3": "ecog",
+      "linia a doua de chimioterapie respinsă": "linia a doua|chimio|ramucirumab",
+      "îngrijire paliativă, reevaluare lunară": "paliativ"
+    }},
+    {"id": "organizare: graficul de gărzi", "key": "gărzi|gard", "items": {
+      "octombrie": "octombrie",
+      "goluri: concedii de maternitate": "concedi|maternitate|goluri",
+      "amânat la ședința de săptămâna viitoare": "amân|săptămâna viitoare"
+    }},
+    {"id": "incident: căderea din chirurgie", "key": "incident|căder", "items": {
+      "pacientă de 82 de ani, fractură de col femural": "82|fractur|femural",
+      "scala Morse nereevaluată după sedativ": "morse|sedativ",
+      "audit al prevenției căderilor în toate secțiile": "audit",
+      "raport până la sfârșitul lunii": "sfârșitul lunii"
+    }}
+  ]
+}

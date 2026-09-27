@@ -52,10 +52,13 @@ def main():
     args = ap.parse_args()
     checklist = json.loads(Path(args.checklist).read_text(encoding="utf-8"))
     for job in args.jobs:
-        m = json.loads((jobs_dir(load_config()) / job / "minutes.json").read_text(encoding="utf-8"))
+        p = Path(job)  # job din AI/jobs sau direct un minutes.json (ex. LLM/runs/<nume>/minutes.json)
+        p = p if p.suffix == ".json" else jobs_dir(load_config()) / job / "minutes.json"
+        m = json.loads(p.read_text(encoding="utf-8"))
         rows, tot, found, wrong = score(checklist, m)
+        exp = checklist.get("expected_cases")
         print(f"== {job}: {found}/{tot} fapte ({100 * found / tot:.0f}%), {wrong} la alt pacient, "
-              f"{len(m['cases'])} cazuri")
+              f"{len(m['cases'])} cazuri" + (f" (așteptate {exp})" if exp else ""))
         for pid, keys, ok, elsewhere, missing in rows:
             print(f"   {pid:9s} {len(ok):2d}/{len(ok) + len(elsewhere) + len(missing):2d}  caz: {keys or '— negăsit'}")
             if args.verbose:
